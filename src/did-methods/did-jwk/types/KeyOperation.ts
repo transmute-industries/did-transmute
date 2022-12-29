@@ -5,18 +5,7 @@ export type Sign = "sign";
 export type Verify = "verify";
 export type Encrypt = "encrypt";
 export type Decrypt = "decrypt";
-export type WrapKey = "wrapKey";
-export type UnwrapKey = "unwrapKey";
 export type DeriveKey = "deriveKey";
-export type DeriveBits = "deriveBits";
-export type KeyOperation =
-  | Sign
-  | Verify
-  | Encrypt
-  | Decrypt
-  | WrapKey
-  | UnwrapKey
-  | DeriveKey
-  | DeriveBits;
+export type KeyOperation = Sign | Verify | Encrypt | Decrypt | DeriveKey;
 
 export type Recommended = Record<KeyOperation, Algorithm>;
