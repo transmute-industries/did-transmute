@@ -1,6 +1,6 @@
 # did:transmute
 
-[![CI](https://github.com/or13/did-transmute/actions/workflows/ci.yml/badge.svg)](https://github.com/or13/did-transmute/actions/workflows/ci.yml)
+[![CI](https://github.com/transmute-industries/did-transmute/actions/workflows/ci.yml/badge.svg)](https://github.com/transmute-industries/did-transmute/actions/workflows/ci.yml)
 ![Branches](./badges/coverage-branches.svg)
 ![Functions](./badges/coverage-functions.svg)
 ![Lines](./badges/coverage-lines.svg)
