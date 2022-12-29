@@ -9,12 +9,14 @@ import {
 
 export const decryptWithKey = async (
   jwe: CompactJsonWebEncryption | string,
-  privateKeyJwk: PrivateKeyJwk
+  privateKey: CryptoKey | PrivateKeyJwk
 ): Promise<SuccessfulDecryption> => {
-  const privateKey = await jose.importJWK(privateKeyJwk);
-  const { plaintext, protectedHeader } = await jose.compactDecrypt(
-    jwe,
-    privateKey
-  );
+  let key: jose.KeyLike | Uint8Array;
+  if ((privateKey as PrivateKeyJwk).alg) {
+    key = await jose.importJWK(privateKey as PrivateKeyJwk);
+  } else {
+    key = privateKey as jose.KeyLike;
+  }
+  const { plaintext, protectedHeader } = await jose.compactDecrypt(jwe, key);
   return { plaintext, protectedHeader } as SuccessfulDecryption;
 };

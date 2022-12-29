@@ -47,12 +47,16 @@ describe("transmute", () => {
           if (transmute.did.jws.alg[privateKeyJwk.alg as SignatureAlgorithm]) {
             it(privateKeyJwk.alg, async () => {
               const iss = transmute.did.jwk.toDid(privateKeyJwk);
-              const jws = await transmute.did.jwk.sign(payload, privateKeyJwk, {
-                alg: privateKeyJwk.alg as SignatureAlgorithm,
-                iss,
-                kid: `#0`,
+              const jws = await transmute.did.jwk.sign({
+                payload,
+                privateKey: privateKeyJwk,
+                header: {
+                  alg: privateKeyJwk.alg as SignatureAlgorithm,
+                  iss,
+                  kid: `#0`,
+                },
               });
-              const v = await transmute.did.jwk.verify(jws);
+              const v = await transmute.did.jwk.verify({ jws });
               expect(v.protectedHeader.alg).toBe(privateKeyJwk.alg);
               expect(new TextDecoder().decode(v.payload)).toEqual(message);
             });
@@ -68,11 +72,14 @@ describe("transmute", () => {
             transmute.did.jwe.alg[privateKeyJwk.alg as KeyAgreementAlgorithm]
           ) {
             it(privateKeyJwk.alg, async () => {
-              const jwe = await transmute.did.jwk.encrypt(
-                payload,
-                privateKeyJwk
-              );
-              const v = await transmute.did.jwk.decrypt(jwe, privateKeyJwk);
+              const jwe = await transmute.did.jwk.encrypt({
+                plaintext: payload,
+                publicKey: privateKeyJwk,
+              });
+              const v = await transmute.did.jwk.decrypt({
+                jwe,
+                privateKey: privateKeyJwk,
+              });
               expect(v.protectedHeader.alg).toBe(privateKeyJwk.alg);
               expect(new TextDecoder().decode(v.plaintext)).toEqual(message);
             });
