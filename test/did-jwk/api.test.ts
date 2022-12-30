@@ -5,11 +5,15 @@ import transmute, {
   KeyAgreementAlgorithm,
   PrivateKeyJwk,
   SignatureAlgorithm,
+  ExtractableActor,
+  UnExtractableActor,
 } from "../../src";
 
 const fixture: any = {};
 const message = "It’s a dangerous business, Frodo, going out your door. 🧠💎";
 const payload = new TextEncoder().encode(message);
+
+const v: any = JSON.parse(fs.readFileSync("./examples.json").toString());
 
 describe("transmute", () => {
   describe("did", () => {
@@ -18,22 +22,22 @@ describe("transmute", () => {
         describe("alg", () => {
           Object.values(transmute.did.jwk.alg).forEach((alg) => {
             it(alg, async () => {
-              const e: any = await transmute.did.jwk.generate({
+              const e = (await transmute.did.jwk.generate({
                 alg,
                 extractable: true,
-              });
+              })) as ExtractableActor;
               fixture[e.did] = e.key.privateKeyJwk;
               expect(e.did.startsWith("did:jwk:")).toBe(true);
               expect(e.key.publicKeyJwk.alg).toBe(alg);
               expect(e.key.privateKeyJwk.alg).toBe(alg);
-              const ne: any = await transmute.did.jwk.generate({
+              const ne = (await transmute.did.jwk.generate({
                 alg,
                 extractable: false,
-              });
+              })) as UnExtractableActor;
               expect(ne.did.startsWith("did:jwk:")).toBe(true);
               expect(ne.key.publicKeyJwk.alg).toBe(alg);
               expect(ne.key.privateKey).toBeDefined();
-              expect(ne.key.privateKeyJwk).toBeUndefined();
+              expect((ne.key as any).privateKeyJwk).toBeUndefined();
             });
           });
         });
@@ -42,9 +46,6 @@ describe("transmute", () => {
         });
       });
       describe("sign & verify", () => {
-        const v: any = JSON.parse(
-          fs.readFileSync("./examples.json").toString()
-        );
         (Object.values(v) as PrivateKeyJwk[]).forEach((privateKeyJwk) => {
           if (transmute.did.jws.alg[privateKeyJwk.alg as SignatureAlgorithm]) {
             it(privateKeyJwk.alg, async () => {
@@ -66,9 +67,6 @@ describe("transmute", () => {
         });
       });
       describe("encrypt & decrypt", () => {
-        const v: any = JSON.parse(
-          fs.readFileSync("./examples.json").toString()
-        );
         (Object.values(v) as PrivateKeyJwk[]).forEach((privateKeyJwk) => {
           if (
             transmute.did.jwe.alg[privateKeyJwk.alg as KeyAgreementAlgorithm]
@@ -90,9 +88,6 @@ describe("transmute", () => {
       });
 
       describe("resolve & dereference", () => {
-        const v: any = JSON.parse(
-          fs.readFileSync("./examples.json").toString()
-        );
         (Object.keys(v) as DidUrl[]).forEach((did) => {
           it(did, async () => {
             const didDocument = transmute.did.jwk.resolve({ didUrl: did });

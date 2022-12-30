@@ -8,6 +8,11 @@ import {
   JsonWebKey2020,
 } from "./did-methods/did-jwk/types/JsonWebKey";
 
+import {
+  ExtractableActor,
+  UnExtractableActor,
+} from "./did-methods/did-jwk/types/ControllerKey";
+
 export {
   Did,
   DidUrl,
@@ -16,4 +21,6 @@ export {
   JsonWebKey2020,
   KeyAgreementAlgorithm,
   SignatureAlgorithm,
+  ExtractableActor,
+  UnExtractableActor,
 };

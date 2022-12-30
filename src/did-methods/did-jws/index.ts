@@ -1,5 +1,7 @@
 import alg from "./alg";
 
-const jws = { alg };
+import { create } from "./actions";
+
+const jws = { alg, create };
 
 export default jws;
