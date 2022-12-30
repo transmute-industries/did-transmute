@@ -1,8 +1,8 @@
 import alg from "./alg";
 import enc from "./enc";
 
-import { create } from "./actions";
+import { encrypt, decrypt } from "./actions";
 
-const jwe = { alg, enc, create };
+const jwe = { alg, enc, encrypt, decrypt };
 
 export default jwe;

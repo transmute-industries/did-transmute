@@ -2,13 +2,14 @@ import { prefix } from "../method";
 import { PublicKeyJwk } from "../../did-jwk/types/JsonWebKey";
 import { encryptToKey } from "./encryptToKey";
 
-export type Create = {
+import { DidJwe, DidJweActor } from "../types/Did";
+export type Encrypt = {
   plaintext: Uint8Array;
   publicKey: PublicKeyJwk;
 };
 
-export const create = async ({ plaintext, publicKey }: Create) => {
+export const encrypt = async ({ plaintext, publicKey }: Encrypt) => {
   const jws = await encryptToKey(plaintext, publicKey);
-  const did = `${prefix}:${jws}`;
-  return { did: did };
+  const did = `${prefix}:${jws}` as DidJwe;
+  return { did: did } as DidJweActor;
 };
