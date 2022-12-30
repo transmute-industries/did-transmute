@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import transmute from "../src";
-import { ECDH_ES_A256KW } from "../src/did-methods/did-jwe/alg";
+import transmute from "../../src";
+import { ECDH_ES_A256KW } from "../../src/did-methods/did-jwe/alg";
 
 const message = "It’s a dangerous business, Frodo, going out your door. 🧠💎";
 const payload = new TextEncoder().encode(message);

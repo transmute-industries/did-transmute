@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from "fs";
-import transmute from "../src";
-import { KeyAgreementAlgorithm } from "../src/did-methods/did-jwe/types/Algorithm";
-import { DidUrl } from "../src/did-methods/did-jwk/types/DidDocument";
-import { PrivateKeyJwk } from "../src/did-methods/did-jwk/types/JsonWebKey";
-import { SignatureAlgorithm } from "../src/did-methods/did-jws/types/Algorithm";
+import transmute from "../../src";
+import { KeyAgreementAlgorithm } from "../../src/did-methods/did-jwe/types/Algorithm";
+import { DidUrl } from "../../src/did-methods/did-jwk/types/DidDocument";
+import { PrivateKeyJwk } from "../../src/did-methods/did-jwk/types/JsonWebKey";
+import { SignatureAlgorithm } from "../../src/did-methods/did-jws/types/Algorithm";
 
 const fixture: any = {};
 const message = "It’s a dangerous business, Frodo, going out your door. 🧠💎";
