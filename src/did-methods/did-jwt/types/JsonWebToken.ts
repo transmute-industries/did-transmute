@@ -1,18 +1,22 @@
 import * as jose from "jose";
-import { SignatureAlgorithm } from "./Algorithm";
+import { SignatureAlgorithm } from "../../did-jws/types/Algorithm";
 export type EncodedProtectedHeader = string;
 export type EncodedPayload = string;
 export type EncodedSignature = string;
 
-export type CompactJsonWebSignature =
+export type CompactJsonWebToken =
   `${EncodedProtectedHeader}.${EncodedPayload}.${EncodedSignature}`;
 
-export type ProtectedHeader = jose.JWSHeaderParameters & {
+export type ProtectedHeader = {
   alg: SignatureAlgorithm;
+  iss: string;
+  kid: string;
+  cty: string;
+  enc: string; // fix me
   [x: string]: unknown;
 };
 
 export type SuccessfulVerification = {
-  payload: Uint8Array;
-  protectedHeader: ProtectedHeader;
+  payload: jose.JWTPayload;
+  protectedHeader: jose.JWTHeaderParameters;
 };
