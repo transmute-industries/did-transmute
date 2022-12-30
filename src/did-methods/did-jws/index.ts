@@ -1,7 +1,7 @@
 import alg from "./alg";
 
-import { create } from "./actions";
+import { sign, verify } from "./actions";
 
-const jws = { alg, create };
+const jws = { alg, sign, verify };
 
 export default jws;
