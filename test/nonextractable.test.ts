@@ -22,7 +22,7 @@ it("sign and verify", async () => {
   });
   const v = await transmute.did.jwk.verify({
     jws,
-    publicKeyJwk: e.key.publicKeyJwk,
+    publicKey: e.key.publicKeyJwk,
   });
   expect(v.protectedHeader.alg).toBe(e.key.publicKeyJwk.alg);
   expect(new TextDecoder().decode(v.payload)).toEqual(message);

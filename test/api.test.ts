@@ -2,6 +2,7 @@
 import fs from "fs";
 import transmute from "../src";
 import { KeyAgreementAlgorithm } from "../src/did-methods/did-jwe/types/Algorithm";
+import { DidUrl } from "../src/did-methods/did-jwk/types/DidDocument";
 import { PrivateKeyJwk } from "../src/did-methods/did-jwk/types/JsonWebKey";
 import { SignatureAlgorithm } from "../src/did-methods/did-jws/types/Algorithm";
 
@@ -84,6 +85,22 @@ describe("transmute", () => {
               expect(new TextDecoder().decode(v.plaintext)).toEqual(message);
             });
           }
+        });
+      });
+
+      describe("resolve & dereference", () => {
+        const v: any = JSON.parse(
+          fs.readFileSync("./examples.json").toString()
+        );
+        (Object.keys(v) as DidUrl[]).forEach((did) => {
+          it(did, async () => {
+            const didDocument = transmute.did.jwk.resolve({ didUrl: did });
+            expect(didDocument.id).toBe(did);
+            const verificationMethod = transmute.did.jwk.dereference({
+              didUrl: did + "#0",
+            });
+            expect(verificationMethod?.controller).toBe(did);
+          });
         });
       });
     });

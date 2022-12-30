@@ -26,11 +26,6 @@ export const generateKeyPairForOperation = async (
       privateKeyJwk.key_ops = ["decrypt"];
       break;
     }
-    case "wrapKey": {
-      publicKeyJwk.key_ops = ["wrapKey", "unwrapKey"];
-      privateKeyJwk.key_ops = ["wrapKey", "unwrapKey"];
-      break;
-    }
     case "deriveKey": {
       publicKeyJwk.key_ops = ["deriveKey", "deriveBits"];
       privateKeyJwk.key_ops = ["deriveKey", "deriveBits"];

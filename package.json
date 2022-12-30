@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "Probably don't use this.",
   "main": "./dist/index.js",
+  "typings": "dist/index.d.ts",
   "scripts": {
     "clean": "rm -rf ./dist",
     "prebuild": "npm run clean",

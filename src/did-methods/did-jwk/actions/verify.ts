@@ -9,31 +9,28 @@ import { PublicKeyJwk } from "../types/JsonWebKey";
 
 export type Verify = {
   jws: CompactJsonWebSignature;
-  publicKeyJwk?: PublicKeyJwk;
+  publicKey?: PublicKeyJwk;
 };
 
 export const verify = async ({
   jws,
-  publicKeyJwk,
+  publicKey,
 }: Verify): Promise<SuccessfulVerification> => {
-  let publicKey;
-  if (!publicKeyJwk) {
+  let key;
+  if (!publicKey) {
     const { iss, kid } = jose.decodeProtectedHeader(jws);
     if (!kid) {
       throw new Error("JWS must contain kid");
     }
     const didUrl = kid.startsWith("did:") ? kid : ((iss + kid) as DidUrl);
-
     const vm = dereference(didUrl);
-
     if (vm === null) {
       throw new Error("Could not dereference public key");
     }
-    publicKey = await jose.importJWK(vm.publicKeyJwk);
+    key = await jose.importJWK(vm.publicKeyJwk);
   } else {
-    publicKey = await jose.importJWK(publicKeyJwk);
+    key = await jose.importJWK(publicKey);
   }
-
-  const { payload, protectedHeader } = await jose.compactVerify(jws, publicKey);
+  const { payload, protectedHeader } = await jose.compactVerify(jws, key);
   return { payload, protectedHeader } as SuccessfulVerification;
 };

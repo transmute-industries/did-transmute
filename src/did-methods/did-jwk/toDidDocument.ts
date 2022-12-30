@@ -13,6 +13,36 @@ import {
 import { SignatureAlgorithm } from "../did-jws/types/Algorithm";
 import { KeyAgreementAlgorithm } from "../did-jwe/types/Algorithm";
 
+const formatVerificationMethod = (
+  vm: VerificationMethod
+): VerificationMethod => {
+  return JSON.parse(
+    JSON.stringify({
+      id: vm.id,
+      type: vm.type,
+      controller: vm.controller,
+      publicKeyJwk: vm.publicKeyJwk,
+    })
+  );
+};
+
+const formatDidDocument = (didDocument: DidDocument): DidDocument => {
+  return JSON.parse(
+    JSON.stringify({
+      "@context": didDocument["@context"],
+      id: didDocument.id,
+      verificationMethod: didDocument.verificationMethod.map(
+        formatVerificationMethod
+      ),
+      authentication: didDocument.authentication,
+      assertionMethod: didDocument.assertionMethod,
+      capabilityInvocation: didDocument.capabilityInvocation,
+      capabilityDelegation: didDocument.capabilityDelegation,
+      keyAgreement: didDocument.keyAgreement,
+    })
+  );
+};
+
 export const toDidDocument = (jwk: JsonWebKey) => {
   const publicKeyJwk = getPublicKeyJwk(jwk);
   const did = toDid(publicKeyJwk);
@@ -47,5 +77,5 @@ export const toDidDocument = (jwk: JsonWebKey) => {
       didDocument[vr] = [vm.id];
     });
   }
-  return didDocument;
+  return formatDidDocument(didDocument);
 };
