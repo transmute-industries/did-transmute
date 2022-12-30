@@ -16,6 +16,10 @@ export type ProtectedHeader = {
   [x: string]: unknown;
 };
 
+export type ClaimSet = jose.JWTPayload & {
+  [x: string]: unknown;
+};
+
 export type SuccessfulVerification = {
   payload: jose.JWTPayload;
   protectedHeader: jose.JWTHeaderParameters;

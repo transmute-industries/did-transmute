@@ -1,34 +1,38 @@
 import * as jose from "jose";
+import { PublicKeyJwk } from "../../../types";
 
 import { getKey } from "../../../util";
 import { prefix } from "../method";
 import { DidJwt, DidJwtActor } from "../types";
+import { ProtectedHeader, ClaimSet } from "../types/JsonWebToken";
 
 export type Encrypt = {
-  issuer: any;
-  verifier: any; //  const audience = verifier.did;
-  protectedHeader: any;
-  claimSet: any;
-  publicKey: any;
+  issuer: string;
+  protectedHeader: ProtectedHeader;
+  claimSet: ClaimSet;
+  audience?: string | string[];
+  publicKey: PublicKeyJwk;
 };
 
 export const encrypt = async ({
   issuer,
-  verifier,
+  audience,
   protectedHeader,
   claimSet,
-  publicKey, // remove...
+  publicKey,
 }: Encrypt): Promise<DidJwtActor> => {
   const key = await getKey(publicKey);
-
-  const jwt = await new jose.EncryptJWT(claimSet)
+  const content = new jose.EncryptJWT(claimSet)
     .setProtectedHeader(protectedHeader)
     .setIssuedAt()
     .setIssuer(issuer)
-    .setAudience(verifier)
-    .setExpirationTime("2h")
-    .encrypt(key);
+    .setExpirationTime("2h");
 
+  if (audience) {
+    content.setAudience(audience);
+  }
+
+  const jwt = await content.encrypt(key);
   const did = `${prefix}:${jwt}` as DidJwt;
   return { did };
 };
