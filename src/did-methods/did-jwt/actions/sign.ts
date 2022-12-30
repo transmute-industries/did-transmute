@@ -8,7 +8,6 @@ import { ClaimSet, ProtectedHeader } from "../types/JsonWebToken";
 export type Sign = {
   issuer: string;
   audience?: string | string[];
-
   protectedHeader: ProtectedHeader;
   claimSet: ClaimSet;
   privateKey: PrivateKeyJwk;
