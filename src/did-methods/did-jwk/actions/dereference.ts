@@ -1,7 +1,10 @@
 import { DereferenceParameters } from "../../../types/DereferenceParameters";
 
-import { dereference as didJwkDereference } from "../dereference";
+import { dereferenceWithResolver } from "../../../util/dereferenceWithResolver";
 
-export const dereference = async ({ didUrl }: DereferenceParameters) => {
-  return didJwkDereference(didUrl);
+export const dereference = async ({
+  didUrl,
+  resolver,
+}: DereferenceParameters) => {
+  return dereferenceWithResolver({ didUrl, resolver });
 };

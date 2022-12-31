@@ -43,6 +43,7 @@ describe("transmute", () => {
             }
             const verificationMethod = await transmute.did.jwk.dereference({
               didUrl: `${did}"#0"`,
+              resolver: transmute.did.jwk.resolve,
             });
             if (verificationMethod) {
               expect(verificationMethod.controller).toBe(did);

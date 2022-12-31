@@ -2,7 +2,7 @@ import * as jose from "jose";
 
 import { DidDocument } from "../../../types/DidDocument";
 
-import { Dereferencer } from "../../../types/Dereferencer";
+import { Resolver } from "../../../types/Resolver";
 
 import { parseDidUrl } from "../../../util/parseDidUrl";
 
@@ -12,9 +12,11 @@ import { DidJwt, DidJwtUrl } from "../../../types/DidJwt";
 import { prefix } from "../method";
 import { PublicKeyJwk } from "../../../types";
 
-export type Resolve = {
+import { dereferenceWithResolver } from "../../../util/dereferenceWithResolver";
+
+export type DidJwtResolver = {
   did: DidJwt;
-  dereference: Dereferencer;
+  resolver: Resolver; // DidJwkResolver...
 };
 
 // Resolve Embedded
@@ -22,19 +24,19 @@ export type Resolve = {
 // TLDR:
 // Trust the jwk if the issuer did document contains it (which will always be true for did:jwk).
 // did:jwt payload claimSet is used as didDocument members.
-const resolveEmbedded = async (did: DidJwt, dereference: Dereferencer) => {
+const resolveEmbedded = async (did: DidJwt, resolver: Resolver) => {
   const jws = did.split(":").pop() as string;
   // this part....
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { iss, kid, jwk, alg } = jose.decodeProtectedHeader(jws) as any;
   // this part....
-  const vm = await dereference({ didUrl: iss + kid });
-  if (!vm) {
+  const item = await dereferenceWithResolver({ didUrl: iss + kid, resolver });
+  if (!item) {
     throw new Error("Cannot dereference public key.");
   }
   if (
     (await jose.calculateJwkThumbprint(jwk)) !==
-    (await jose.calculateJwkThumbprint(vm.publicKeyJwk as PublicKeyJwk))
+    (await jose.calculateJwkThumbprint(item.publicKeyJwk as PublicKeyJwk))
   ) {
     throw new Error("Issuer does does not control header.jwk.");
   }
@@ -61,8 +63,8 @@ const resolveEmbedded = async (did: DidJwt, dereference: Dereferencer) => {
 
 export const resolve = async ({
   did,
-  dereference,
-}: Resolve): Promise<DidDocument | null> => {
+  resolver,
+}: DidJwtResolver): Promise<DidDocument | null> => {
   if (!did.startsWith(prefix)) {
     return null;
   }
@@ -70,7 +72,7 @@ export const resolve = async ({
   const jws = parsedDid.did.split(":").pop() as string;
   const { jwk } = jose.decodeProtectedHeader(jws);
   if (jwk) {
-    return resolveEmbedded(parsedDid.did as DidJwt, dereference);
+    return resolveEmbedded(parsedDid.did as DidJwt, resolver);
   }
   return null;
 };

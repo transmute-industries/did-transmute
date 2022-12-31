@@ -17,6 +17,7 @@ describe("transmute", () => {
           })) as any;
           const didDocument3 = (await transmute.did.jwk.dereference({
             didUrl: `${did}`,
+            resolver: transmute.did.jwk.resolve,
           })) as any;
           expect(didDocument.id).toBe(did);
           expect(didDocument2).toEqual(didDocument);
