@@ -8,29 +8,28 @@ import { parseDidUrl } from "../../../util/parseDidUrl";
 
 import { verify } from "./verify";
 
+import { DidJwkResolver } from "../../../types/DidJwk";
 import { DidJwt, DidJwtUrl } from "../../../types/DidJwt";
 import { prefix } from "../method";
 import { PublicKeyJwk } from "../../../types";
 
 import { dereferenceWithResolver } from "../../../util/dereferenceWithResolver";
 
-export type DidJwtResolver = {
-  did: DidJwt;
-  resolver: Resolver; // DidJwkResolver...
-};
-
 // Resolve Embedded
 // https://www.pingidentity.com/en/resources/blog/post/jwt-security-nobody-talks-about.html
 // TLDR:
 // Trust the jwk if the issuer did document contains it (which will always be true for did:jwk).
 // did:jwt payload claimSet is used as didDocument members.
-const resolveEmbedded = async (did: DidJwt, resolver: Resolver) => {
+const resolveEmbedded = async (did: DidJwt, resolver: DidJwkResolver) => {
   const jws = did.split(":").pop() as string;
   // this part....
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { iss, kid, jwk, alg } = jose.decodeProtectedHeader(jws) as any;
   // this part....
-  const item = await dereferenceWithResolver({ didUrl: iss + kid, resolver });
+  const item = await dereferenceWithResolver({
+    didUrl: iss + kid,
+    resolver: resolver as Resolver,
+  });
   if (!item) {
     throw new Error("Cannot dereference public key.");
   }
@@ -64,7 +63,10 @@ const resolveEmbedded = async (did: DidJwt, resolver: Resolver) => {
 export const resolve = async ({
   did,
   resolver,
-}: DidJwtResolver): Promise<DidDocument | null> => {
+}: {
+  did: DidJwt;
+  resolver: DidJwkResolver;
+}): Promise<DidDocument | null> => {
   if (!did.startsWith(prefix)) {
     return null;
   }
