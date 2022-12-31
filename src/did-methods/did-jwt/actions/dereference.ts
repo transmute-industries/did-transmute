@@ -1,18 +1,13 @@
-import { DidDocument, DereferenceParameters } from "../../../types";
-import { VerificationMethod } from "../../../types/VerificationMethod";
-import { Service } from "../../../types/Service";
+import { Resolver } from "../../../types";
+import { DidJwtDereference } from "../../../types/DidJwt";
 
 import { dereferenceWithResolver } from "../../../util/dereferenceWithResolver";
 import { prefix } from "../method";
 
-export const dereference = async ({
-  didUrl,
-  resolver,
-}: DereferenceParameters): Promise<
-  DidDocument | VerificationMethod | Service | null
-> => {
+export const dereference: DidJwtDereference = async ({ didUrl, resolver }) => {
   if (!didUrl.startsWith(prefix)) {
     return null;
   }
-  return dereferenceWithResolver({ didUrl, resolver });
+  // this resolver needs to handle both did:jwk and did:jwt...
+  return dereferenceWithResolver({ didUrl, resolver: resolver as Resolver }); // needs generics
 };

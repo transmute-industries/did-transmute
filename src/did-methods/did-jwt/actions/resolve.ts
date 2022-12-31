@@ -9,7 +9,7 @@ import { parseDidUrl } from "../../../util/parseDidUrl";
 import { verify } from "./verify";
 
 import { DidJwkResolver } from "../../../types/DidJwk";
-import { DidJwt, DidJwtUrl } from "../../../types/DidJwt";
+import { DidJwt, DidJwtUrl, DidJwtResolver } from "../../../types/DidJwt";
 import { prefix } from "../method";
 import { PublicKeyJwk } from "../../../types";
 
@@ -60,13 +60,7 @@ const resolveEmbedded = async (did: DidJwt, resolver: DidJwkResolver) => {
   return didDocument as DidDocument;
 };
 
-export const resolve = async ({
-  did,
-  resolver,
-}: {
-  did: DidJwt;
-  resolver: DidJwkResolver;
-}): Promise<DidDocument | null> => {
+export const resolve: DidJwtResolver = async ({ did, resolver }) => {
   if (!did.startsWith(prefix)) {
     return null;
   }

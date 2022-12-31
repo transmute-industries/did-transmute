@@ -1,18 +1,11 @@
 import * as jose from "jose";
 import { prefix } from "../method";
-import { DidJwk } from "../../../types/DidJwk";
-import { DidDocument } from "../../../types";
+import { DidJwkResolver } from "../../../types/DidJwk";
 
 import { parseDidUrl } from "../../../util/parseDidUrl";
 import { toDidDocument } from "../toDidDocument";
 
-export type Resolve = {
-  did: DidJwk;
-};
-
-export const resolve = async ({
-  did,
-}: Resolve): Promise<DidDocument | null> => {
+export const resolve: DidJwkResolver = async ({ did }) => {
   if (!did.startsWith(prefix)) {
     return null;
   }
