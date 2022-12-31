@@ -1,4 +1,3 @@
-// sign
 export type EdDSA = "EdDSA";
 export type ES256K = "ES256K";
 export type ES256 = "ES256";

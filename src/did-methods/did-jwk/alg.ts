@@ -1,4 +1,4 @@
-import * as Algorithm from "./types/Algorithm";
+import * as Algorithm from "../../types/Algorithm";
 
 import { signatureAlgorithms } from "../did-jws/alg";
 import { keyAgreementAlgorithms } from "../did-jwe/alg";

@@ -1,7 +1,6 @@
 import jose from "jose";
-import { PublicKeyJwk } from "./types/JsonWebKey";
 
-export const calculateJwkThumbprintUri = async (publicKeyJwk: PublicKeyJwk) => {
-  const kid = await jose.calculateJwkThumbprintUri(publicKeyJwk);
+export const calculateJwkThumbprintUri = async (jwk: jose.JWK) => {
+  const kid = await jose.calculateJwkThumbprintUri(jwk);
   return kid;
 };

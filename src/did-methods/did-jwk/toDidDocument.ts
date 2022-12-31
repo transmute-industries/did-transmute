@@ -1,4 +1,3 @@
-import { JsonWebKey } from "./types/JsonWebKey";
 import { toDid } from "./toDid";
 
 import { DidUrl } from "../../types/DidUrl";
@@ -13,8 +12,10 @@ import {
   signatureVerificationRelationships,
   encryptionVerificationRelationships,
 } from "./method";
-import { SignatureAlgorithm } from "../did-jws/types/Algorithm";
-import { KeyAgreementAlgorithm } from "../did-jwe/types/Algorithm";
+
+import { AsymmetricJsonWebKey } from "../../types/AsymmetricJsonWebKey";
+import { SignatureAlgorithm } from "../../types/SignatureAlgorithm";
+import { KeyAgreementAlgorithm } from "../../types/KeyAgreementAlgorithm";
 
 const formatVerificationMethod = (
   vm: VerificationMethod
@@ -43,7 +44,7 @@ const formatDidDocument = (didDocument: DidDocument): DidDocument => {
   return JSON.parse(JSON.stringify(formatted));
 };
 
-export const toDidDocument = (jwk: JsonWebKey) => {
+export const toDidDocument = (jwk: AsymmetricJsonWebKey) => {
   const publicKeyJwk = getPublicKeyJwk(jwk);
   const did = toDid(publicKeyJwk);
   const vm: VerificationMethod = {

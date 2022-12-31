@@ -1,11 +1,12 @@
 import * as jose from "jose";
-import {
-  CompactJsonWebSignature,
-  SuccessfulVerification,
-} from "../../did-jws/types/JsonWebSignature";
+
 import { dereference } from "../dereference";
-import { DidUrl } from "../types/DidDocument";
-import { PublicKeyJwk } from "../types/JsonWebKey";
+import { DidUrl } from "../../../types/DidUrl";
+import { PublicKeyJwk } from "../../../types/PublicKeyJwk";
+
+import { CompactJsonWebSignature } from "../../../types/CompactJsonWebSignature";
+
+import { SuccessfulVerification } from "../../../types/SuccessfulVerification";
 
 export type Verify = {
   jws: CompactJsonWebSignature;
@@ -22,8 +23,8 @@ export const verify = async ({
     if (!kid) {
       throw new Error("JWS must contain kid");
     }
-    const didUrl = kid.startsWith("did:") ? kid : ((iss + kid) as DidUrl);
-    const vm = dereference(didUrl);
+    const didUrl = kid.startsWith("did:") ? kid : iss + kid;
+    const vm = dereference(didUrl as DidUrl);
     if (vm === null) {
       throw new Error("Could not dereference public key");
     }

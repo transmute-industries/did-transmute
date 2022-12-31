@@ -6,10 +6,10 @@ import {
   Encrypt,
   Decrypt,
   DeriveKey,
-} from "./types/KeyOperation";
+} from "../../types/KeyOperation";
 
 import jwsAlg from "../did-jws/alg";
-import jweAlg, { ECDH_ES_A256KW } from "../did-jwe/alg";
+import jweAlg from "../did-jwe/alg";
 
 export const sign: Sign = "sign";
 export const verify: Verify = "verify";
@@ -29,7 +29,7 @@ export const keyOperations: Record<KeyOperation, string> = {
 export const algForKeyOperation: Recommended = {
   sign: jwsAlg.EdDSA,
   verify: jwsAlg.EdDSA,
-  encrypt: jweAlg[ECDH_ES_A256KW],
-  decrypt: jweAlg[ECDH_ES_A256KW],
-  deriveKey: jweAlg[ECDH_ES_A256KW],
+  encrypt: jweAlg.ECDH_ES_A256KW,
+  decrypt: jweAlg.ECDH_ES_A256KW,
+  deriveKey: jweAlg.ECDH_ES_A256KW,
 };

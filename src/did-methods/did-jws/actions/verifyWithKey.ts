@@ -1,16 +1,15 @@
 import * as jose from "jose";
-import { PublicKeyJwk } from "../../did-jwk/types/JsonWebKey";
+import { PublicKey } from "../../../types/PublicKey";
+import { getKey } from "../../../util";
 
-import {
-  CompactJsonWebSignature,
-  SuccessfulVerification,
-} from "../types/JsonWebSignature";
+import { CompactJsonWebSignature } from "../../../types/CompactJsonWebSignature";
+import { SuccessfulVerification } from "../../../types/SuccessfulVerification";
 
 export const verifyWithKey = async (
   jws: CompactJsonWebSignature,
-  publicKeyJwk: PublicKeyJwk
+  publicKey: PublicKey
 ): Promise<SuccessfulVerification> => {
-  const publicKey = await jose.importJWK(publicKeyJwk);
-  const { payload, protectedHeader } = await jose.compactVerify(jws, publicKey);
+  const key = await getKey(publicKey);
+  const { payload, protectedHeader } = await jose.compactVerify(jws, key);
   return { payload, protectedHeader } as SuccessfulVerification;
 };

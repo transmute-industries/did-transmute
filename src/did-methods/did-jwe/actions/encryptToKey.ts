@@ -1,13 +1,19 @@
 import * as jose from "jose";
-import { PublicKeyJwk } from "../../did-jwk/types/JsonWebKey";
+
+import { PublicKey } from "../../../types/PublicKey";
+import { PublicKeyJwk } from "../../../types/PublicKeyJwk";
+import { getKey } from "../../../util";
 
 export const encryptToKey = async (
   plaintext: Uint8Array,
-  publicKeyJwk: PublicKeyJwk
+  publicKey: PublicKey
 ) => {
-  const publicKey = await jose.importJWK(publicKeyJwk);
+  const key = await getKey(publicKey);
   const jwe = await new jose.CompactEncrypt(plaintext)
-    .setProtectedHeader({ alg: publicKeyJwk.alg, enc: "A256GCM" })
-    .encrypt(publicKey);
+    .setProtectedHeader({
+      alg: (publicKey as PublicKeyJwk).alg,
+      enc: "A256GCM", // fixme
+    } as any)
+    .encrypt(key);
   return jwe;
 };

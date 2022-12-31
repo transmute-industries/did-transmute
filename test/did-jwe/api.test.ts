@@ -1,11 +1,11 @@
-import transmute, { ECDH_ES_A256KW, ExtractableActor } from "../../src";
+import transmute, { ExportableActor } from "../../src";
 
 const message = "hello world";
 describe("transmute", () => {
   describe("did", () => {
     describe("jwe", () => {
       it("encrypt & decrypt", async () => {
-        const alg = transmute.did.jwe.alg[ECDH_ES_A256KW];
+        const alg = transmute.did.jwe.alg.ECDH_ES_A256KW;
         const actor = await transmute.did.jwk.generate({
           alg,
           extractable: true,
@@ -17,7 +17,7 @@ describe("transmute", () => {
         expect(actor2.did.startsWith("did:jwe:")).toBe(true);
         const v = await transmute.did.jwe.decrypt({
           did: actor2.did,
-          privateKey: (actor as ExtractableActor).key.privateKeyJwk,
+          privateKey: (actor as ExportableActor).key.privateKeyJwk,
         });
         expect(v.protectedHeader.alg).toBe(actor.key.publicKeyJwk.alg);
         expect(new TextDecoder().decode(v.plaintext)).toEqual(message);

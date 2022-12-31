@@ -1,10 +1,7 @@
-import { dereference as d } from "../dereference";
-import { DidUrl } from "../types/DidDocument";
+import { DereferenceParameters } from "../../../types/DereferenceParameters";
 
-export type Dereference = {
-  didUrl: DidUrl | string;
-};
+import { dereference as didJwkDereference } from "../dereference";
 
-export const dereference = async ({ didUrl }: Dereference) => {
-  return d(didUrl);
+export const dereference = async ({ didUrl }: DereferenceParameters) => {
+  return didJwkDereference(didUrl);
 };

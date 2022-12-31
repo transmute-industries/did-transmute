@@ -1,8 +1,7 @@
-import { PublicKeyJwk } from "./types/JsonWebKey";
-
+import { JWK } from "jose";
 import { calculateJwkThumbprintUri } from "./calculateJwkThumbprintUri";
 
-export const calculateJwkThumbprint = async (publicKeyJwk: PublicKeyJwk) => {
-  const kid = await calculateJwkThumbprintUri(publicKeyJwk);
+export const calculateJwkThumbprint = async (jwk: JWK) => {
+  const kid = await calculateJwkThumbprintUri(jwk);
   return kid.split(":").pop();
 };

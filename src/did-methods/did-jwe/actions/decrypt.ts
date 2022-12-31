@@ -1,11 +1,12 @@
-import { PrivateKeyJwk } from "../../../types";
-import { DidJwe } from "../types/Did";
-import { CompactJsonWebEncryption } from "../types/JsonWebEncryption";
 import { decryptWithKey } from "./decryptWithKey";
+
+import { DidJwe } from "../../../types/DidJwe";
+import { CompactJsonWebEncryption } from "../../../types/CompactJsonWebEncryption";
+import { PrivateKey } from "../../../types/PrivateKey";
 
 export type Decrypt = {
   did: DidJwe;
-  privateKey: PrivateKeyJwk;
+  privateKey: PrivateKey;
 };
 
 export const decrypt = async ({ did, privateKey }: Decrypt) => {

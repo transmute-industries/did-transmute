@@ -1,10 +1,11 @@
 import * as jose from "jose";
 
-import { formatJwk } from "./formatJwk";
-import { PrivateKeyJwk, PublicKeyJwk } from "./types/JsonWebKey";
+import { formatJwk } from "../../util/formatJwk";
 
-import { Algorithm } from "./types/Algorithm";
-import { ControllerKey } from "./types/ControllerKey";
+import { Algorithm } from "../../types/Algorithm";
+
+import { ExportableKey } from "../../types/ExportableKey";
+import { IsolatedKey } from "../../types/IsolatedKey";
 
 export type GenerateKeyPair = {
   alg: Algorithm;
@@ -14,25 +15,24 @@ export type GenerateKeyPair = {
 export const generateKeyPair = async ({
   alg,
   extractable,
-}: GenerateKeyPair): Promise<ControllerKey> => {
+}: GenerateKeyPair): Promise<ExportableKey | IsolatedKey> => {
   const { publicKey, privateKey } = await jose.generateKeyPair(alg, {
     extractable,
   });
-  const publicKeyJwk = (await jose.exportJWK(publicKey)) as PublicKeyJwk;
+  const publicKeyJwk = await jose.exportJWK(publicKey);
   const kid = await jose.calculateJwkThumbprintUri(publicKeyJwk);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const controllerKey: any = {
+  const key: any = {
     publicKeyJwk: formatJwk({ ...publicKeyJwk, alg, kid }),
   };
   if (extractable) {
-    controllerKey.privateKeyJwk = formatJwk({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ...((await jose.exportJWK(privateKey)) as any),
+    key.privateKeyJwk = formatJwk({
+      ...(await jose.exportJWK(privateKey)),
       alg,
       kid,
-    }) as PrivateKeyJwk;
+    });
   } else {
-    controllerKey.privateKey = privateKey;
+    key.privateKey = privateKey;
   }
-  return controllerKey as ControllerKey;
+  return extractable ? (key as ExportableKey) : (key as IsolatedKey);
 };

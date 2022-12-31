@@ -6,8 +6,9 @@ import { Dereferencer } from "../../../types/Dereferencer";
 
 import { parseDidUrl } from "../../../util/parseDidUrl";
 
-import { DidJwtUrl } from "../types/Did";
 import { verify } from "./verify";
+import { DidUrl } from "../../../types/DidUrl";
+import { DidJwtUrl } from "../../../types/DidJwt";
 
 export type Resolve = {
   didUrl: DidJwtUrl;
@@ -19,7 +20,10 @@ export type Resolve = {
 // TLDR:
 // Trust the jwk if the issuer did document contains it (which will always be true for did:jwk).
 // did:jwt payload claimSet is used as didDocument members.
-const resolveEmbedded = async (didUrl: string, dereference: Dereferencer) => {
+const dereferenceEmbedded = async (
+  didUrl: DidUrl,
+  dereference: Dereferencer
+) => {
   const { did } = parseDidUrl(didUrl) as any;
   const jws = didUrl.split(":").pop() as string;
   const { iss, kid, jwk, alg } = jose.decodeProtectedHeader(jws) as any;
@@ -55,7 +59,7 @@ export const resolve = async ({ didUrl, dereference }: Resolve) => {
   const jws = didUrl.split(":").pop() as string;
   const { jwk } = jose.decodeProtectedHeader(jws);
   if (jwk) {
-    return resolveEmbedded(didUrl, dereference);
+    return dereferenceEmbedded(didUrl, dereference);
   }
   return null;
 };

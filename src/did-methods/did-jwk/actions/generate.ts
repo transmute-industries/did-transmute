@@ -1,4 +1,4 @@
-import { Algorithm } from "../types/Algorithm";
+import { Algorithm } from "../../../types/Algorithm";
 import { generateKeyPair } from "../generateKeyPair";
 import { toDid } from "../toDid";
 

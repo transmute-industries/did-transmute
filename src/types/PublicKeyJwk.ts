@@ -1,9 +1,11 @@
+import { KeyOperation } from "./KeyOperation";
+import { Algorithm } from "./Algorithm";
 // https://www.iana.org/assignments/jose/jose.xhtml#web-key-parameters
 
 export type PublicKeyJwk = {
   kty?: string;
   use?: string;
-  key_ops?: string[];
+  key_ops?: KeyOperation[];
   alg?: string;
   kid?: string;
   x5u?: string;
@@ -17,4 +19,6 @@ export type PublicKeyJwk = {
   e?: string;
   ext?: boolean;
   [propertyName: string]: unknown;
+} & {
+  alg: Algorithm; // required algorithms with known types... because...
 };

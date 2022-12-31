@@ -1,4 +1,4 @@
-import transmute, { ExtractableActor } from "../../src";
+import transmute, { ExportableActor } from "../../src";
 
 const message = "hello world";
 describe("transmute", () => {
@@ -13,7 +13,7 @@ describe("transmute", () => {
         const actor2 = await transmute.did.jws.sign({
           header: { alg },
           payload: new TextEncoder().encode(message),
-          privateKey: (actor as ExtractableActor).key.privateKeyJwk,
+          privateKey: (actor as ExportableActor).key.privateKeyJwk,
         });
         expect(actor2.did.startsWith("did:jws:")).toBe(true);
         const v = await transmute.did.jws.verify({

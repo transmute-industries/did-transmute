@@ -1,16 +1,19 @@
 import * as jose from "jose";
-import { PrivateKeyJwk } from "../../../types";
+
 import { getKey } from "../../../util";
 import { prefix } from "../method";
-import { DidJwt, DidJwtActor } from "../types";
-import { ClaimSet, ProtectedHeader } from "../types/JsonWebToken";
+import { DidJwt, DidJwtActor } from "../../../types/DidJwt";
+
+import { PrivateKey } from "../../../types/PrivateKey";
+import { ProtectedHeader } from "../../../types/ProtectedHeader";
+import { ClaimSet } from "../../../types/ClaimSet";
 
 export type Sign = {
   issuer: string;
   audience?: string | string[];
   protectedHeader: ProtectedHeader;
   claimSet: ClaimSet;
-  privateKey: PrivateKeyJwk;
+  privateKey: PrivateKey;
 };
 
 export const sign = async ({

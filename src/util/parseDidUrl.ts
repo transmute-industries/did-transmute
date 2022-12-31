@@ -1,14 +1,11 @@
 import { Did } from "../types/Did";
-import { DidUrl } from "../types/DidUrl";
-export type DidPath = string;
-export type DidQuery = string;
-export type DidFragment = string;
-export type DidUrlObject = {
-  did: Did;
-  path: DidPath;
-  query: DidPath;
-  fragment: DidPath;
-};
+import {
+  DidFragment,
+  DidPath,
+  DidQuery,
+  DidUrl,
+  DidUrlObject,
+} from "../types/DidUrl";
 
 export const parseDidUrl = (didUrl: DidUrl): DidUrlObject => {
   const pathStartsAt = didUrl.indexOf("/");

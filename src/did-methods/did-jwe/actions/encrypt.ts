@@ -1,11 +1,12 @@
 import { prefix } from "../method";
-import { PublicKeyJwk } from "../../did-jwk/types/JsonWebKey";
+import { PublicKey } from "../../../types/PublicKey";
 import { encryptToKey } from "./encryptToKey";
 
-import { DidJwe, DidJweActor } from "../types/Did";
+import { DidJwe, DidJweActor } from "../../../types/DidJwe";
+
 export type Encrypt = {
   plaintext: Uint8Array;
-  publicKey: PublicKeyJwk;
+  publicKey: PublicKey;
 };
 
 export const encrypt = async ({ plaintext, publicKey }: Encrypt) => {

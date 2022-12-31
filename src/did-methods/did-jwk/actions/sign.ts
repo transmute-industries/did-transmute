@@ -1,13 +1,12 @@
 import { signWithKey } from "../../did-jws/actions/signWithKey";
-import {
-  CompactJsonWebSignature,
-  ProtectedHeader,
-} from "../../did-jws/types/JsonWebSignature";
-import { PrivateKeyJwk } from "../types/JsonWebKey";
+
+import { PrivateKey } from "../../../types/PrivateKey";
+import { CompactJsonWebSignature } from "../../../types/CompactJsonWebSignature";
+import { ProtectedHeader } from "../../../types/ProtectedHeader";
 
 export type Sign = {
   payload: Uint8Array;
-  privateKey: CryptoKey | PrivateKeyJwk;
+  privateKey: PrivateKey;
   header: ProtectedHeader;
 };
 

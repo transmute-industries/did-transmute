@@ -1,10 +1,10 @@
 import { resolve as r } from "../resolve";
-import { DidUrl } from "../types/DidDocument";
+import { Did } from "../../../types/Did";
 
 export type Resolve = {
-  didUrl: DidUrl | string;
+  did: Did;
 };
 
-export const resolve = ({ didUrl }: Resolve) => {
-  return r(didUrl);
+export const resolve = ({ did }: Resolve) => {
+  return r(did);
 };

@@ -1,13 +1,16 @@
 import * as jose from "jose";
-import { Did } from "./types/DidDocument";
-import { JsonWebKey } from "./types/JsonWebKey";
+import { Did } from "../../types/Did";
+
+import { AsymmetricJsonWebKey } from "../../types/AsymmetricJsonWebKey";
 
 import * as method from "./method";
+import { getPublicKeyJwk } from "./getPublicKeyJwk";
 
-export const toDid = (jwk: JsonWebKey, methodPrefix = method.prefix): Did => {
-  // @typescript-eslint/no-unused-vars
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { d, p, q, dp, dq, qi, ...publicKeyJwk } = jwk;
+export const toDid = (
+  jwk: AsymmetricJsonWebKey,
+  methodPrefix = method.prefix
+): Did => {
+  const publicKeyJwk = getPublicKeyJwk(jwk);
   const id = jose.base64url.encode(JSON.stringify(publicKeyJwk));
   const did = `${methodPrefix}:${id}`;
   return did as Did;

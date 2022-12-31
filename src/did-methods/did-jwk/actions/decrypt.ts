@@ -1,10 +1,11 @@
-import { PrivateKeyJwk } from "../types/JsonWebKey";
 import { decryptWithKey } from "../../did-jwe/actions/decryptWithKey";
-import { CompactJsonWebEncryption } from "../../did-jwe/types/JsonWebEncryption";
+
+import { PrivateKey } from "../../../types/PrivateKey";
+import { CompactJsonWebEncryption } from "../../../types/CompactJsonWebEncryption";
 
 export type Decrypt = {
   jwe: CompactJsonWebEncryption | string;
-  privateKey: CryptoKey | PrivateKeyJwk;
+  privateKey: PrivateKey;
 };
 export const decrypt = async ({ jwe, privateKey }: Decrypt) => {
   return decryptWithKey(jwe, privateKey);

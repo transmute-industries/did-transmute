@@ -1,13 +1,12 @@
-import { PublicKeyJwk } from "../../did-jwk/types/JsonWebKey";
-
 import { verifyWithKey } from "./verifyWithKey";
 
-import { DidJws } from "../types/Did";
-import { CompactJsonWebSignature } from "../types/JsonWebSignature";
+import { PublicKey } from "../../../types/PublicKey";
+import { DidJws } from "../../../types/DidJws";
+import { CompactJsonWebSignature } from "../../../types/CompactJsonWebSignature";
 
 export type Verify = {
   did: DidJws;
-  publicKey: PublicKeyJwk;
+  publicKey: PublicKey;
 };
 
 export const verify = async ({ did, publicKey }: Verify) => {

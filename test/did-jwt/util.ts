@@ -1,4 +1,4 @@
-import transmute, { ExtractableActor, Dereference } from "../../src";
+import transmute, { ExportableActor, DereferenceParameters } from "../../src";
 
 export const getActors = async (alg: any) => {
   const issuer = await transmute.did.jwk.generate({
@@ -19,8 +19,8 @@ export const getActors = async (alg: any) => {
     },
   };
   return {
-    issuer: issuer as ExtractableActor,
-    verifier: verifier as ExtractableActor,
+    issuer: issuer as ExportableActor,
+    verifier: verifier as ExportableActor,
     trustStore,
   };
 };
@@ -51,7 +51,9 @@ export const checks = (
 };
 
 // This function must only return verification methods that are trusted.
-export const trustedDereferencer = async ({ didUrl }: Dereference) => {
+export const trustedDereferencer = async ({
+  didUrl,
+}: DereferenceParameters) => {
   if (didUrl.startsWith("did:jwk:")) {
     return transmute.did.jwk.dereference({ didUrl });
   }

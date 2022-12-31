@@ -1,29 +1,16 @@
-import { Did, DidUrl } from "../did-methods/did-jwk/types/DidDocument";
-import { KeyAgreementAlgorithm } from "../did-methods/did-jwe/types/Algorithm";
-import { SignatureAlgorithm } from "../did-methods/did-jws/types/Algorithm";
+export * from "./Did";
+export * from "./DidUrl";
+export * from "./DidDocument";
+export * from "./ExportableKey";
+export * from "./ExportableActor";
+export * from "./DereferenceParameters";
+export * from "./Dereferencer";
 
-import {
-  PublicKeyJwk,
-  PrivateKeyJwk,
-  JsonWebKey2020,
-} from "../did-methods/did-jwk/types/JsonWebKey";
+export * from "./SignatureAlgorithm";
+export * from "./KeyAgreementAlgorithm";
 
-import {
-  ExtractableActor,
-  UnExtractableActor,
-} from "../did-methods/did-jwk/types/ControllerKey";
+export * from "./PublicKeyJwk";
+export * from "./PrivateKeyJwk";
 
-import { Dereference } from "../did-methods/did-jwk/actions";
-
-export {
-  Did,
-  DidUrl,
-  PublicKeyJwk,
-  PrivateKeyJwk,
-  JsonWebKey2020,
-  KeyAgreementAlgorithm,
-  SignatureAlgorithm,
-  ExtractableActor,
-  UnExtractableActor,
-  Dereference,
-};
+export * from "./ExportableActor";
+export * from "./IsolatedActor";

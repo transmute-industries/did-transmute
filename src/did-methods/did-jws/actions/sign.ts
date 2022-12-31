@@ -1,14 +1,14 @@
-import { ProtectedHeader } from "../types/JsonWebSignature";
-import { PrivateKeyJwk } from "../../did-jwk/types/JsonWebKey";
-
 import { signWithKey } from "./signWithKey";
 import { prefix } from "../method";
-import { DidJws, DidJwsActor } from "../types/Did";
+
+import { DidJws, DidJwsActor } from "../../../types/DidJws";
+import { ProtectedHeader } from "../../../types/ProtectedHeader";
+import { PrivateKey } from "../../../types/PrivateKey";
 
 export type Sign = {
   header: ProtectedHeader;
   payload: Uint8Array;
-  privateKey: CryptoKey | PrivateKeyJwk;
+  privateKey: PrivateKey;
 };
 
 export const sign = async ({ header, payload, privateKey }: Sign) => {

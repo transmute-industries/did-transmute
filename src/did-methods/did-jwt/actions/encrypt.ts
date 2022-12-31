@@ -1,18 +1,19 @@
 import * as jose from "jose";
-import { PublicKeyJwk } from "../../../types";
 
 import { getKey } from "../../../util";
 import { prefix } from "../method";
-import { DidJwt, DidJwtActor } from "../types";
-import { ClaimSet } from "../types/JsonWebToken";
-import { ProtectedHeader } from "../../did-jwe/types/JsonWebEncryption";
+
+import { DidJwt, DidJwtActor } from "../../../types/DidJwt";
+import { ClaimSet } from "../../../types/ClaimSet";
+
+import { PublicKey } from "../../../types/PublicKey";
 
 export type Encrypt = {
   issuer: string;
-  protectedHeader: ProtectedHeader;
+  protectedHeader: jose.CompactJWEHeaderParameters;
   claimSet: ClaimSet;
   audience?: string | string[];
-  publicKey: PublicKeyJwk;
+  publicKey: PublicKey;
 };
 
 export const encrypt = async ({

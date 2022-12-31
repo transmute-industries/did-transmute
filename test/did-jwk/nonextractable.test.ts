@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import transmute, { UnExtractableActor, ECDH_ES_A256KW } from "../../src";
+import transmute, { IsolatedActor } from "../../src";
 
 const message = "It’s a dangerous business, Frodo, going out your door. 🧠💎";
 const payload = new TextEncoder().encode(message);
@@ -9,7 +9,7 @@ it("sign and verify", async () => {
   const e = (await transmute.did.jwk.generate({
     alg,
     extractable: false,
-  })) as UnExtractableActor;
+  })) as IsolatedActor;
   const jws = await transmute.did.jwk.sign({
     payload,
     privateKey: e.key.privateKey,
@@ -28,11 +28,11 @@ it("sign and verify", async () => {
 });
 
 it("encrypt and decrypt", async () => {
-  const alg = transmute.did.jwe.alg[ECDH_ES_A256KW];
+  const alg = transmute.did.jwe.alg.ECDH_ES_A256KW;
   const e = (await transmute.did.jwk.generate({
     alg,
     extractable: false,
-  })) as UnExtractableActor;
+  })) as IsolatedActor;
   const jwe = await transmute.did.jwk.encrypt({
     plaintext: payload,
     publicKey: e.key.publicKeyJwk,

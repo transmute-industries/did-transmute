@@ -1,22 +1,18 @@
 import * as jose from "jose";
 
-import { PrivateKeyJwk } from "../../did-jwk/types/JsonWebKey";
-import {
-  ProtectedHeader,
-  CompactJsonWebSignature,
-} from "../types/JsonWebSignature";
+import { PrivateKey } from "../../../types/PrivateKey";
+import { getKey } from "../../../util";
+
+import { ProtectedHeader } from "../../../types/ProtectedHeader";
+
+import { CompactJsonWebSignature } from "../../../types/CompactJsonWebSignature";
 
 export const signWithKey = async (
   payload: Uint8Array,
-  privateKey: CryptoKey | PrivateKeyJwk,
+  privateKey: PrivateKey,
   header: ProtectedHeader
 ): Promise<CompactJsonWebSignature> => {
-  let key: jose.KeyLike | Uint8Array;
-  if ((privateKey as PrivateKeyJwk).alg) {
-    key = await jose.importJWK(privateKey as PrivateKeyJwk);
-  } else {
-    key = privateKey as jose.KeyLike;
-  }
+  const key = await getKey(privateKey);
   const jws = await new jose.CompactSign(payload)
     .setProtectedHeader(header)
     .sign(key);

@@ -1,4 +1,4 @@
-import transmute, { ECDH_ES_A256KW } from "../../src";
+import transmute from "../../src";
 
 import { makeHeader, checks, getActors, claimSet } from "./util";
 
@@ -28,7 +28,7 @@ describe("transmute", () => {
         checks(v, alg, protectedHeader, verifier.did);
       });
       it("encrypt & decrypt", async () => {
-        const alg = transmute.did.jwe.alg[ECDH_ES_A256KW];
+        const alg = transmute.did.jwe.alg.ECDH_ES_A256KW;
         const enc = transmute.did.jwe.enc.A256GCM;
         const { issuer, verifier } = await getActors(alg);
         const protectedHeader = makeHeader({
