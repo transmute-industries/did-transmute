@@ -37,8 +37,10 @@ describe("transmute", () => {
       describe("resolve & dereference", () => {
         (Object.keys(v) as Did[]).forEach((did) => {
           it(did, async () => {
-            const didDocument = transmute.did.jwk.resolve({ did });
-            expect(didDocument.id).toBe(did);
+            const didDocument = await transmute.did.jwk.resolve({ did });
+            if (didDocument) {
+              expect(didDocument.id).toBe(did);
+            }
             const verificationMethod = await transmute.did.jwk.dereference({
               didUrl: `${did}"#0"`,
             });

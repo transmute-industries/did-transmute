@@ -7,11 +7,13 @@ import { Dereferencer } from "../../../types/Dereferencer";
 import { parseDidUrl } from "../../../util/parseDidUrl";
 
 import { verify } from "./verify";
-import { DidUrl } from "../../../types/DidUrl";
-import { DidJwtUrl } from "../../../types/DidJwt";
+
+import { DidJwt, DidJwtUrl } from "../../../types/DidJwt";
+import { prefix } from "../method";
+import { PublicKeyJwk } from "../../../types";
 
 export type Resolve = {
-  didUrl: DidJwtUrl;
+  did: DidJwt;
   dereference: Dereferencer;
 };
 
@@ -20,12 +22,8 @@ export type Resolve = {
 // TLDR:
 // Trust the jwk if the issuer did document contains it (which will always be true for did:jwk).
 // did:jwt payload claimSet is used as didDocument members.
-const dereferenceEmbedded = async (
-  didUrl: DidUrl,
-  dereference: Dereferencer
-) => {
-  const { did } = parseDidUrl(didUrl);
-  const jws = didUrl.split(":").pop() as string;
+const resolveEmbedded = async (did: DidJwt, dereference: Dereferencer) => {
+  const jws = did.split(":").pop() as string;
   // this part....
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { iss, kid, jwk, alg } = jose.decodeProtectedHeader(jws) as any;
@@ -36,7 +34,7 @@ const dereferenceEmbedded = async (
   }
   if (
     (await jose.calculateJwkThumbprint(jwk)) !==
-    (await jose.calculateJwkThumbprint(vm.publicKeyJwk))
+    (await jose.calculateJwkThumbprint(vm.publicKeyJwk as PublicKeyJwk))
   ) {
     throw new Error("Issuer does does not control header.jwk.");
   }
@@ -61,11 +59,18 @@ const dereferenceEmbedded = async (
   return didDocument as DidDocument;
 };
 
-export const resolve = async ({ didUrl, dereference }: Resolve) => {
-  const jws = didUrl.split(":").pop() as string;
+export const resolve = async ({
+  did,
+  dereference,
+}: Resolve): Promise<DidDocument | null> => {
+  if (!did.startsWith(prefix)) {
+    return null;
+  }
+  const parsedDid = parseDidUrl(did);
+  const jws = parsedDid.did.split(":").pop() as string;
   const { jwk } = jose.decodeProtectedHeader(jws);
   if (jwk) {
-    return dereferenceEmbedded(didUrl, dereference);
+    return resolveEmbedded(parsedDid.did as DidJwt, dereference);
   }
   return null;
 };
