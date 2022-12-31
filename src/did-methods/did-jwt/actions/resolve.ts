@@ -24,8 +24,10 @@ const dereferenceEmbedded = async (
   didUrl: DidUrl,
   dereference: Dereferencer
 ) => {
-  const { did } = parseDidUrl(didUrl) as any;
+  const { did } = parseDidUrl(didUrl);
   const jws = didUrl.split(":").pop() as string;
+  // this part....
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { iss, kid, jwk, alg } = jose.decodeProtectedHeader(jws) as any;
   // this part....
   const vm = await dereference({ didUrl: iss + kid });
@@ -43,7 +45,11 @@ const dereferenceEmbedded = async (
       "Algorithm mismatch. Expected 'header.alg' to be 'header.jwk.alg'."
     );
   }
-  const v = await verify({ did, issuer: iss, publicKey: jwk });
+  const v = await verify({
+    did: did as DidJwtUrl,
+    issuer: iss,
+    publicKey: jwk,
+  });
   const didDocument = {
     "@context": [
       "https://www.w3.org/ns/did/v1",
