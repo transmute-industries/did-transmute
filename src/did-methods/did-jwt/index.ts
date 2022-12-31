@@ -1,7 +1,7 @@
 import alg from "../did-jws/alg";
 
-import { sign, verify, encrypt, decrypt } from "./actions";
+import { sign, verify, encrypt, decrypt, resolve } from "./actions";
 
-const jws = { alg, sign, verify, encrypt, decrypt };
+const jws = { alg, sign, verify, encrypt, decrypt, resolve };
 
 export default jws;

@@ -5,7 +5,7 @@ export type MethodSpecificIdentifier = string;
 export type DidPath = string;
 export type DidQuery = string;
 export type DidFragment = string;
-export type Did = `did:${MethodName}:${MethodSpecificIdentifier}`;
+export type Did = `did:${MethodName}:${MethodSpecificIdentifier}` | string;
 export type DidUrl = `${Did}`;
 
 export type DidUrlObject = {

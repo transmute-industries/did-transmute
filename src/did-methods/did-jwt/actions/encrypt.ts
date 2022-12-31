@@ -4,7 +4,8 @@ import { PublicKeyJwk } from "../../../types";
 import { getKey } from "../../../util";
 import { prefix } from "../method";
 import { DidJwt, DidJwtActor } from "../types";
-import { ProtectedHeader, ClaimSet } from "../types/JsonWebToken";
+import { ClaimSet } from "../types/JsonWebToken";
+import { ProtectedHeader } from "../../did-jwe/types/JsonWebEncryption";
 
 export type Encrypt = {
   issuer: string;

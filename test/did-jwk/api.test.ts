@@ -92,7 +92,7 @@ describe("transmute", () => {
           it(did, async () => {
             const didDocument = transmute.did.jwk.resolve({ didUrl: did });
             expect(didDocument.id).toBe(did);
-            const verificationMethod = transmute.did.jwk.dereference({
+            const verificationMethod = await transmute.did.jwk.dereference({
               didUrl: did + "#0",
             });
             expect(verificationMethod?.controller).toBe(did);

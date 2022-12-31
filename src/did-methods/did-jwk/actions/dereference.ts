@@ -5,6 +5,6 @@ export type Dereference = {
   didUrl: DidUrl | string;
 };
 
-export const dereference = ({ didUrl }: Dereference) => {
+export const dereference = async ({ didUrl }: Dereference) => {
   return d(didUrl);
 };
