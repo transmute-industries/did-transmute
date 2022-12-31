@@ -1,4 +1,4 @@
-import { decryptWithKey } from "./decryptWithKey";
+import { decryptWithKey } from "../../../jose/decryptWithKey";
 
 import { DidJwe } from "../../../types/DidJwe";
 import { CompactJsonWebEncryption } from "../../../types/CompactJsonWebEncryption";
@@ -11,5 +11,5 @@ export type Decrypt = {
 
 export const decrypt = async ({ did, privateKey }: Decrypt) => {
   const jwe = did.split(":").pop() as CompactJsonWebEncryption;
-  return decryptWithKey(jwe, privateKey);
+  return decryptWithKey({ jwe, privateKey });
 };

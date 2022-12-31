@@ -1,14 +1,6 @@
 import alg from "./alg";
 import { toDid } from "./toDid";
-import {
-  generate,
-  sign,
-  verify,
-  encrypt,
-  decrypt,
-  resolve,
-  dereference,
-} from "./actions";
+import { generate, sign, verify, resolve, dereference } from "./actions";
 
 const jwk = {
   alg,
@@ -16,8 +8,7 @@ const jwk = {
   generate,
   sign,
   verify,
-  encrypt,
-  decrypt,
+
   resolve,
   dereference,
 };

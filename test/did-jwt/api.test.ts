@@ -1,6 +1,6 @@
 import transmute from "../../src";
 
-import { getActors } from "./util";
+import { getActors } from "../util";
 
 describe("transmute", () => {
   describe("did", () => {

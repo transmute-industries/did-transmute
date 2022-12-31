@@ -1,16 +1,23 @@
+import { CompactJWEHeaderParameters } from "jose";
 import { prefix } from "../method";
 import { PublicKey } from "../../../types/PublicKey";
-import { encryptToKey } from "./encryptToKey";
 
-import { DidJwe, DidJweActor } from "../../../types/DidJwe";
+import { DidJweActor } from "../../../types/DidJwe";
+
+import { encryptToKey } from "../../../jose/encryptToKey";
 
 export type Encrypt = {
-  plaintext: Uint8Array;
   publicKey: PublicKey;
+  plaintext: Uint8Array;
+  protectedHeader: CompactJWEHeaderParameters;
 };
 
-export const encrypt = async ({ plaintext, publicKey }: Encrypt) => {
-  const jws = await encryptToKey(plaintext, publicKey);
-  const did = `${prefix}:${jws}` as DidJwe;
+export const encrypt = async ({
+  plaintext,
+  publicKey,
+  protectedHeader,
+}: Encrypt) => {
+  const jwe = await encryptToKey({ plaintext, publicKey, protectedHeader });
+  const did = `${prefix}:${jwe}`;
   return { did: did } as DidJweActor;
 };

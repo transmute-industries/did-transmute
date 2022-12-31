@@ -58,24 +58,6 @@ describe("transmute", () => {
           }
         });
       });
-      describe("encrypt & decrypt", () => {
-        (Object.values(v) as any[]).forEach((privateKeyJwk) => {
-          if ((transmute.did.jwe.alg as any)[privateKeyJwk.alg]) {
-            it(privateKeyJwk.alg, async () => {
-              const jwe = await transmute.did.jwk.encrypt({
-                plaintext: payload,
-                publicKey: privateKeyJwk,
-              });
-              const v = await transmute.did.jwk.decrypt({
-                jwe,
-                privateKey: privateKeyJwk,
-              });
-              expect(v.protectedHeader.alg).toBe(privateKeyJwk.alg);
-              expect(new TextDecoder().decode(v.plaintext)).toEqual(message);
-            });
-          }
-        });
-      });
 
       describe("resolve & dereference", () => {
         (Object.keys(v) as Did[]).forEach((did) => {

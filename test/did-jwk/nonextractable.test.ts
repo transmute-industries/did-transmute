@@ -33,11 +33,15 @@ it("encrypt and decrypt", async () => {
     alg,
     extractable: false,
   })) as IsolatedActor;
-  const jwe = await transmute.did.jwk.encrypt({
-    plaintext: payload,
+  const jwe = await transmute.encrypt({
     publicKey: e.key.publicKeyJwk,
+    plaintext: payload,
+    protectedHeader: {
+      alg: e.key.publicKeyJwk.alg,
+      enc: transmute.did.jwe.enc.A256GCM,
+    },
   });
-  const v = await transmute.did.jwk.decrypt({
+  const v = await transmute.decrypt({
     jwe,
     privateKey: e.key.privateKey,
   });

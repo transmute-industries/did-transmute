@@ -1,6 +1,6 @@
 import transmute from "../../src";
 
-import { getActors, trustedDereferencer } from "./util";
+import { getActors, trustedDereferencer } from "../util";
 
 describe("transmute", () => {
   describe("did", () => {

@@ -1,6 +1,8 @@
 import did from "./did-methods";
 
-const transmute = { did };
+import { encryptToKey, decryptWithKey } from "./jose";
+
+const transmute = { did, encrypt: encryptToKey, decrypt: decryptWithKey };
 
 export * from "./types";
 
