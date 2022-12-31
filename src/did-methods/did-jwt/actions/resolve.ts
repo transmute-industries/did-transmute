@@ -4,7 +4,7 @@ import { DidDocument } from "../../../types/DidDocument";
 
 import { Dereferencer } from "../../../types/Dereferencer";
 
-import { parseDidUrl } from "../../did-jwk/parseDidUrl";
+import { parseDidUrl } from "../../../util/parseDidUrl";
 
 import { DidJwtUrl } from "../types/Did";
 import { verify } from "./verify";

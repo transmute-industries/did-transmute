@@ -2,7 +2,7 @@ import { DidUrl } from "../../types/DidUrl";
 import { VerificationMethod } from "../../types/VerificationMethod";
 
 import { resolve } from "./resolve";
-import { parseDidUrl } from "./parseDidUrl";
+import { parseDidUrl } from "../../util/parseDidUrl";
 
 export const dereference = (
   didUrl: DidUrl | string

@@ -3,7 +3,7 @@ import jwe from "./did-jwe";
 import jws from "./did-jws";
 import jwt from "./did-jwt";
 
-import { parseDidUrl } from "./did-jwk/parseDidUrl";
+import { parseDidUrl } from "../util/parseDidUrl";
 
 const did = { jwk, jwe, jws, jwt, parse: parseDidUrl };
 

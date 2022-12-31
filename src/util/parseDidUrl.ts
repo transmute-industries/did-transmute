@@ -1,13 +1,16 @@
-import {
-  Did,
-  DidFragment,
-  DidPath,
-  DidQuery,
-  DidUrl,
-  DidUrlObject,
-} from "./types/DidDocument";
+import { Did } from "../types/Did";
+import { DidUrl } from "../types/DidUrl";
+export type DidPath = string;
+export type DidQuery = string;
+export type DidFragment = string;
+export type DidUrlObject = {
+  did: Did;
+  path: DidPath;
+  query: DidPath;
+  fragment: DidPath;
+};
 
-export const parseDidUrl = (didUrl: DidUrl | string): DidUrlObject => {
+export const parseDidUrl = (didUrl: DidUrl): DidUrlObject => {
   const pathStartsAt = didUrl.indexOf("/");
   const queryStartsAt = didUrl.indexOf("?");
   const fragmentStartsAt = didUrl.indexOf("#");
