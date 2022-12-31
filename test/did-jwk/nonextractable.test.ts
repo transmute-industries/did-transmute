@@ -10,16 +10,16 @@ it("sign and verify", async () => {
     alg,
     extractable: false,
   })) as IsolatedActor;
-  const jws = await transmute.did.jwk.sign({
-    payload,
+  const jws = await transmute.sign({
     privateKey: e.key.privateKey,
-    header: {
+    protectedHeader: {
       alg,
       iss: e.did,
       kid: "#0",
     },
+    payload,
   });
-  const v = await transmute.did.jwk.verify({
+  const v = await transmute.verify({
     jws,
     publicKey: e.key.publicKeyJwk,
   });
@@ -35,11 +35,11 @@ it("encrypt and decrypt", async () => {
   })) as IsolatedActor;
   const jwe = await transmute.encrypt({
     publicKey: e.key.publicKeyJwk,
-    plaintext: payload,
     protectedHeader: {
       alg: e.key.publicKeyJwk.alg,
       enc: transmute.did.jwe.enc.A256GCM,
     },
+    plaintext: payload,
   });
   const v = await transmute.decrypt({
     jwe,

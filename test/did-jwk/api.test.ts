@@ -3,8 +3,7 @@ import fs from "fs";
 import transmute, { Did, ExportableActor, IsolatedActor } from "../../src";
 
 const fixture: any = {};
-const message = "It’s a dangerous business, Frodo, going out your door. 🧠💎";
-const payload = new TextEncoder().encode(message);
+
 const v = JSON.parse(fs.readFileSync("./examples.json").toString());
 
 describe("transmute", () => {
@@ -37,28 +36,6 @@ describe("transmute", () => {
           fs.writeFileSync("./examples.json", JSON.stringify(fixture, null, 2));
         });
       });
-      describe("sign & verify", () => {
-        (Object.values(v) as any[]).forEach((privateKeyJwk) => {
-          if ((transmute.did.jws.alg as any)[privateKeyJwk.alg]) {
-            it(privateKeyJwk.alg, async () => {
-              const iss = transmute.did.jwk.toDid(privateKeyJwk);
-              const jws = await transmute.did.jwk.sign({
-                payload,
-                privateKey: privateKeyJwk,
-                header: {
-                  alg: privateKeyJwk.alg,
-                  iss,
-                  kid: `#0`,
-                },
-              });
-              const v = await transmute.did.jwk.verify({ jws });
-              expect(v.protectedHeader.alg).toBe(privateKeyJwk.alg);
-              expect(new TextDecoder().decode(v.payload)).toEqual(message);
-            });
-          }
-        });
-      });
-
       describe("resolve & dereference", () => {
         (Object.keys(v) as Did[]).forEach((did) => {
           it(did, async () => {
