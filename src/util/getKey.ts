@@ -1,9 +1,6 @@
 import * as jose from "jose";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getKey = async (data: any): Promise<jose.KeyLike> => {
-  let key = data;
-  if (key.kty) {
-    key = await jose.importJWK(data);
-  }
-  return key as jose.KeyLike;
+  return data.kty ? jose.importJWK(data) : data;
 };

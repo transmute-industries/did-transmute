@@ -11,11 +11,11 @@ describe("transmute", () => {
         });
         const actor2 = await transmute.did.jwe.encrypt({
           publicKey: actor.key.publicKeyJwk,
-          plaintext: new TextEncoder().encode("hello world"),
           protectedHeader: {
             alg: actor.key.publicKeyJwk.alg,
             enc: transmute.did.jwe.enc.A256GCM,
           },
+          plaintext: new TextEncoder().encode("hello world"),
         });
         expect(actor2.did.startsWith("did:jwe:")).toBe(true);
         const v = await transmute.did.jwe.decrypt({
