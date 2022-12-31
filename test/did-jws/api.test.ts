@@ -1,4 +1,4 @@
-import transmute, { ExportableActor } from "../../src";
+import transmute from "../../src";
 
 const message = "hello world";
 describe("transmute", () => {
@@ -6,12 +6,11 @@ describe("transmute", () => {
     describe("jws", () => {
       it("sign & verify", async () => {
         const alg = transmute.did.jws.alg.ES256;
-        const actor = await transmute.did.jwk.generate({
+        const actor = await transmute.did.jwk.exportable({
           alg,
-          extractable: true,
         });
         const actor2 = await transmute.did.jws.sign({
-          privateKey: (actor as ExportableActor).key.privateKeyJwk,
+          privateKey: actor.key.privateKeyJwk,
           protectedHeader: { alg },
           payload: new TextEncoder().encode(message),
         });

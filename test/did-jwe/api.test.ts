@@ -1,13 +1,12 @@
-import transmute, { ExportableActor } from "../../src";
+import transmute from "../../src";
 
 const message = "hello world";
 describe("transmute", () => {
   describe("did", () => {
     describe("jwe", () => {
       it("encrypt & decrypt", async () => {
-        const actor = await transmute.did.jwk.generate({
+        const actor = await transmute.did.jwk.exportable({
           alg: transmute.did.jwe.alg.ECDH_ES_A256KW,
-          extractable: true,
         });
         const actor2 = await transmute.did.jwe.encrypt({
           publicKey: actor.key.publicKeyJwk,
@@ -20,7 +19,7 @@ describe("transmute", () => {
         expect(actor2.did.startsWith("did:jwe:")).toBe(true);
         const v = await transmute.did.jwe.decrypt({
           did: actor2.did,
-          privateKey: (actor as ExportableActor).key.privateKeyJwk,
+          privateKey: actor.key.privateKeyJwk,
         });
         expect(v.protectedHeader.alg).toBe(actor.key.publicKeyJwk.alg);
         expect(new TextDecoder().decode(v.plaintext)).toEqual(message);

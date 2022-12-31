@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from "fs";
-import transmute, { Did, ExportableActor, IsolatedActor } from "../../src";
+import transmute, { Did } from "../../src";
 
 const fixture: any = {};
 
@@ -13,18 +13,16 @@ describe("transmute", () => {
         describe("alg", () => {
           Object.values(transmute.did.jwk.alg).forEach((alg) => {
             it(alg, async () => {
-              const e = (await transmute.did.jwk.generate({
+              const e = await transmute.did.jwk.exportable({
                 alg,
-                extractable: true,
-              })) as ExportableActor;
+              });
               fixture[e.did] = e.key.privateKeyJwk;
               expect(e.did.startsWith("did:jwk:")).toBe(true);
               expect(e.key.publicKeyJwk.alg).toBe(alg);
               expect(e.key.privateKeyJwk.alg).toBe(alg);
-              const ne = (await transmute.did.jwk.generate({
+              const ne = await transmute.did.jwk.isolated({
                 alg,
-                extractable: false,
-              })) as IsolatedActor;
+              });
               expect(ne.did.startsWith("did:jwk:")).toBe(true);
               expect(ne.key.publicKeyJwk.alg).toBe(alg);
               expect(ne.key.privateKey).toBeDefined();

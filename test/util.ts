@@ -1,5 +1,4 @@
 import transmute, {
-  ExportableActor,
   DereferenceParameters,
   SignatureAlgorithm,
   KeyAgreementAlgorithm,
@@ -8,17 +7,15 @@ import transmute, {
 export const getActors = async (
   alg: SignatureAlgorithm | KeyAgreementAlgorithm
 ) => {
-  const issuer = await transmute.did.jwk.generate({
+  const issuer = await transmute.did.jwk.exportable({
     alg,
-    extractable: true,
   });
-  const verifier = await transmute.did.jwk.generate({
+  const verifier = await transmute.did.jwk.exportable({
     alg,
-    extractable: true,
   });
   return {
-    issuer: issuer as ExportableActor,
-    verifier: verifier as ExportableActor,
+    issuer: issuer,
+    verifier: verifier,
   };
 };
 

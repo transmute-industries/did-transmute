@@ -1,11 +1,12 @@
 import alg from "./alg";
 import { toDid } from "./toDid";
-import { generate, resolve, dereference } from "./actions";
+import { exportable, isolated, resolve, dereference } from "./actions";
 
 const jwk = {
   alg,
   toDid,
-  generate,
+  exportable,
+  isolated,
 
   resolve,
   dereference,
