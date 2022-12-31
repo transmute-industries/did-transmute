@@ -1,6 +1,9 @@
 import { JsonWebKey } from "./types/JsonWebKey";
 import { toDid } from "./toDid";
-import { DidDocument, DidUrl, VerificationMethod } from "./types/DidDocument";
+
+import { DidUrl } from "../../types/DidUrl";
+import { VerificationMethod } from "../../types/VerificationMethod";
+import { DidDocument } from "../../types/DidDocument";
 import { getPublicKeyJwk } from "./getPublicKeyJwk";
 
 import { signatureAlgorithms } from "../did-jws/alg";
@@ -16,31 +19,28 @@ import { KeyAgreementAlgorithm } from "../did-jwe/types/Algorithm";
 const formatVerificationMethod = (
   vm: VerificationMethod
 ): VerificationMethod => {
-  return JSON.parse(
-    JSON.stringify({
-      id: vm.id,
-      type: vm.type,
-      controller: vm.controller,
-      publicKeyJwk: vm.publicKeyJwk,
-    })
-  );
+  const formatted = {
+    id: vm.id,
+    type: vm.type,
+    controller: vm.controller,
+    publicKeyJwk: vm.publicKeyJwk,
+  };
+  return JSON.parse(JSON.stringify(formatted));
 };
 
 const formatDidDocument = (didDocument: DidDocument): DidDocument => {
-  return JSON.parse(
-    JSON.stringify({
-      "@context": didDocument["@context"],
-      id: didDocument.id,
-      verificationMethod: didDocument.verificationMethod.map(
-        formatVerificationMethod
-      ),
-      authentication: didDocument.authentication,
-      assertionMethod: didDocument.assertionMethod,
-      capabilityInvocation: didDocument.capabilityInvocation,
-      capabilityDelegation: didDocument.capabilityDelegation,
-      keyAgreement: didDocument.keyAgreement,
-    })
-  );
+  const formatted = {
+    "@context": didDocument["@context"],
+    id: didDocument.id,
+    verificationMethod:
+      didDocument.verificationMethod || [].map(formatVerificationMethod),
+    authentication: didDocument.authentication,
+    assertionMethod: didDocument.assertionMethod,
+    capabilityInvocation: didDocument.capabilityInvocation,
+    capabilityDelegation: didDocument.capabilityDelegation,
+    keyAgreement: didDocument.keyAgreement,
+  };
+  return JSON.parse(JSON.stringify(formatted));
 };
 
 export const toDidDocument = (jwk: JsonWebKey) => {

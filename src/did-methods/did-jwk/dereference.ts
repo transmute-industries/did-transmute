@@ -1,4 +1,6 @@
-import { DidUrl, VerificationMethod } from "./types/DidDocument";
+import { DidUrl } from "../../types/DidUrl";
+import { VerificationMethod } from "../../types/VerificationMethod";
+
 import { resolve } from "./resolve";
 import { parseDidUrl } from "./parseDidUrl";
 
@@ -7,8 +9,11 @@ export const dereference = (
 ): VerificationMethod | null => {
   const { did, fragment } = parseDidUrl(didUrl);
   const didDocument = resolve(did);
-  const [vm] = didDocument.verificationMethod;
-  if (vm.id === `#${fragment}`) {
+  const [vm] = didDocument.verificationMethod || [];
+  if (!vm) {
+    return null;
+  }
+  if (vm.id === didUrl || vm.id === `#${fragment}`) {
     return vm;
   }
   return null;
