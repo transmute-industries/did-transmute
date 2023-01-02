@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from "fs";
-import transmute, { Did } from "../../src";
+import transmute, { DidJwk, VerificationMethod } from "../../src";
 
 const fixture: any = {};
 
@@ -35,7 +35,7 @@ describe("transmute", () => {
         });
       });
       describe("resolve & dereference", () => {
-        (Object.keys(v) as Did[]).forEach((did) => {
+        (Object.keys(v) as DidJwk[]).forEach((did) => {
           it(did, async () => {
             const didDocument = await transmute.did.jwk.resolve({ did });
             if (didDocument) {
@@ -46,7 +46,9 @@ describe("transmute", () => {
               resolver: transmute.did.jwk.resolve,
             });
             if (verificationMethod) {
-              expect(verificationMethod.controller).toBe(did);
+              expect(
+                (verificationMethod as VerificationMethod).controller
+              ).toBe(did);
             }
           });
         });

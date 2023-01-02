@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from "fs";
-import transmute, { Did } from "../../src";
+import transmute, { DidJwk, VerificationMethod } from "../../src";
 
 const examples = JSON.parse(fs.readFileSync("./examples.json").toString());
 
-const [did] = Object.keys(examples) as Did[];
+const [did] = Object.keys(examples) as DidJwk[];
 
 describe("transmute", () => {
   describe("did", () => {
@@ -16,7 +16,9 @@ describe("transmute", () => {
             resolver: transmute.did.jwk.resolve,
           });
           if (verificationMethod) {
-            expect(verificationMethod.controller).toBe(did);
+            expect((verificationMethod as VerificationMethod).controller).toBe(
+              did
+            );
           }
         });
       });
