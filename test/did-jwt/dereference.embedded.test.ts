@@ -1,13 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import transmute, {
-  Did,
-  DidJwk,
-  DidJwkResolver,
-  DidJwt,
-  DidJwtResolver,
-  ResolveParameters,
-  Service,
-} from "../../src";
+import transmute, { DidJwkResolver, DidJwtResolver, Service } from "../../src";
 
 import { getActors } from "../util";
 
