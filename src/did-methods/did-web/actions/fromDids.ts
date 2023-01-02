@@ -4,17 +4,17 @@ import { toDidDocument } from "../toDidDocument";
 
 import { DidWebActor } from "../../../types/DidWeb";
 
-export type From = {
+export type FromDids = {
   url: string;
   dids: DidJwk[];
   resolver: DidJwkResolver;
 };
 
-export const from = async ({
+export const fromDids = async ({
   url,
   dids,
   resolver,
-}: From): Promise<DidWebActor> => {
+}: FromDids): Promise<DidWebActor> => {
   const didDocument = await toDidDocument(url, dids, resolver);
   return { did: didDocument.id, didDocument } as DidWebActor;
 };

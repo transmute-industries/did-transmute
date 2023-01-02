@@ -1,9 +1,19 @@
-import { exportable, from, dereference } from "./actions";
+import {
+  exportable,
+  resolve,
+  dereference,
+  fromPrivateKey,
+  fromDids,
+} from "./actions";
 
 const web = {
   exportable,
-  from,
+
+  resolve,
   dereference,
+
+  fromPrivateKey,
+  fromDids,
 };
 
 export default web;

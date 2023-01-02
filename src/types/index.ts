@@ -27,3 +27,5 @@ export * from "./DidJwt";
 
 export * from "./SignatureRelationships";
 export * from "./EncryptionRelationships";
+
+export * from "./GenericResolver";

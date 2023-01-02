@@ -5,14 +5,14 @@ import { VerificationMethod } from "./VerificationMethod";
 
 import { ExportableKey } from "./ExportableKey";
 export type DidWebMethodName = "web";
-import { GenericResolver } from "./GenericResolver";
+import { GenericDocumentLoader } from "./GenericDocumentLoader";
 
 export type DidWeb = `did:${DidWebMethodName}:${string}`;
 export type DidWebUrl = `${DidWeb}${DidPath}${DidQuery}${DidFragment}`;
 
 export type DidWebResolver = (parameters: {
   did: DidWeb;
-  resolver: GenericResolver;
+  documentLoader: GenericDocumentLoader;
 }) => Promise<DidDocument | VerificationMethod | Service | null>;
 
 export type DidWebDereference = (parameters: {
@@ -23,5 +23,5 @@ export type DidWebDereference = (parameters: {
 export type DidWebActor = {
   did: DidWeb;
   didDocument: DidDocument;
-  keys?: ExportableKey[];
+  key: ExportableKey;
 };

@@ -1,32 +1,6 @@
-import {
-  DidJwk,
-  DidJwkResolver,
-  DidDocument,
-  SignatureRelationships,
-  EncryptionRelationships,
-} from "../../types";
+import { DidJwk, DidJwkResolver, DidDocument } from "../../types";
 import { endpointToDid } from "./endpointToDid";
 import { formatDidDocument } from "../../util/formatDidDocument";
-
-import {
-  signatureVerificationRelationships,
-  encryptionVerificationRelationships,
-} from "../did-jwk/method";
-
-const mergeDocuments = (
-  propertName:
-    | "verificationMethod"
-    | SignatureRelationships
-    | EncryptionRelationships,
-  didDocumentLeft: DidDocument,
-  didDocumentRight: DidDocument
-) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (didDocumentLeft as any)[propertName] = [
-    ...(didDocumentLeft[propertName] || []),
-    ...(didDocumentRight[propertName] || []),
-  ];
-};
 
 export const toDidDocument = async (
   url: string,
@@ -40,26 +14,15 @@ export const toDidDocument = async (
       { "@vocab": "https://www.iana.org/assignments/jose#" },
     ],
     id: controller,
-    verificationMethod: [],
-    authentication: [],
-    assertionMethod: [],
-    capabilityInvocation: [],
-    capabilityDelegation: [],
-    keyAgreement: [],
   };
   await Promise.all(
     dids.map(async (did) => {
       const delegateDocument = (await resolver({ did })) as DidDocument;
-      // verification material
-      mergeDocuments("verificationMethod", didDocument, delegateDocument);
-      // signature relationships
-      signatureVerificationRelationships.forEach((vr) => {
-        mergeDocuments(vr, didDocument, delegateDocument);
-      });
-      // key agreement relationships
-      encryptionVerificationRelationships.forEach((vr) => {
-        mergeDocuments(vr, didDocument, delegateDocument);
-      });
+      // accumulate verification methods
+      didDocument.verificationMethod = [
+        ...(didDocument.verificationMethod || []),
+        ...(delegateDocument.verificationMethod || []),
+      ];
     })
   );
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -67,5 +30,6 @@ export const toDidDocument = async (
     vm.id = `#${vm.publicKeyJwk.kid.split(":").pop()}`;
     vm.controller = controller;
   });
+  // TODO: set relationships?
   return formatDidDocument(didDocument);
 };
