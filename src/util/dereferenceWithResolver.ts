@@ -8,6 +8,7 @@ const findInBuckets = (didDocument: DidDocument, didUrl: DidUrl) => {
     ...(didDocument.verificationMethod || []),
     ...(didDocument.service || []),
   ];
+
   const item = bucket.find((vm) => {
     return vm.id === didUrl || vm.id === `#${fragment}`;
   });
@@ -20,6 +21,7 @@ export const dereferenceWithResolver = async ({
 }: DereferenceParameters): Promise<DidDocument | VerificationMethod | null> => {
   const { did, path, query, fragment } = parseDidUrl(didUrl);
   const didDocument = await resolver({ did });
+
   if (!didDocument) {
     return null;
   }
@@ -27,6 +29,7 @@ export const dereferenceWithResolver = async ({
   if (path === "" && query === "" && fragment === "") {
     return didDocument;
   }
+
   const item = findInBuckets(didDocument, didUrl);
   return item;
 };

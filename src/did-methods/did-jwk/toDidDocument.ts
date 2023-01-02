@@ -17,32 +17,7 @@ import { AsymmetricJsonWebKey } from "../../types/AsymmetricJsonWebKey";
 import { SignatureAlgorithm } from "../../types/SignatureAlgorithm";
 import { KeyAgreementAlgorithm } from "../../types/KeyAgreementAlgorithm";
 
-const formatVerificationMethod = (
-  vm: VerificationMethod
-): VerificationMethod => {
-  const formatted = {
-    id: vm.id,
-    type: vm.type,
-    controller: vm.controller,
-    publicKeyJwk: vm.publicKeyJwk,
-  };
-  return JSON.parse(JSON.stringify(formatted));
-};
-
-const formatDidDocument = (didDocument: DidDocument): DidDocument => {
-  const formatted = {
-    "@context": didDocument["@context"],
-    id: didDocument.id,
-    verificationMethod:
-      didDocument.verificationMethod || [].map(formatVerificationMethod),
-    authentication: didDocument.authentication,
-    assertionMethod: didDocument.assertionMethod,
-    capabilityInvocation: didDocument.capabilityInvocation,
-    capabilityDelegation: didDocument.capabilityDelegation,
-    keyAgreement: didDocument.keyAgreement,
-  };
-  return JSON.parse(JSON.stringify(formatted));
-};
+import { formatDidDocument } from "../../util/formatDidDocument";
 
 export const toDidDocument = (jwk: AsymmetricJsonWebKey) => {
   const publicKeyJwk = getPublicKeyJwk(jwk);

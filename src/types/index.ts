@@ -24,3 +24,6 @@ export * from "./IsolatedActor";
 
 export * from "./DidJwk";
 export * from "./DidJwt";
+
+export * from "./SignatureRelationships";
+export * from "./EncryptionRelationships";
