@@ -398,6 +398,112 @@ const service = await transmute.did.jwt.dereference({
 // service.type === "DecentralizedWebNode"
 ```
 
+## did:web
+
+This method is very 🚧 experimental 🏗️.
+
+### Generate
+
+```ts
+ const { did, didDocument, key } = await transmute.did.web.exportable({
+  url: "https://id.gs1.transmute.example/01/9506000134352",
+  alg: transmute.did.jws.alg.ES256,
+  resolver: transmute.did.jwk.resolve,
+});
+```
+
+### From Private Key
+
+```ts
+const { 
+  key: {privateKeyJwk} 
+} = await transmute.did.jwk.exportable({
+  alg: 'ES256',
+});
+const issuer = await transmute.did.web.fromPrivateKey({
+  url: "https://id.gs1.transmute.example/01/9506000134352",
+  privateKey: privateKeyJwk,
+});
+```
+
+### From Dids
+
+```ts
+const { 
+  did
+} = await transmute.did.jwk.exportable({
+  alg: 'ES256',
+});
+const issuer = await transmute.did.web.fromDids({
+  url: "https://id.gs1.transmute.example/01/9506000134352",
+  dids: [did],
+  resolver: transmute.did.jwk.resolve,
+});
+```
+
+### Resolve
+
+```ts
+const { 
+  key: { privateKeyJwk } 
+} = await transmute.did.jwk.exportable({
+  alg: 'ES256',
+});
+const issuer = await transmute.did.web.fromPrivateKey({
+  url: "https://id.gs1.transmute.example/01/9506000134352",
+  privateKey: privateKeyJwk,
+});
+const didDocument = await transmute.did.web.resolve({
+  did: issuer.did,
+  documentLoader: async (iri: string) => {
+    // for test purposes.
+    if (iri === "https://id.gs1.transmute.example/01/9506000134352/did.json") {
+      return { document: issuer.didDocument };
+    }
+    throw new Error("Unsupported IRI " + iri);
+  },
+});
+// didDocument.id = "did:web:id.gs1.transmute.example:01:9506000134352"
+```
+
+### Dereference
+
+```ts
+const { 
+  key: { privateKeyJwk } 
+} = await transmute.did.jwk.exportable({
+  alg: 'ES256',
+});
+const issuer = await transmute.did.web.fromPrivateKey({
+  url: "https://id.gs1.transmute.example/01/9506000134352",
+  privateKey: privateKeyJwk,
+});
+const jws = await transmute.sign({
+  payload,
+  protectedHeader: {
+    alg: privateKey.alg,
+  },
+  privateKey: privateKeyJwk,
+});
+const absoluteDidWebUrl = `${issuer.did}#${privateKeyJwk.kid
+  ?.split(":")
+  .pop()}`;
+const vm = await transmute.did.web.dereference({
+  didUrl: absoluteDidWebUrl as DidWebUrl,
+  resolver: async ({ did }) => {
+    // for test purposes.
+    if (did === issuer.did) {
+      return issuer.didDocument;
+    }
+    return null;
+  },
+});
+const v = await transmute.verify({
+  jws,
+  publicKey: (vm as VerificationMethod).publicKeyJwk,
+});
+```
+
 ## Develop
 
 ```bash
