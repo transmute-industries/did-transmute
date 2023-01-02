@@ -2,6 +2,7 @@ import { DidPath, DidQuery, DidFragment } from "./DidUrl";
 import { DidDocument } from "./DidDocument";
 import { VerificationMethod } from "./VerificationMethod";
 import { Service } from "./Service";
+import { ExportableActor } from "./ExportableActor";
 
 export type Base64UrlEncodedPublicKeyJwk = string;
 export type DidJwkMethodName = "jwk";
@@ -20,3 +21,5 @@ export type DidJwkDereference = (parameters: {
 export type DidJwkActor = {
   did: DidJwk;
 };
+
+export type ExportableDidJwkActor = ExportableActor & DidJwkActor;

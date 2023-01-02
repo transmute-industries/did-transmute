@@ -1,4 +1,4 @@
-import { DidJwkResolver } from "../../../types";
+import { DidWebDelegateResolver } from "../../../types";
 import { Algorithm } from "../../../types/Algorithm";
 import { DidWebActor } from "../../../types/DidWeb";
 import { generate } from "../../did-jwk/actions/generate";
@@ -9,7 +9,7 @@ import { toDidDocument } from "../toDidDocument";
 export type Exportable = {
   url: string;
   alg: Algorithm;
-  resolver: DidJwkResolver;
+  resolver: DidWebDelegateResolver;
 };
 
 export const exportable = async ({

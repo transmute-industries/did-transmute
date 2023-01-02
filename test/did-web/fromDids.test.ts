@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from "fs";
 
-import transmute, { DidJwk } from "../../src";
+import transmute, { DidJwk, DidWebDelegateResolver } from "../../src";
 
 const examples = JSON.parse(fs.readFileSync("./examples.json").toString());
 
@@ -12,7 +12,7 @@ describe("transmute", () => {
         const issuer = await transmute.did.web.fromDids({
           url: "https://id.gs1.org/01/9506000134352",
           dids: Object.keys(examples) as DidJwk[],
-          resolver: transmute.did.jwk.resolve,
+          resolver: transmute.did.jwk.resolve as DidWebDelegateResolver,
         });
         expect(issuer.did).toBe("did:web:id.gs1.org:01:9506000134352");
         expect(issuer.didDocument).toBeDefined();

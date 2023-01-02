@@ -390,7 +390,7 @@ const trustedDidJwtResolver: DidJwtResolver = async ({ did }) => {
 };
 
 const service = await transmute.did.jwt.dereference({
-  didUrl: `${actor2.did}#dwn`,
+  didUrl: `${delegate.did}#dwn`,
   // dereferencing always requires a trusted resolver.
   resolver: trustedDidJwtResolver,
 });

@@ -3,7 +3,7 @@ import { resolve } from "../../did-jwk/actions/resolve";
 
 import { PrivateKeyJwk } from "../../../types/PrivateKeyJwk";
 
-import { DidWebActor } from "../../../types/DidWeb";
+import { DidWebActor, DidWebDelegateResolver } from "../../../types/DidWeb";
 import { toDid } from "../../did-jwk/toDid";
 import { getPublicKeyJwk } from "../../did-jwk/getPublicKeyJwk";
 
@@ -19,7 +19,7 @@ export const fromPrivateKey = async ({
   const { did, didDocument } = await fromDids({
     url,
     dids: [toDid(privateKey)],
-    resolver: resolve,
+    resolver: resolve as DidWebDelegateResolver,
   });
   return {
     did,

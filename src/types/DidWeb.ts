@@ -6,6 +6,8 @@ import { VerificationMethod } from "./VerificationMethod";
 import { ExportableKey } from "./ExportableKey";
 export type DidWebMethodName = "web";
 import { GenericDocumentLoader } from "./GenericDocumentLoader";
+import { DidJwk } from "./DidJwk";
+import { DidJwt } from "./DidJwt";
 
 export type DidWeb = `did:${DidWebMethodName}:${string}`;
 export type DidWebUrl = `${DidWeb}${DidPath}${DidQuery}${DidFragment}`;
@@ -25,3 +27,10 @@ export type DidWebActor = {
   didDocument: DidDocument;
   key: ExportableKey;
 };
+
+export type DidWebDelegateType = DidJwk | DidJwt;
+
+export type DidWebDelegateResolver = (parameters: {
+  did: DidWebDelegateType;
+  resolver: DidWebDelegateResolver;
+}) => Promise<DidDocument | null>;

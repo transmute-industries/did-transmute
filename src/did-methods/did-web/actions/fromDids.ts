@@ -1,13 +1,15 @@
-import { DidJwk, DidJwkResolver } from "../../../types";
-
 import { toDidDocument } from "../toDidDocument";
 
-import { DidWebActor } from "../../../types/DidWeb";
+import {
+  DidWebActor,
+  DidWebDelegateType,
+  DidWebDelegateResolver,
+} from "../../../types/DidWeb";
 
 export type FromDids = {
   url: string;
-  dids: DidJwk[];
-  resolver: DidJwkResolver;
+  dids: DidWebDelegateType[];
+  resolver: DidWebDelegateResolver;
 };
 
 export const fromDids = async ({

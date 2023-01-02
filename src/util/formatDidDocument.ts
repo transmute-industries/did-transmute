@@ -2,26 +2,32 @@ import { formatVerificationMethod } from "./formatVerificationMethod";
 import { DidDocument } from "../types";
 
 export const formatDidDocument = (didDocument: DidDocument): DidDocument => {
+  const {
+    id,
+    verificationMethod,
+    authentication,
+    assertionMethod,
+    capabilityInvocation,
+    capabilityDelegation,
+    keyAgreement,
+    service,
+    ...rest
+  } = didDocument;
   const formatted = {
     "@context": didDocument["@context"],
-    id: didDocument.id,
-    verificationMethod:
-      didDocument.verificationMethod || [].map(formatVerificationMethod),
-    authentication: didDocument.authentication?.length
-      ? didDocument.authentication
+    id: id,
+    verificationMethod: verificationMethod || [].map(formatVerificationMethod),
+    authentication: authentication?.length ? authentication : undefined,
+    assertionMethod: assertionMethod?.length ? assertionMethod : undefined,
+    capabilityInvocation: capabilityInvocation?.length
+      ? capabilityInvocation
       : undefined,
-    assertionMethod: didDocument.assertionMethod?.length
-      ? didDocument.assertionMethod
+    capabilityDelegation: capabilityDelegation?.length
+      ? capabilityDelegation
       : undefined,
-    capabilityInvocation: didDocument.capabilityInvocation?.length
-      ? didDocument.capabilityInvocation
-      : undefined,
-    capabilityDelegation: didDocument.capabilityDelegation?.length
-      ? didDocument.capabilityDelegation
-      : undefined,
-    keyAgreement: didDocument.keyAgreement?.length
-      ? didDocument.keyAgreement
-      : undefined,
+    keyAgreement: keyAgreement?.length ? keyAgreement : undefined,
+    service: service?.length ? service : undefined,
+    ...rest,
   };
   return JSON.parse(JSON.stringify(formatted));
 };
