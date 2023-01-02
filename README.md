@@ -116,7 +116,9 @@ const actor2 = await transmute.did.jwk.isolated({
 ### Resolve & Dereference
 
 ```ts
-const { did } = await transmute.did.jwk.exportable({
+const { 
+  did 
+} = await transmute.did.jwk.exportable({
   alg: 'ES256',
 });
 const didDocument = await transmute.did.jwk.resolve({ did });
@@ -130,7 +132,9 @@ const { publicKeyJwk } = await transmute.did.jwk.dereference({
 ### Sign & Verify
 
 ```ts
-const { key: { privateKeyJwk, publicKeyJwk } } = await transmute.did.jwk.exportable({
+const { 
+  key: { privateKeyJwk, publicKeyJwk } 
+} = await transmute.did.jwk.exportable({
   alg: transmute.did.jws.alg.ES256,
 });
 const jws = await transmute.sign({
@@ -149,7 +153,9 @@ const v = await transmute.verify({
 ### Encrypt & Decrypt
 
 ```ts
-const { key: { privateKeyJwk, publicKeyJwk } } = await transmute.did.jwk.exportable({
+const { 
+  key: { privateKeyJwk, publicKeyJwk } 
+} = await transmute.did.jwk.exportable({
   alg: transmute.did.jwe.alg.ECDH_ES_A256KW,
 });
 const jwe = await transmute.encrypt({
@@ -188,32 +194,29 @@ This method is very 🚧 experimental 🏗️.
   }
 }%%
 %% Support https://transmute.industries
-graph
+graph LR
 	subgraph &nbsp
 		direction LR
+    Did("did:jwt: compact-json-web-token ")
+    KeyDereference{"Key Resolver"}
+    DidResolution{"Did Resolution"}
+    DidDocument("Did Document")
+    DidDocumentMetadata("Did Document Metadata")
+    ProtectedHeader("ProtectedHeader")
+    ClaimSet("Claim Set")
+    Trusted{{"Is Issuer Trusted?"}}
+    Untrusted("No")
 
-        
-        Did("did:jwt: compact-json-web-token ")
-        KeyDereference{"Key Resolver"}
-        DidResolution{"Did Resolution"}
-        DidDocument("Did Document")
-        DidDocumentMetadata("Did Document Metadata")
-        ProtectedHeader("ProtectedHeader")
-        ClaimSet("Claim Set")
-        Trusted{{"Is Issuer Trusted?"}}
-        Untrusted("No")
+    Did -- Protected Header  --> KeyDereference
+    KeyDereference --> Trusted
+    
+    Trusted -- Payload --> DidResolution
+    DidResolution --> DidDocument
+    DidDocument --> ClaimSet
+    DidResolution -.-> DidDocumentMetadata
+    DidDocumentMetadata -.-> ProtectedHeader
 
-
-        Did -- Protected Header  --> KeyDereference
-        KeyDereference --> Trusted
-        
-        Trusted -- Payload --> DidResolution
-        DidResolution --> DidDocument
-        DidDocument --> ClaimSet
-        DidResolution -.-> DidDocumentMetadata
-        DidDocumentMetadata -.-> ProtectedHeader
-
-        Trusted -.-> Untrusted
+    Trusted -.-> Untrusted
 
 	end
 
@@ -301,7 +304,10 @@ See [jwt-vc-presentation-profile](https://identity.foundation/jwt-vc-presentatio
 ### Generate
 
 ```ts
-const { did, key: { privateKeyJwk, publicKeyJwk } } = await transmute.did.jwk.exportable({
+const { 
+  did, 
+  key: { privateKeyJwk, publicKeyJwk } 
+} = await transmute.did.jwk.exportable({
   alg: transmute.did.jws.alg.ES256,
 });
 const delegate = await transmute.did.jwt.sign({
