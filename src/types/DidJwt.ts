@@ -16,7 +16,7 @@ export type DidJwtResolver = (parameters: {
 
 export type DidJwtDereference = (parameters: {
   didUrl: DidJwtUrl;
-  resolver: DidJwtResolver & DidJwkResolver;
+  resolver: DidJwtResolver;
 }) => Promise<DidDocument | VerificationMethod | Service | null>;
 
 export type DidJwtActor = {

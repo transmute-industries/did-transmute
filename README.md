@@ -166,6 +166,232 @@ const v = await transmute.decrypt({
 });
 ```
 
+## did:jwt
+
+This method is very 🚧 experimental 🏗️.
+
+```mermaid
+%%{
+  init: {
+    'theme': 'base',
+    'themeVariables': {
+      'primaryColor': '#2a2d4c',
+      'primaryTextColor': '#565a7c',
+      'nodeBorder': '#565a7c',
+      'edgeLabelBackground': '#2a2d4c',
+      'clusterBkg': '#2a2d4c',
+      'clusterBorder': '#2a2d4c',
+      'lineColor': '#565a7c',
+      'fontFamily': 'monospace',
+      'darkmode': true
+    }
+  }
+}%%
+%% Support https://transmute.industries
+graph
+	subgraph &nbsp
+		direction LR
+
+        
+        Did("did:jwt: compact-json-web-token ")
+        KeyDereference{"Key Resolver"}
+        DidResolution{"Did Resolution"}
+        DidDocument("Did Document")
+        DidDocumentMetadata("Did Document Metadata")
+        ProtectedHeader("ProtectedHeader")
+        ClaimSet("Claim Set")
+        Trusted{{"Is Issuer Trusted?"}}
+        Untrusted("No")
+
+
+        Did -- Protected Header  --> KeyDereference
+        KeyDereference --> Trusted
+        
+        Trusted -- Payload --> DidResolution
+        DidResolution --> DidDocument
+        DidDocument --> ClaimSet
+        DidResolution -.-> DidDocumentMetadata
+        DidDocumentMetadata -.-> ProtectedHeader
+
+        Trusted -.-> Untrusted
+
+	end
+
+%% orange
+style Did color: #fcb373, stroke: #fcb373
+style DidDocument color: #fcb373, stroke: #fcb373
+
+%% teal
+style Trusted color: #27225b, fill: #2cb3d9
+
+%% purple
+style ProtectedHeader color: #fff, fill: #594aa8
+style ClaimSet color: #fff, fill: #594aa8
+
+%% light grey
+style DidDocumentMetadata color: #8286a3, stroke: #8286a3
+
+%% red
+style KeyDereference color: #ff605d, stroke: #ff605d
+style DidResolution color: #ff605d, stroke: #ff605d
+
+
+%% red lines
+linkStyle 0,2 color:#ff605d, stroke-width: 2.0px
+
+%% linkStyle 1,2,4 color:#ff605d, stroke:#8286a3, stroke-width: 2.0px
+%% export const transmute = {
+%%   primary: {
+%%     purple: { dark: "#27225b", light: "#594aa8" },
+%%     red: "#ff605d",
+%%     orange: "#fcb373",
+%%     grey: "#f5f7fd",
+%%     white: "#fff",
+%%   },
+%%   secondary: {
+%%     teal: "#48caca",
+%%     aqua: "#2cb3d9",
+%%     dark: "#2a2d4c",
+%%     medium: "#565a7c",
+%%     light: "#8286a3",
+%%   },
+%% };
+```
+
+There are several different ways to "trust" a JSON Web Token issuer, based `exclusively` or the `header` and `verify` or `decrypt` operations.
+
+🔥 Only `embedded jwk` is supported currently.
+
+### Embedding keys
+
+Using [jwk](https://www.rfc-editor.org/rfc/rfc7515.html#section-4.1.3) and [x5c](https://www.rfc-editor.org/rfc/rfc7515.html#section-4.1.6).
+
+> Embedding the key within the token is a straightforward way to enable key distribution. To ensure the security of this mechanism, the consumer of the JWT needs to restrict which keys it accepts. Failure to do so allows an attacker to generate tokens signed with a malicious private key. An overly permitting consumer would merely use the embedded public key to verify the signature, which will be valid. To avoid such issues, the consumer needs to match the key used against a set of explicitly whitelisted keys. In case the key comes in the form of an X509 certificate, the consumer can use the certificate information to verify the authenticity.
+
+- [Source](https://www.pingidentity.com/en/resources/blog/post/jwt-security-nobody-talks-about.html)
+
+
+When `jwk` is present in the `Protected Header` of a `JWT`, a custom `did:jwk` resoler will be used as the the `allow-list`.
+
+A `null` resolution is treated as a `deny` operation.
+
+
+See also [panva/jose](https://github.com/panva/jose/blob/HEAD/docs/functions/jwk_embedded.EmbeddedJWK.md#readme).
+
+### Distributing keys
+
+Using [jku](https://www.rfc-editor.org/rfc/rfc7515.html#section-4.1.2) and [x5u](https://www.rfc-editor.org/rfc/rfc7515.html#section-4.1.5).
+
+## TODO
+
+See [RFC7515](https://www.rfc-editor.org/rfc/rfc7515.html)
+
+#### Proof of Possession
+
+## TODO
+
+See [RFC7800](https://www.rfc-editor.org/rfc/rfc7800.html#section-3)
+
+#### Verifiable Credential's JSON Web Token Profile
+
+## TODO
+
+See [jwt-vc-presentation-profile](https://identity.foundation/jwt-vc-presentation-profile/)
+
+### Generate
+
+```ts
+const { did, key: { privateKeyJwk, publicKeyJwk } } = await transmute.did.jwk.exportable({
+  alg: transmute.did.jws.alg.ES256,
+});
+const delegate = await transmute.did.jwt.sign({
+  issuer: did,
+  audience: 'urn:example:audience', // optional.
+  protectedHeader: {
+    alg: publicKeyJwk.alg,
+    iss: did,
+    kid: "#0",
+    // application/claimSet+json ?
+    cty: "vnd.mycompany.myapp.customer+json; version=2.0", 
+  },
+  claimSet: { "urn:example:claim": true },
+  privateKey: privateKeyJwk,
+});
+```
+
+### Resolve
+
+```ts
+// This did:jwk resolver acts as the "allow list" for embedded JWKs.
+const trustedResolver = async ({ did }: ResolveParameters) => {
+  if (did.startsWith("did:jwk:")) {
+    // trust all valid did:jwk, for testing purposes only.
+    return transmute.did.jwk.resolve({ did: did as DidJwk });
+  }
+  return null;
+};
+const didDocument = await transmute.did.jwt.resolve({
+  did: delegate.did,
+  // This did:jwk resolver acts as the "allow list" for embedded JWKs.
+  resolver: trustedResolver,
+});
+// didDocument["urn:example:claim"] === true;
+```
+
+### Dereference
+
+```ts
+const delegate = await transmute.did.jwt.sign({
+  issuer: did,
+  audience: 'urn:example:audience', // optional.
+  protectedHeader: {
+    alg: publicKeyJwk.alg,
+    iss: did,
+    kid: "#0",
+    // application/did+json ?
+    cty: "vnd.mycompany.myapp.customer+json; version=2.0", 
+  },
+  claimSet: {
+    service: [
+      {
+        id: "#dwn",
+        type: "DecentralizedWebNode",
+        serviceEndpoint: {
+          nodes: ["https://dwn.example.com", "https://example.org/dwn"],
+        },
+      },
+    ],
+  },
+  privateKey: privateKeyJwk,
+});
+
+const trustedDidJwkResolver: DidJwkResolver = async ({ did }) => {
+  if (did.startsWith("did:jwk:")) {
+    return transmute.did.jwk.resolve({ did });
+  }
+  return null;
+};
+
+const trustedDidJwtResolver: DidJwtResolver = async ({ did }) => {
+  if (did.startsWith("did:jwt")) {
+    return transmute.did.jwt.resolve({
+      did,
+      // this resolver is used as the "allow list" for embedded JWK.
+      resolver: trustedDidJwkResolver,
+    });
+  }
+  return null;
+};
+
+const service = await transmute.did.jwt.dereference({
+  didUrl: `${actor2.did}#dwn`,
+  // dereferencing always requires a trusted resolver.
+  resolver: trustedDidJwtResolver,
+});
+// service.id === "#dwn"
+// service.type === "DecentralizedWebNode"
+```
+
 ## Develop
 
 ```bash

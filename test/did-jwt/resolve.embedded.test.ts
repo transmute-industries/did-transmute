@@ -15,14 +15,19 @@ describe("transmute", () => {
   describe("did", () => {
     describe("jwt", () => {
       it("resolve", async () => {
-        const { issuer } = await getActors(transmute.did.jws.alg.ES256);
+        const {
+          issuer: {
+            did,
+            key: { publicKeyJwk, privateKeyJwk },
+          },
+        } = await getActors(transmute.did.jws.alg.ES256);
         const actor2 = await transmute.did.jwt.sign({
-          issuer: issuer.did,
-          privateKey: issuer.key.privateKeyJwk,
+          issuer: did,
+          privateKey: privateKeyJwk,
           protectedHeader: {
-            alg: issuer.key.publicKeyJwk.alg,
-            iss: issuer.did,
-            jwk: issuer.key.publicKeyJwk,
+            alg: publicKeyJwk.alg,
+            iss: did,
+            jwk: publicKeyJwk,
             kid: "#0",
             cty: "vnd.mycompany.myapp.customer+json; version=2.0",
           },
