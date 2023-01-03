@@ -18,7 +18,7 @@ This repository contains experimental implementations of various [DID Methods](h
 A primary use case for this is "DID Method Projection", in which an existing identifier space such as 
 all JWK or JWT, is projected into a Decentralizied Identifier space, such as `did:jwk:` or `did:jwt`.
 
-This is accomplished by defining resolution and derefernecing for the DID URLs under the "projection method".
+This is accomplished by defining resolution and dereferencing for the DID URLs under the "projection method".
 
 The prefixing might be removed as part of a standardization process.
 
