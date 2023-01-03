@@ -30,9 +30,10 @@ describe("transmute", () => {
             });
           });
         });
-        afterAll(() => {
-          fs.writeFileSync("./examples.json", JSON.stringify(fixture, null, 2));
-        });
+        // uncomment to rebuild fixtures.
+        // afterAll(() => {
+        //   fs.writeFileSync("./examples.json", JSON.stringify(fixture, null, 2));
+        // });
       });
       describe("resolve & dereference", () => {
         (Object.keys(v) as DidJwk[]).forEach((did) => {
