@@ -300,9 +300,88 @@ See [RFC7800](https://www.rfc-editor.org/rfc/rfc7800.html#section-3)
 
 ## TODO
 
+
+```mermaid
+%%{
+  init: {
+    'theme': 'base',
+    'themeVariables': {
+      'primaryColor': '#2a2d4c',
+      'primaryTextColor': '#565a7c',
+      'nodeBorder': '#565a7c',
+      'edgeLabelBackground': '#2a2d4c',
+      'clusterBkg': '#2a2d4c',
+      'clusterBorder': '#2a2d4c',
+      'lineColor': '#565a7c',
+      'fontFamily': 'monospace',
+      'darkmode': true
+    }
+  }
+}%%
+%% Support https://transmute.industries
+
+flowchart LR
+subgraph 0 [Open ID Connect 'DID Method']
+direction LR
+ProtectedHeader("Protected Header")
+ProtectedClaimSet("Protected Claim Set")
+DecodedVerificationMethodComponents("{ iss, kid }")
+WellKnownConfig(".well-known/openid-configuration")
+WellKnownJwks(".well-known/jwks.json")
+DidDocument("DID Document")
+
+ProtectedHeader -.-> DecodedVerificationMethodComponents
+ProtectedClaimSet -.-> DecodedVerificationMethodComponents
+DecodedVerificationMethodComponents -.-> WellKnownConfig
+WellKnownConfig -.-> WellKnownJwks
+WellKnownJwks -.-> DidDocument
+
+VerificationMethod("{{iss}}#{{kid}}")
+DecodedVerificationMethodComponents -.-> VerificationMethod
+
+DidDocument -.-> PublicKeyJwk
+PublicKeyJwk("{ publicKeyJwk }")
+VerificationMethod -.-> PublicKeyJwk
+
+class ProtectedHeader,ProtectedClaimSet,PublicKeyJwk PurpleNode
+class DecodedVerificationMethodComponents,WellKnownConfig,WellKnownJwks RedNode
+class DidDocument,VerificationMethod TealNode
+
+classDef PurpleNode color:#fff, fill:#594aa8, stroke:#27225b, stroke-width:1px;
+classDef RedNode color:#ff605d, stroke:#ff605d, stroke-width:1px;
+classDef OrangeNode color:#fcb373, stroke:#fcb373, stroke-width:1px;
+classDef GreyNode fill:#f5f7fd, stroke:#f5f7fd, stroke-width:1px;
+classDef WhiteNode color:#fff, stroke:#fff, stroke-width:1px;
+classDef DarkPurpleNode color:#f5f7fd, fill:#27225b, stroke:#f5f7fd, stroke-width:1px;
+classDef TealNode color:#48caca, stroke:#48caca, stroke-width:1px;
+classDef AquaNode color:#2cb3d9, stroke:#2cb3d9, stroke-width:1px;
+end
+```
+
+#### Example DID Document
+
+```json
+{
+  "id": "{{iss}}",
+  "verificationMethod":[{
+    "id": "#{{kid}}",
+    "type": "JsonWebKey2020",
+    "controller": "{{iss}}",
+    "publicKeyJwk":{
+      "kid": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0",
+      "kty": "OKP",
+      "crv": "Ed25519",
+      "alg": "EdDSA",
+      "x": "dh2c41edqveCxEzw3OVjtAmdcJPwe4lAg2fJ10rsZk0",
+    }
+  }],
+  "assertionMethod": ["#{{kid}}"]
+}
+```
+
 See [openid-connect-discovery](https://openid.net/specs/openid-connect-discovery-1_0-21.html)
 
-#### Verifiable Credential's JSON Web Token Profile
+### Verifiable Credential's JSON Web Token Profile
 
 This approach relies on the `resolver` to act as an allow list for `absolute did urls`, constructed from `kid` or a combination of `kid` and `iss`.
 
