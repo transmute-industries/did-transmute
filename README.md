@@ -295,9 +295,71 @@ See [RFC7515](https://www.rfc-editor.org/rfc/rfc7515.html)
 
 See [RFC7800](https://www.rfc-editor.org/rfc/rfc7800.html#section-3)
 
-#### Verifiable Credential's JSON Web Token Profile
+
+### Using OpenID Connect Discovery
 
 ## TODO
+
+See [openid-connect-discovery](https://openid.net/specs/openid-connect-discovery-1_0-21.html)
+
+#### Verifiable Credential's JSON Web Token Profile
+
+This approach relies on the `resolver` to act as an allow list for `absolute did urls`, constructed from `kid` or a combination of `kid` and `iss`.
+
+For example, a `protectedHeader` might look like:
+
+```json
+{
+  "alg": "ES256",
+  "iss": "did:example:123",
+  "kid": "#key-4"
+}
+```
+
+or 
+
+```json
+{
+  "alg": "ES256",
+  "kid": "did:example:123#key-4"
+}
+```
+
+This header will be used to dereference a `verificationMethod` which is expected to contain a `publicKeyJwk`.
+
+For example:
+
+```json
+{
+  "id": "#key-4",
+  "type": "JsonWebKey2020",
+  "controller": "did:example:123",
+  "publicKeyJwk": {
+    "kid": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0",
+    "kty": "OKP",
+    "crv": "Ed25519",
+    "alg": "EdDSA",
+    "x": "dh2c41edqveCxEzw3OVjtAmdcJPwe4lAg2fJ10rsZk0",
+  }
+}
+```
+
+or
+
+```json
+{
+  "id": "did:example:123#urn:ietf:params:oauth:jwk-thumbprint:sha-256:AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0",
+  "type": "JsonWebKey2020",
+  "controller": "did:example:123",
+  "publicKeyJwk": {
+    "kid": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0",
+    "kty": "OKP",
+    "crv": "Ed25519",
+    "alg": "EdDSA",
+    "x": "dh2c41edqveCxEzw3OVjtAmdcJPwe4lAg2fJ10rsZk0",
+  }
+}
+```
 
 See [jwt-vc-presentation-profile](https://identity.foundation/jwt-vc-presentation-profile/)
 

@@ -7,7 +7,7 @@ import { prefix } from "../method";
 
 import { resolveWithEmbeddedJwk } from "../resolveWithEmbeddedJwk";
 import { resolveWithIss } from "../resolveWithIss";
-
+import { resolveWithOpenIdConnectDiscovery } from "../resolveWithOpenIdConnectDiscovery";
 export const resolve: DidJwtResolver = async ({ did, resolver }) => {
   if (!did.startsWith(prefix)) {
     return null;
@@ -15,12 +15,21 @@ export const resolve: DidJwtResolver = async ({ did, resolver }) => {
   const parsedDid = parseDidUrl(did);
   const didJwt = parsedDid.did as DidJwt;
   const jws = parsedDid.did.split(":").pop() as string;
-  const { jwk, iss, kid } = jose.decodeProtectedHeader(jws);
+  const protectedHeader = jose.decodeProtectedHeader(jws);
+  const { jwk, iss, kid } = protectedHeader;
+
   if (jwk) {
     return resolveWithEmbeddedJwk({ did: didJwt, resolver });
+  }
+  if (!iss && kid) {
+    return resolveWithOpenIdConnectDiscovery({
+      did: didJwt,
+      resolver,
+    });
   }
   if (iss && kid) {
     return resolveWithIss({ did: didJwt, resolver });
   }
+
   return null;
 };

@@ -1,3 +1,5 @@
+import { getOpenIdConnectIssuerPublicKey } from "../../util/getOpenIdConnectIssuerPublicKey";
+
 import alg from "../did-jws/alg";
 
 import {
@@ -9,6 +11,15 @@ import {
   dereference,
 } from "./actions";
 
-const jws = { alg, sign, verify, encrypt, decrypt, resolve, dereference };
+const jwt = {
+  alg,
+  sign,
+  verify,
+  encrypt,
+  decrypt,
+  resolve,
+  dereference,
+  getOpenIdConnectIssuerPublicKey,
+};
 
-export default jws;
+export default jwt;
