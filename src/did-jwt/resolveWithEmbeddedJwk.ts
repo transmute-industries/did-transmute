@@ -1,6 +1,6 @@
 import * as jose from "jose";
 import { PublicKeyJwk } from "../jose/PublicKeyJwk";
-import { DidJwsJwtResolutionParameters } from "./types";
+import { DidJwtResolutionParameters } from "./types";
 import { parseDidUrl } from "../did/parseDidUrl";
 
 import { toDid } from "../did-jwk/toDid";
@@ -13,7 +13,7 @@ import { AnyDid } from "../did/Did";
 export const resolveWithEmbeddedJwk = async ({
   id,
   documentLoader,
-}: DidJwsJwtResolutionParameters) => {
+}: DidJwtResolutionParameters) => {
   const parsed = parseDidUrl<AnyDid>(id);
   const { alg, jwk } = jose.decodeProtectedHeader(parsed.id);
   const { iss } = jose.decodeJwt(parsed.id);
@@ -27,15 +27,13 @@ export const resolveWithEmbeddedJwk = async ({
       "Algorithm mismatch. Expected 'header.alg' to be 'header.jwk.alg'."
     );
   }
-  const issuerDidJwk = toDid(jwk as PublicKeyJwk);
-  const issuerDocumentLoaderResponse = await documentLoader(
-    issuerDidJwk as AnyDid
-  );
+  const issuer = toDid(jwk as PublicKeyJwk);
+  const { document } = await documentLoader(issuer);
   const verificationMethod = dereferenceWithinDocument<
     VerificationMethod<DidJwk>
   >({
     id: "#0",
-    document: issuerDocumentLoaderResponse.document,
+    document: document,
   });
   if (verificationMethod === null) {
     throw new Error("Could not dereference verification method.");

@@ -1,15 +1,15 @@
 import * as jose from "jose";
-import { DidJwsJwtResolver } from "./types";
+import { DidJwtResolutionParameters } from "./types";
 import { parseDidUrl } from "../did/parseDidUrl";
 import { getDidDocumentFromVerification } from "./getDidDocumentFromVerification";
 import { dereferenceWithinDocument } from "../did/dereferenceWithinDocument";
 import { DidUrl, PublicKeyJwk } from "../types";
 import { AnyDid } from "../types";
 import { VerificationMethod } from "../did/VerificationMethod";
-export const resolveWithRelativeDidUrl: DidJwsJwtResolver = async ({
+export const resolveWithRelativeDidUrl = async ({
   id,
   documentLoader,
-}) => {
+}: DidJwtResolutionParameters) => {
   const parsed = parseDidUrl<AnyDid>(id);
   const { iss, kid } = jose.decodeProtectedHeader(parsed.id);
   if (!iss) {

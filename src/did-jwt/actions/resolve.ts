@@ -7,11 +7,11 @@ import { resolveWithEmbeddedJwk } from "../resolveWithEmbeddedJwk";
 import { resolveWithRelativeDidUrl } from "../resolveWithRelativeDidUrl";
 import { resolveWithAccessToken } from "../resolveWithAccessToken";
 
-import { DidJwsJwtResolutionParameters, DidJwsJwtDocument } from "../types";
+import { DidJwtResolutionParameters, DidJwsJwtDocument } from "../types";
 
 // documentLoader is a dynamic just in time allow-list.
 export const resolve = async (
-  params: DidJwsJwtResolutionParameters
+  params: DidJwtResolutionParameters
 ): Promise<DidJwsJwtDocument> => {
   const { id, profiles } = params;
   if (!id.startsWith(prefix)) {

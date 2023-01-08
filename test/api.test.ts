@@ -1,4 +1,4 @@
-import transmute, { DidJwk, AnyService, AnyDidDocument } from "../src";
+import transmute, { DidJwk } from "../src";
 
 const { alg, enc } = transmute.jose;
 
@@ -220,7 +220,7 @@ describe("transmute.did.jwt.resolve", () => {
     });
     const didDocument = await transmute.did.jwt.resolve({
       id: subject.did,
-      documentLoader: async (id: string) => {
+      documentLoader: async (id) => {
         if (id.startsWith("https://contoso.auth0.com/")) {
           const [iss, kid] = id.split("#");
           const didDocument =
@@ -236,7 +236,7 @@ describe("transmute.did.jwt.resolve", () => {
         throw new Error("documentLoader does not support identifier: " + id);
       },
       profiles: ["access_token"],
-    } as any);
+    });
     expect(didDocument.id.startsWith("did:jwt")).toBe(true);
     expect(didDocument.scope).toBe("openid profile read:patients read:admin");
   });
@@ -281,7 +281,14 @@ it("transmute.did.jwt.dereference", async () => {
     },
     privateKey: issuer.key.privateKey,
   });
-  const service = await transmute.did.jwt.dereference<AnyService>({
+  type DwnService = {
+    id: "#dwn";
+    type: "DecentralizedWebNode";
+    serviceEndpoint: {
+      nodes: ["https://dwn.example.com", "https://example.org/dwn"];
+    };
+  };
+  const service = await transmute.did.jwt.dereference<DwnService>({
     id: `${subject.did}#dwn`,
     documentLoader: async (id: string) => {
       if (id.startsWith("did:jwk")) {
