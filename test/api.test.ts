@@ -158,7 +158,7 @@ describe("transmute.did.jwt.resolve", () => {
         }
         throw new Error("documentLoader does not support identifier: " + id);
       },
-      profiles: ["embedded-jwk"], // This part.
+      profiles: ["embedded-jwk"],
     });
     expect(didDocument.id.startsWith("did:jwt")).toBe(true);
     expect(didDocument["urn:example:claim"]).toBe(true);
@@ -189,7 +189,7 @@ describe("transmute.did.jwt.resolve", () => {
         }
         throw new Error("documentLoader does not support identifier: " + id);
       },
-      profiles: ["relative-did-url"], // This part.
+      profiles: ["relative-did-url"],
     });
     expect(didDocument.id.startsWith("did:jwt")).toBe(true);
     expect(didDocument["urn:example:claim"]).toBe(true);
@@ -300,4 +300,57 @@ it("transmute.did.jwt.dereference", async () => {
   });
   expect(service.id).toBe("#dwn");
   expect(service.type).toBe("DecentralizedWebNode");
+});
+
+it("transmute.did.jwt.encrypt", async () => {
+  const issuer = await transmute.did.jwk.exportable({
+    alg: alg.ECDH_ES_A256KW,
+  });
+  const subject = await transmute.did.jwt.encrypt({
+    issuer: issuer.did,
+    protectedHeader: {
+      alg: issuer.key.publicKey.alg,
+      enc: transmute.jose.enc.A256GCM,
+    },
+    claimSet: {
+      yolo: 1,
+    },
+    publicKey: issuer.key.publicKey,
+  });
+  const v = await transmute.did.jwt.decrypt({
+    did: subject.did,
+    issuer: issuer.did,
+    privateKey: issuer.key.privateKey,
+  });
+  expect(v.payload.yolo).toBe(1);
+});
+
+it.only("transmute.did.jwt.resolve", async () => {
+  const issuer = await transmute.did.jwk.exportable({
+    alg: alg.ECDH_ES_A256KW,
+  });
+  const subject = await transmute.did.jwt.encrypt({
+    issuer: "did:example:123",
+    protectedHeader: {
+      alg: issuer.key.publicKey.alg,
+      iss: "did:example:123",
+      kid: "#0",
+      enc: transmute.jose.enc.A256GCM,
+    },
+    claimSet: {
+      yolo: 1,
+    },
+    publicKey: issuer.key.publicKey,
+  });
+  const didDocument = await transmute.did.jwt.resolve({
+    id: subject.did,
+    privateKeyLoader: async (id: string) => {
+      if (id.startsWith("did:example:123")) {
+        return issuer.key.privateKey;
+      }
+      throw new Error("privateKeyLoader does not support identifier: " + id);
+    },
+    profiles: ["encrypted-jwt"],
+  });
+  console.log(didDocument);
 });

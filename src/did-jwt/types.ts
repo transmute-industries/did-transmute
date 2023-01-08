@@ -3,6 +3,7 @@ import { Context } from "../did/Context";
 import { ExportableActor } from "../did/ExportableActor";
 import { IsolatedActor } from "../did/IsolatedActor";
 import { DocumentLoader } from "../did/DocumentLoader";
+import { PrivateKeyLoader } from "../did/PrivateKeyLoader";
 
 export type EncodedJws<U extends string> =
   U extends `${infer EncodedProtectedHeader}.${infer EncodedPayload}.${infer EncodedSignature}`
@@ -19,14 +20,40 @@ export type CompactJws<U extends string> =
 export type DidJwsJwt =
   Did<`did:jwt:${CompactJws<`${string}.${string}.${string}`>}`>;
 
+export type EncodedJwe<U extends string> =
+  U extends `${infer EncodedProtectedHeader}.${infer EncryptedKey}.${infer InitializationVector}.${infer CypherText}.${infer AuthenticationTag}`
+    ? {
+        protectedHeader: EncodedProtectedHeader;
+        encryptedKey: EncryptedKey;
+        initializationVector: InitializationVector;
+        cypherText: CypherText;
+        authenticationTag: AuthenticationTag;
+      }
+    : {
+        protectedHeader: "";
+        encryptedKey: "";
+        initializationVector: "";
+        cypherText: "";
+        authenticationTag: "";
+      };
+
+export type CompactJwe<U extends string> =
+  `${EncodedJwe<U>["protectedHeader"]}.${EncodedJwe<U>["encryptedKey"]}.${EncodedJwe<U>["initializationVector"]}.${EncodedJwe<U>["cypherText"]}.${EncodedJwe<U>["authenticationTag"]}`;
+
+export type DidJweJwt =
+  Did<`did:jwt:${CompactJwe<`${string}.${string}.${string}.${string}.${string}`>}`>;
+
 export type ExportableDidJwsJwtActor = Omit<ExportableActor<DidJwsJwt>, "key">;
 
 export type IsolatedDidJwsJwtActor = Omit<IsolatedActor<DidJwsJwt>, "key">;
 
+export type ExportableDidJweJwtActor = Omit<ExportableActor<DidJweJwt>, "key">;
+
 export type DidJwtResolutionProfile =
   | `embedded-jwk`
   | `relative-did-url`
-  | `access_token`;
+  | `access_token`
+  | `encrypted-jwt`;
 
 export type DidJwsJwtDocument = {
   "@context": Array<Context>;
@@ -34,8 +61,24 @@ export type DidJwsJwtDocument = {
   [property: string]: unknown;
 };
 
-export type DidJwtResolutionParameters = {
-  id: DidJwsJwt;
-  documentLoader: DocumentLoader<AnyDidLike>;
+export type DidJweJwtResolutionParameters = {
+  id: DidJweJwt;
   profiles: DidJwtResolutionProfile[];
+  privateKeyLoader: PrivateKeyLoader;
+};
+
+export type DidJwsJwtResolutionParameters = {
+  id: DidJwsJwt;
+  profiles: DidJwtResolutionProfile[];
+  documentLoader: DocumentLoader<AnyDidLike>;
+};
+
+export type DidJwtResolutionParameters =
+  | DidJweJwtResolutionParameters
+  | DidJwsJwtResolutionParameters;
+
+export type DidJwtDocument = {
+  "@context": Array<Context>;
+  id: Did<`did:jwt:${string}`>;
+  [property: string]: unknown;
 };

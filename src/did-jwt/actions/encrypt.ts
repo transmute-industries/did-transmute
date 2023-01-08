@@ -1,12 +1,12 @@
 import * as jose from "jose";
 
-import { getKey } from "../../../util";
+import { getKey } from "../../jose/getKey";
+import { PublicKey } from "../../jose/PublicKey";
+import { ClaimSet } from "../../jose/ClaimSet";
+
 import { prefix } from "../method";
 
-import { DidJwt, DidJwtActor } from "../../../types/DidJwt";
-import { ClaimSet } from "../../../types/ClaimSet";
-
-import { PublicKey } from "../../../types/PublicKey";
+import { DidJweJwt, ExportableDidJweJwtActor } from "../types";
 
 export type Encrypt = {
   issuer: string;
@@ -22,7 +22,7 @@ export const encrypt = async ({
   protectedHeader,
   claimSet,
   publicKey,
-}: Encrypt): Promise<DidJwtActor> => {
+}: Encrypt): Promise<ExportableDidJweJwtActor> => {
   const key = await getKey(publicKey);
   const content = new jose.EncryptJWT(claimSet)
     .setProtectedHeader(protectedHeader)
@@ -33,8 +33,7 @@ export const encrypt = async ({
   if (audience) {
     content.setAudience(audience);
   }
-
   const jwt = await content.encrypt(key);
-  const did = `${prefix}:${jwt}` as DidJwt;
+  const did = `${prefix}:${jwt}` as DidJweJwt;
   return { did };
 };

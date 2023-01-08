@@ -1,6 +1,6 @@
 import * as jose from "jose";
 import { PublicKeyJwk } from "../jose/PublicKeyJwk";
-import { DidJwtResolutionParameters } from "./types";
+import { DidJwsJwt, DidJwsJwtResolutionParameters } from "./types";
 import { parseDidUrl } from "../did/parseDidUrl";
 
 import { toDid } from "../did-jwk/toDid";
@@ -8,13 +8,12 @@ import { dereferenceWithinDocument } from "../did/dereferenceWithinDocument";
 import { getDidDocumentFromVerification } from "./getDidDocumentFromVerification";
 import { VerificationMethod } from "../did/VerificationMethod";
 import { DidJwk } from "../types";
-import { AnyDid } from "../did/Did";
 
 export const resolveWithEmbeddedJwk = async ({
   id,
   documentLoader,
-}: DidJwtResolutionParameters) => {
-  const parsed = parseDidUrl<AnyDid>(id);
+}: DidJwsJwtResolutionParameters) => {
+  const parsed = parseDidUrl<DidJwsJwt>(id);
   const { alg, jwk } = jose.decodeProtectedHeader(parsed.id);
   const { iss } = jose.decodeJwt(parsed.id);
   if (!jwk) {

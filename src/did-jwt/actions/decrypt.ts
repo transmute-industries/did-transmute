@@ -1,13 +1,15 @@
 import * as jose from "jose";
 
-import { getKey } from "../../../util/getKey";
-import { PrivateKey } from "../../../types/PrivateKey";
-import { CompactJsonWebToken } from "../../../types/CompactJsonWebToken";
-import { SuccessfulTokenVerification } from "../../../types/SuccessfulTokenVerification";
-import { DidJwt } from "../../../types/DidJwt";
+import { getKey } from "../../jose/getKey";
+import { PrivateKey } from "../../jose/PrivateKey";
+import { SuccessfulTokenVerification } from "../../jose/SuccessfulTokenVerification";
+
+import { DidJweJwt } from "../types";
+
+import { parseDidUrl } from "../../did/parseDidUrl";
 
 export type Decrypt = {
-  did: DidJwt;
+  did: DidJweJwt;
   issuer: string;
   audience?: string | string[];
   privateKey: PrivateKey;
@@ -19,7 +21,8 @@ export const decrypt = async ({
   audience,
   privateKey,
 }: Decrypt): Promise<SuccessfulTokenVerification> => {
-  const jwt = did.split(":").pop() as CompactJsonWebToken;
+  const parsed = parseDidUrl(did);
+  const jwt = parsed.id;
   const options: jose.JWTDecryptOptions = {
     issuer,
   };

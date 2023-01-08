@@ -1,16 +1,16 @@
 import * as jose from "jose";
-import { DidJwtResolutionParameters } from "./types";
+import { DidJwsJwtResolutionParameters, DidJwsJwt } from "./types";
 import { parseDidUrl } from "../did/parseDidUrl";
 import { getDidDocumentFromVerification } from "./getDidDocumentFromVerification";
 import { dereferenceWithinDocument } from "../did/dereferenceWithinDocument";
 import { DidUrl, PublicKeyJwk } from "../types";
-import { AnyDid } from "../types";
+
 import { VerificationMethod } from "../did/VerificationMethod";
 export const resolveWithRelativeDidUrl = async ({
   id,
   documentLoader,
-}: DidJwtResolutionParameters) => {
-  const parsed = parseDidUrl<AnyDid>(id);
+}: DidJwsJwtResolutionParameters) => {
+  const parsed = parseDidUrl<DidJwsJwt>(id);
   const { iss, kid } = jose.decodeProtectedHeader(parsed.id);
   if (!iss) {
     throw new Error("protectedHeader.iss MUST be present.");
@@ -25,7 +25,7 @@ export const resolveWithRelativeDidUrl = async ({
     `${iss}${kid}` as DidUrl<"did:jwt:header.payload.signature#key-0">;
   const { document: didDocument } = await documentLoader(absoluteDidUrl);
   const verificationMethod = dereferenceWithinDocument<
-    VerificationMethod<AnyDid>
+    VerificationMethod<DidJwsJwt>
   >({
     id: absoluteDidUrl,
     document: didDocument,

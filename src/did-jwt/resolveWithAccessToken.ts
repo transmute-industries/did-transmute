@@ -1,5 +1,5 @@
 import * as jose from "jose";
-import { DidJwtResolutionParameters } from "./types";
+import { DidJwsJwtResolutionParameters, DidJwsJwt } from "./types";
 import { parseDidUrl } from "../did/parseDidUrl";
 import { getDidDocumentFromVerification } from "./getDidDocumentFromVerification";
 import { dereferenceWithinDocument } from "../did/dereferenceWithinDocument";
@@ -10,8 +10,8 @@ import { VerificationMethod } from "../did/VerificationMethod";
 export const resolveWithAccessToken = async ({
   id,
   documentLoader,
-}: DidJwtResolutionParameters) => {
-  const parsed = parseDidUrl<AnyDid>(id);
+}: DidJwsJwtResolutionParameters) => {
+  const parsed = parseDidUrl<DidJwsJwt>(id);
   const { kid } = jose.decodeProtectedHeader(parsed.id);
   const { iss } = jose.decodeJwt(parsed.id);
   if (!kid) {

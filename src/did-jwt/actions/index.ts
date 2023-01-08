@@ -6,6 +6,7 @@ export * from "./actor";
 export * from "./resolve";
 export * from "./dereference";
 
-// export * from "./encrypt";
-// export * from "./decrypt";
-//
+export * from "./encrypt";
+export * from "./decrypt";
+
+export * from "../resolveWithPrivateKeyLoader";
