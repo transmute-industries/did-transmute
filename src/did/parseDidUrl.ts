@@ -1,9 +1,7 @@
-import { ParsedDidUrl } from "./ParsedDidUrl";
+import { ParsedDidUrl, RemovePrefix } from "./ParsedDidUrl";
 import { DidUrl } from "./DidUrl";
 
-export function parseDidUrl<DidUrlType extends string>(
-  id: DidUrl<DidUrlType>
-): ParsedDidUrl<DidUrlType> {
+export function parseDidUrl<DidUrlType extends string>(id: DidUrl<DidUrlType>) {
   const pathStartsAt = id.indexOf("/");
   const queryStartsAt = id.indexOf("?");
   const fragmentStartsAt = id.indexOf("#");
@@ -39,10 +37,13 @@ export function parseDidUrl<DidUrlType extends string>(
   const methodSpecificId = did.replace(`did:${method}:`, "");
 
   return {
-    method,
-    id: methodSpecificId,
-    path: path,
-    query: query,
-    fragment: fragment,
-  } as ParsedDidUrl<DidUrlType>;
+    method: method as ParsedDidUrl<DidUrlType>["method"],
+    id: methodSpecificId as ParsedDidUrl<DidUrlType>["id"],
+    path: path as RemovePrefix<"/", ParsedDidUrl<DidUrlType>["path"]>,
+    query: query as RemovePrefix<"?", ParsedDidUrl<DidUrlType>["query"]>,
+    fragment: fragment as RemovePrefix<
+      "#",
+      ParsedDidUrl<DidUrlType>["fragment"]
+    >,
+  };
 }

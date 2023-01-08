@@ -26,3 +26,8 @@ export type ParsedDidUrl<S extends string> = {
   query: DidQuery<Split<S, "#">[0]>;
   fragment: DidFragment<S>;
 };
+
+export type RemovePrefix<
+  P extends string,
+  S extends string
+> = S extends `${P}${infer WithoutP}` ? WithoutP : S;

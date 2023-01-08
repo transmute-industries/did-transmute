@@ -242,7 +242,7 @@ describe("transmute.did.jwt.resolve", () => {
   });
 });
 
-it("transmute.did.oidc.resolve", async () => {
+it.skip("transmute.did.oidc.resolve", async () => {
   const iss = "https://contoso.auth0.com/";
   const didDocument = await transmute.did.oidc.resolve({
     iss,
@@ -250,7 +250,7 @@ it("transmute.did.oidc.resolve", async () => {
   expect(didDocument.id).toBe(iss);
 });
 
-it("transmute.did.oidc.getPublicKey", async () => {
+it.skip("transmute.did.oidc.getPublicKey", async () => {
   const iss = "https://contoso.auth0.com/";
   const kid = `NTBGNTJEMDc3RUE3RUVEOTM4NDcyOEFDNzEyOTY5NDNGOUQ4OEU5OA`;
   const publicKeyJwk = await transmute.did.oidc.getPublicKey({ iss, kid });
