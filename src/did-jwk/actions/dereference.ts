@@ -1,4 +1,4 @@
-import { dereferenceWithinDocument } from "../../util/dereferenceWithinDocument";
+import { dereferenceWithinDocument } from "../../did/dereferenceWithinDocument";
 
 import { prefix } from "../method";
 import { DidJwkResolutionParameters, DidJwkVerificationMethod } from "../types";

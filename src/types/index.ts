@@ -1,27 +1,27 @@
-export * from "./SignatureAlgorithm";
-export * from "./KeyAgreementAlgorithm";
+export * from "../did/Did";
+export * from "../did/DidUrl";
 
-export * from "./PublicKeyJwk";
-export * from "./PrivateKeyJwk";
+export * from "../did/DocumentLoader";
+export * from "../did/DidResolutionParameters";
+export * from "../did/DidDereferenceParameters";
 
-export * from "./ExportableKey";
-export * from "./ExportableActor";
+export * from "../did/Resolver";
 
-export * from "./IsolatedKey";
-export * from "./IsolatedActor";
+export * from "../did/SignatureRelationships";
+export * from "../did/EncryptionRelationships";
 
-export * from "./SignatureRelationships";
-export * from "./EncryptionRelationships";
+export * from "../did/Service";
 
-// begin new
+export * from "../did/ExportableKey";
+export * from "../did/ExportableActor";
 
-export * from "./Did";
-export * from "./DidUrl";
+export * from "../did/IsolatedKey";
+export * from "../did/IsolatedActor";
 
-export * from "./DocumentLoader";
-export * from "./DidResolutionParameters";
+export * from "../jose/PublicKeyJwk";
+export * from "../jose/PrivateKeyJwk";
 
-export * from "./Resolver";
+export * from "../jose/SignatureAlgorithm";
+export * from "../jose/KeyAgreementAlgorithm";
 
-// refactr...
-export * from "./Service";
+export * from "../did/ResourceParams";

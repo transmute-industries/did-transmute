@@ -1,11 +1,11 @@
 import * as jose from "jose";
 
-import { getKey } from "../util";
+import { getKey } from "./getKey";
 
-import { PrivateKey } from "../types/PrivateKey";
+import { PrivateKey } from "./PrivateKey";
 
-import { CompactJsonWebEncryption } from "../types/CompactJsonWebEncryption";
-import { SuccessfulDecryption } from "../types/SuccessfulDecryption";
+import { CompactJsonWebEncryption } from "./CompactJsonWebEncryption";
+import { SuccessfulDecryption } from "./SuccessfulDecryption";
 
 export type Decrypt = {
   jwe: CompactJsonWebEncryption | string;

@@ -1,6 +1,6 @@
 import * as jose from "jose";
 
-import { AsymmetricJsonWebKey } from "../types/AsymmetricJsonWebKey";
+import { AsymmetricJsonWebKey } from "../jose/AsymmetricJsonWebKey";
 
 import * as method from "./method";
 import { getPublicKeyJwk } from "./getPublicKeyJwk";

@@ -1,5 +1,5 @@
 import { DidDocument, DidUrl } from "../types";
-import { VerificationMethod } from "../types/VerificationMethod";
+import { VerificationMethod } from "./VerificationMethod";
 import { parseDidUrl } from "./parseDidUrl";
 
 const findInBuckets = (didDocument: DidDocument, didUrl: DidUrl) => {

@@ -1,4 +1,4 @@
-import { Split } from "./Split";
+import { Split } from "../types/Split";
 
 export type DidFragment<S extends string> =
   S extends `${string}#${infer Fragment}` ? `#${Fragment}` : "";

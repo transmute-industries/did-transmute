@@ -1,6 +1,5 @@
-import * as KeyAgreementAlgorithm from "../types/KeyAgreementAlgorithm";
-
-import * as SignatureAlgorithm from "../types/SignatureAlgorithm";
+import * as KeyAgreementAlgorithm from "./KeyAgreementAlgorithm";
+import * as SignatureAlgorithm from "./SignatureAlgorithm";
 
 export const EdDSA: SignatureAlgorithm.EdDSA = "EdDSA";
 export const ES256K: SignatureAlgorithm.ES256K = "ES256K";

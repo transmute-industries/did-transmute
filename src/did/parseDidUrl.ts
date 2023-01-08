@@ -1,5 +1,5 @@
-import { ParsedDidUrl } from "../types/ParsedDidUrl";
-import { DidUrl } from "../types/DidUrl";
+import { ParsedDidUrl } from "./ParsedDidUrl";
+import { DidUrl } from "./DidUrl";
 
 export function parseDidUrl<DidUrlType extends string>(
   id: DidUrl<DidUrlType>

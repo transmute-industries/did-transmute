@@ -1,6 +1,6 @@
 import { Did } from "./Did";
 import { ParsedDidUrl } from "./ParsedDidUrl";
-import { PublicKeyJwk } from "./PublicKeyJwk";
+import { PublicKeyJwk } from "../jose/PublicKeyJwk";
 
 export type VerificationMethod<U extends string> = {
   id: ParsedDidUrl<U>["fragment"];

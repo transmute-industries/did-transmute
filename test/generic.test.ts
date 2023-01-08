@@ -1,6 +1,26 @@
-import { Did, DidUrl, DidDereferenceParameters } from "../src/types/_types";
+import {
+  Did,
+  DidUrl,
+  DocumentLoader,
+  DidResolutionParameters,
+  DidDereferenceParameters,
+} from "../src/types";
 
-import { DocumentLoader, DidResolutionParameters } from "../src/types";
+// type E0 =
+//   ParsedDidUrl<"did:example:v0:123/resources/123?query=456#fragment-789">;
+// type E1 = ParsedDidUrl<"did:example:v0:123/resources/123#fragment-789">;
+// type E2 = ParsedDidUrl<"did:example:v0:123?query=456#fragment-789">;
+// type E3 = ParsedDidUrl<"did:example:v0:123#fragment-789">;
+// type E4 = ParsedDidUrl<"did:example:v0:123?query=456">;
+// type E5 = ParsedDidUrl<"did:example:v0:123/resources/123">;
+// type E6 = ParsedDidUrl<"did:example:v0:123/resources/123">;
+
+// type R0 = DidUrl<"did:example:v0:123/resources/123?query=456#fragment-789">;
+// type R1 = DidUrl<"did:example:v0:123/resources/123">;
+// type R2 = DidUrl<"did:example:v0:123#fragment-789">;
+
+// type R0P =
+//   ResourceParams<"did:example:v0:123/posts/:postId/:commentId?authUser=:authUser&filter=:filter#:keyId">;
 
 async function loader<Type>(id: Type) {
   return { document: { id, foo: 123 } };

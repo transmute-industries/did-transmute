@@ -1,6 +1,6 @@
-import { SignatureRelationships } from "../types/SignatureRelationships";
+import { SignatureRelationships } from "../did/SignatureRelationships";
 
-import { EncryptionRelationships } from "../types/EncryptionRelationships";
+import { EncryptionRelationships } from "../did/EncryptionRelationships";
 
 export const prefix = "did:jwk";
 

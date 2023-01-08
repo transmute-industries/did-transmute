@@ -1,9 +1,9 @@
 import * as jose from "jose";
-import { PublicKey } from "../types/PublicKey";
-import { getKey } from "../util";
+import { PublicKey } from "./PublicKey";
+import { getKey } from "./getKey";
 
-import { CompactJsonWebSignature } from "../types/CompactJsonWebSignature";
-import { SuccessfulVerification } from "../types/SuccessfulVerification";
+import { CompactJsonWebSignature } from "./CompactJsonWebSignature";
+import { SuccessfulVerification } from "./SuccessfulVerification";
 
 export type Verify = {
   jws: CompactJsonWebSignature;

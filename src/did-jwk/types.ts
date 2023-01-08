@@ -1,10 +1,10 @@
-import { Did } from "../types/Did";
-import { DidUrl } from "../types/DidUrl";
-import { Context } from "../types/Context";
-import { ParsedDidUrl } from "../types/ParsedDidUrl";
-import { DidResolutionParameters } from "../types/DidResolutionParameters";
-import { DidDereferenceParameters } from "../types/DidDereferenceParameters";
-import { VerificationMethod } from "../types/VerificationMethod";
+import { Did } from "../did/Did";
+import { DidUrl } from "../did/DidUrl";
+import { Context } from "../did/Context";
+import { ParsedDidUrl } from "../did/ParsedDidUrl";
+import { DidResolutionParameters } from "../did/DidResolutionParameters";
+import { DidDereferenceParameters } from "../did/DidDereferenceParameters";
+import { VerificationMethod } from "../did/VerificationMethod";
 
 export type DidJwk = Did<`did:jwk:${string}`>;
 export type DidJwkUrl = DidUrl<`${DidJwk}#0`>;

@@ -1,10 +1,10 @@
 import * as jose from "jose";
 
-import { getKey } from "../util";
+import { getKey } from "./getKey";
 
-import { ProtectedHeader } from "../types/ProtectedHeader";
-import { CompactJsonWebSignature } from "../types/CompactJsonWebSignature";
-import { PrivateKey } from "../types/PrivateKey";
+import { ProtectedHeader } from "./ProtectedHeader";
+import { CompactJsonWebSignature } from "./CompactJsonWebSignature";
+import { PrivateKey } from "./PrivateKey";
 
 export type Sign = {
   payload: Uint8Array;

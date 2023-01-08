@@ -1,11 +1,11 @@
 import * as jose from "jose";
 
-import { formatJwk } from "../util/formatJwk";
+import { formatJwk } from "../jose/formatJwk";
 
-import { Algorithm } from "../types/Algorithm";
+import { Algorithm } from "../jose/Algorithm";
 
-import { ExportableKey } from "../types/ExportableKey";
-import { IsolatedKey } from "../types/IsolatedKey";
+import { ExportableKey } from "../did/ExportableKey";
+import { IsolatedKey } from "../did/IsolatedKey";
 
 export type GenerateKeyPair = {
   alg: Algorithm;

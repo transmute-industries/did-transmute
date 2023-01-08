@@ -1,8 +1,8 @@
 import * as jose from "jose";
 
-import { getKey } from "../util";
-import { PublicKey } from "../types/PublicKey";
-import { CompactJsonWebEncryption } from "../types/CompactJsonWebEncryption";
+import { getKey } from "./getKey";
+import { PublicKey } from "./PublicKey";
+import { CompactJsonWebEncryption } from "./CompactJsonWebEncryption";
 
 export type Encrypt = {
   publicKey: PublicKey;

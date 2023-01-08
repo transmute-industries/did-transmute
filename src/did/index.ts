@@ -4,7 +4,7 @@ import jwk from "../did-jwk";
 // import jwt from "./did-jwt";
 // import web from "./did-web";
 
-import { parseDidUrl } from "../util/parseDidUrl";
+import { parseDidUrl } from "./parseDidUrl";
 
 const did = {
   jwk,

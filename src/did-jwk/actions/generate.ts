@@ -1,5 +1,5 @@
 import { ExportableActor, IsolatedActor } from "../../types";
-import { Algorithm } from "../../types/Algorithm";
+import { Algorithm } from "../../jose/Algorithm";
 import { generateKeyPair } from "../generateKeyPair";
 import { toDid } from "../toDid";
 

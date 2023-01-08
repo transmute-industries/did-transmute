@@ -5,10 +5,10 @@ import {
   signatureVerificationRelationships,
   encryptionVerificationRelationships,
 } from "./method";
-import { AsymmetricJsonWebKey } from "../types/AsymmetricJsonWebKey";
-import { SignatureAlgorithm } from "../types/SignatureAlgorithm";
-import { KeyAgreementAlgorithm } from "../types/KeyAgreementAlgorithm";
-import { formatDidDocument } from "../util/formatDidDocument";
+import { AsymmetricJsonWebKey } from "../jose/AsymmetricJsonWebKey";
+import { SignatureAlgorithm } from "../jose/SignatureAlgorithm";
+import { KeyAgreementAlgorithm } from "../jose/KeyAgreementAlgorithm";
+import { formatDidDocument } from "../did/formatDidDocument";
 export const toDidDocument = (jwk: AsymmetricJsonWebKey) => {
   const publicKeyJwk = getPublicKeyJwk(jwk);
   const did = toDid(publicKeyJwk);

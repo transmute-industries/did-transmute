@@ -1,10 +1,10 @@
 import { base64url } from "jose";
 
-import { Did } from "../../types/Did";
+import { Did } from "../../did/Did";
 
-import { DocumentLoader } from "../../types/DocumentLoader";
+import { DocumentLoader } from "../../did/DocumentLoader";
 
-import { parseDidUrl } from "../../util/parseDidUrl";
+import { parseDidUrl } from "../../did/parseDidUrl";
 import { toDidDocument } from "../toDidDocument";
 
 import { DidJwk } from "../types";

@@ -6,7 +6,7 @@ import {
   Encrypt,
   Decrypt,
   DeriveKey,
-} from "../types/KeyOperation";
+} from "../jose/KeyOperation";
 
 import { jwsAlg, jweAlg } from "../jose/alg";
 
