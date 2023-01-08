@@ -8,7 +8,7 @@ export const dereference = async ({
   documentLoader,
 }: DidJwkResolutionParameters) => {
   if (!id.startsWith(prefix)) {
-    throw new Error("Method is not did:jwk.");
+    throw new Error(`Method is not ${prefix}.`);
   }
   const { document } = await documentLoader(id);
   const resource = dereferenceWithinDocument({

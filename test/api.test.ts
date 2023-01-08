@@ -400,3 +400,16 @@ it("transmute.did.jwt.dereference", async () => {
   expect(service.id).toBe("#dwn");
   expect(service.type).toBe("DecentralizedWebNode");
 });
+
+it("transmute.did.web.exportable", async () => {
+  const { did, didDocument, key } = await transmute.did.web.exportable({
+    url: "https://id.gs1.transmute.example/01/9506000134352",
+    alg: transmute.jose.alg.ES256,
+    documentLoader: transmute.did.jwk.documentLoader,
+  });
+  expect(did).toBe("did:web:id.gs1.transmute.example:01:9506000134352");
+  expect(didDocument.id).toBe(
+    "did:web:id.gs1.transmute.example:01:9506000134352"
+  );
+  expect(key.privateKey).toBeDefined();
+});

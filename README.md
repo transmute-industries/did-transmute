@@ -121,11 +121,14 @@ const {
 } = await transmute.did.jwk.exportable({
   alg: 'ES256',
 });
-const didDocument = await transmute.did.jwk.resolve({ did });
+const didDocument = await transmute.did.jwk.resolve({ 
+  id: did,
+  documentLoader: transmute.did.jwk.documentLoader
+});
 // See https://www.w3.org/TR/did-core/#verification-relationships
 const { publicKeyJwk } = await transmute.did.jwk.dereference({
-  didUrl: `${did}#0`,
-  resolver: transmute.did.jwk.resolve,
+  id: `${did}#0`,
+  documentLoader: transmute.did.jwk.documentLoader
 });
 ```
 
@@ -133,20 +136,20 @@ const { publicKeyJwk } = await transmute.did.jwk.dereference({
 
 ```ts
 const { 
-  key: { privateKeyJwk, publicKeyJwk } 
+  key: { privateKey, publicKey } 
 } = await transmute.did.jwk.exportable({
-  alg: transmute.did.jws.alg.ES256,
+  alg: transmute.jose.alg.ES256,
 });
 const jws = await transmute.sign({
-  privateKey: privateKeyJwk,
+  privateKey: privateKey,
   protectedHeader: {
-    alg: privateKeyJwk.alg,
+    alg: privateKey.alg,
   },
   payload: new TextEncoder().encode("It’s a dangerous business, Frodo, going out your door. 🧠💎"),
 });
 const v = await transmute.verify({
   jws,
-  publicKey: publicKeyJwk,
+  publicKey: publicKey,
 });
 ```
 
@@ -154,21 +157,21 @@ const v = await transmute.verify({
 
 ```ts
 const { 
-  key: { privateKeyJwk, publicKeyJwk } 
+  key: { privateKey, publicKey } 
 } = await transmute.did.jwk.exportable({
-  alg: transmute.did.jwe.alg.ECDH_ES_A256KW,
+  alg: transmute.jose.alg.ECDH_ES_A256KW,
 });
 const jwe = await transmute.encrypt({
-  publicKey: publicKeyJwk,
+  publicKey: publicKey,
   plaintext: new TextEncoder().encode("It’s a dangerous business, Frodo, going out your door. 🧠💎"),
   protectedHeader: {
-    alg: publicKeyJwk.alg,
-    enc: transmute.did.jwe.enc.A256GCM,
+    alg: publicKey.alg,
+    enc: transmute.jose.enc.A256GCM,
   },
 });
 const v = await transmute.decrypt({
   jwe,
-  privateKey: privateKeyJwk,
+  privateKey: privateKey,
 });
 ```
 
@@ -295,7 +298,6 @@ See [RFC7515](https://www.rfc-editor.org/rfc/rfc7515.html)
 
 See [RFC7800](https://www.rfc-editor.org/rfc/rfc7800.html#section-3)
 
-
 ### Using OpenID Connect Discovery
 
 ## TODO
@@ -339,11 +341,11 @@ WellKnownJwks -.-> DidDocument
 VerificationMethod("{{iss}}#{{kid}}")
 DecodedVerificationMethodComponents -.-> VerificationMethod
 
-DidDocument -.-> PublicKeyJwk
-PublicKeyJwk("{ publicKeyJwk }")
-VerificationMethod -.-> PublicKeyJwk
+DidDocument -.-> publicKey
+publicKey("{ publicKey }")
+VerificationMethod -.-> publicKey
 
-class ProtectedHeader,ProtectedClaimSet,PublicKeyJwk PurpleNode
+class ProtectedHeader,ProtectedClaimSet,publicKey PurpleNode
 class DecodedVerificationMethodComponents,WellKnownConfig,WellKnownJwks RedNode
 class DidDocument,VerificationMethod TealNode
 
@@ -367,7 +369,7 @@ end
     "id": "#{{kid}}",
     "type": "JsonWebKey2020",
     "controller": "{{iss}}",
-    "publicKeyJwk":{
+    "publicKey":{
       "kid": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0",
       "kty": "OKP",
       "crv": "Ed25519",
@@ -404,7 +406,7 @@ or
 }
 ```
 
-This header will be used to dereference a `verificationMethod` which is expected to contain a `publicKeyJwk`.
+This header will be used to dereference a `verificationMethod` which is expected to contain a `publicKey`.
 
 For example:
 
@@ -413,7 +415,7 @@ For example:
   "id": "#key-4",
   "type": "JsonWebKey2020",
   "controller": "did:example:123",
-  "publicKeyJwk": {
+  "publicKey": {
     "kid": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0",
     "kty": "OKP",
     "crv": "Ed25519",
@@ -430,7 +432,7 @@ or
   "id": "did:example:123#urn:ietf:params:oauth:jwk-thumbprint:sha-256:AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0",
   "type": "JsonWebKey2020",
   "controller": "did:example:123",
-  "publicKeyJwk": {
+  "publicKey": {
     "kid": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0",
     "kty": "OKP",
     "crv": "Ed25519",
@@ -442,61 +444,38 @@ or
 
 See [jwt-vc-presentation-profile](https://identity.foundation/jwt-vc-presentation-profile/)
 
-### Generate
+### Sign
 
 ```ts
-const { 
-  did, 
-  key: { privateKeyJwk, publicKeyJwk } 
-} = await transmute.did.jwk.exportable({
-  alg: transmute.did.jws.alg.ES256,
-});
-const delegate = await transmute.did.jwt.sign({
-  issuer: did,
-  audience: 'urn:example:audience', // optional.
+const issuer = await transmute.did.jwk.exportable({
+    alg: alg.ES256,
+  });
+const subject = await transmute.did.jwt.sign({
+  issuer: "did:example:123",
+  audience: "did:example:456",
   protectedHeader: {
-    alg: publicKeyJwk.alg,
-    iss: did,
-    kid: "#0",
-    // application/claimSet+json ?
-    cty: "vnd.mycompany.myapp.customer+json; version=2.0", 
+    alg: issuer.key.publicKey.alg,
   },
-  claimSet: { "urn:example:claim": true },
-  privateKey: privateKeyJwk,
+  claimSet: {
+    "urn:example:claim": true,
+  },
+  privateKey: issuer.key.privateKey,
 });
 ```
 
-### Resolve
+### Encrypt
 
 ```ts
-// This did:jwk resolver acts as the "allow list" for embedded JWKs.
-const trustedResolver = async ({ did }: ResolveParameters) => {
-  if (did.startsWith("did:jwk:")) {
-    // trust all valid did:jwk, for testing purposes only.
-    return transmute.did.jwk.resolve({ did: did as DidJwk });
-  }
-  return null;
-};
-const didDocument = await transmute.did.jwt.resolve({
-  did: delegate.did,
-  // This did:jwk resolver acts as the "allow list" for embedded JWKs.
-  resolver: trustedResolver,
+const issuer = await transmute.did.jwk.exportable({
+  alg: alg.ECDH_ES_A256KW,
 });
-// didDocument["urn:example:claim"] === true;
-```
-
-### Dereference
-
-```ts
-const delegate = await transmute.did.jwt.sign({
-  issuer: did,
-  audience: 'urn:example:audience', // optional.
+const subject = await transmute.did.jwt.encrypt({
+  issuer: "did:example:123",
   protectedHeader: {
-    alg: publicKeyJwk.alg,
-    iss: did,
+    alg: issuer.key.publicKey.alg,
+    iss: "did:example:123",
     kid: "#0",
-    // application/did+json ?
-    cty: "vnd.mycompany.myapp.customer+json; version=2.0", 
+    enc: transmute.jose.enc.A256GCM,
   },
   claimSet: {
     service: [
@@ -509,34 +488,45 @@ const delegate = await transmute.did.jwt.sign({
       },
     ],
   },
-  privateKey: privateKeyJwk,
+  publicKey: issuer.key.publicKey,
 });
+```
 
-const trustedDidJwkResolver: DidJwkResolver = async ({ did }) => {
-  if (did.startsWith("did:jwk:")) {
-    return transmute.did.jwk.resolve({ did });
-  }
-  return null;
-};
+### Resolve
 
-const trustedDidJwtResolver: DidJwtResolver = async ({ did }) => {
-  if (did.startsWith("did:jwt")) {
-    return transmute.did.jwt.resolve({
-      did,
-      // this resolver is used as the "allow list" for embedded JWK.
-      resolver: trustedDidJwkResolver,
-    });
-  }
-  return null;
-};
-
-const service = await transmute.did.jwt.dereference({
-  didUrl: `${delegate.did}#dwn`,
-  // dereferencing always requires a trusted resolver.
-  resolver: trustedDidJwtResolver,
+```ts
+const didDocument = await transmute.did.jwt.resolve({
+  id: subject.did,
+  privateKeyLoader: async (id: string) => {
+    if (id.startsWith("did:example:123")) {
+      return issuer.key.privateKey;
+    }
+    throw new Error("privateKeyLoader does not support identifier: " + id);
+  },
+  profiles: ["encrypted-jwt"],
 });
-// service.id === "#dwn"
-// service.type === "DecentralizedWebNode"
+```
+
+### Dereference
+
+```ts
+type DwnService = {
+  id: "#dwn";
+  type: "DecentralizedWebNode";
+  serviceEndpoint: {
+    nodes: ["https://dwn.example.com", "https://example.org/dwn"];
+  };
+};
+const service = await transmute.did.jwt.dereference<DwnService>({
+  id: `${subject.did}#dwn`,
+  privateKeyLoader: async (id: string) => {
+    if (id.startsWith("did:example:123")) {
+      return issuer.key.privateKey;
+    }
+    throw new Error("privateKeyLoader does not support identifier: " + id);
+  },
+  profiles: ["encrypted-jwt"],
+});
 ```
 
 ## did:web
@@ -546,24 +536,20 @@ This method is very 🚧 experimental 🏗️.
 ### Generate
 
 ```ts
- const { did, didDocument, key } = await transmute.did.web.exportable({
-  url: "https://id.gs1.transmute.example/01/9506000134352",
-  alg: transmute.did.jws.alg.ES256,
-  resolver: transmute.did.jwk.resolve,
-});
+
 ```
 
 ### From Private Key
 
 ```ts
 const { 
-  key: {privateKeyJwk} 
+  key: {privateKey} 
 } = await transmute.did.jwk.exportable({
   alg: 'ES256',
 });
 const issuer = await transmute.did.web.fromPrivateKey({
   url: "https://id.gs1.transmute.example/01/9506000134352",
-  privateKey: privateKeyJwk,
+  privateKey: privateKey,
 });
 ```
 
@@ -586,13 +572,13 @@ const issuer = await transmute.did.web.fromDids({
 
 ```ts
 const { 
-  key: { privateKeyJwk } 
+  key: { privateKey } 
 } = await transmute.did.jwk.exportable({
   alg: 'ES256',
 });
 const issuer = await transmute.did.web.fromPrivateKey({
   url: "https://id.gs1.transmute.example/01/9506000134352",
-  privateKey: privateKeyJwk,
+  privateKey: privateKey,
 });
 const didDocument = await transmute.did.web.resolve({
   did: issuer.did,
@@ -611,22 +597,22 @@ const didDocument = await transmute.did.web.resolve({
 
 ```ts
 const { 
-  key: { privateKeyJwk } 
+  key: { privateKey } 
 } = await transmute.did.jwk.exportable({
   alg: 'ES256',
 });
 const issuer = await transmute.did.web.fromPrivateKey({
   url: "https://id.gs1.transmute.example/01/9506000134352",
-  privateKey: privateKeyJwk,
+  privateKey: privateKey,
 });
 const jws = await transmute.sign({
   payload,
   protectedHeader: {
     alg: privateKey.alg,
   },
-  privateKey: privateKeyJwk,
+  privateKey: privateKey,
 });
-const absoluteDidWebUrl = `${issuer.did}#${privateKeyJwk.kid
+const absoluteDidWebUrl = `${issuer.did}#${privateKey.kid
   ?.split(":")
   .pop()}`;
 const vm = await transmute.did.web.dereference({
@@ -641,7 +627,7 @@ const vm = await transmute.did.web.dereference({
 });
 const v = await transmute.verify({
   jws,
-  publicKey: (vm as VerificationMethod).publicKeyJwk,
+  publicKey: (vm as VerificationMethod).publicKey,
 });
 ```
 
