@@ -4,7 +4,6 @@ export * from "./DidDocument";
 export * from "./VerificationMethod";
 export * from "./Service";
 
-export * from "./ResolveParameters";
 export * from "./Resolver";
 
 export * from "./DereferenceParameters";
@@ -29,4 +28,7 @@ export * from "./DidWeb";
 export * from "./SignatureRelationships";
 export * from "./EncryptionRelationships";
 
+// begin new
 export * from "./GenericResolver";
+export * from "./DocumentLoader";
+export * from "./DidResolutionParameters";

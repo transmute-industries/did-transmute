@@ -1,7 +1,10 @@
-import { ResolveParameters } from "./ResolveParameters";
+import {
+  DocumentLoaderResponse,
+  DocumentLoaderDocument,
+} from "./DocumentLoader";
 
-import { DidDocument } from "./DidDocument";
+import { DidResolutionParameters } from "./DidResolutionParameters";
 
-export type Resolver = (
-  parameters: ResolveParameters
-) => Promise<DidDocument | null>;
+export type Resolver<Did> = (
+  parameters: DidResolutionParameters<Did>
+) => DocumentLoaderResponse<DocumentLoaderDocument<Did>>;

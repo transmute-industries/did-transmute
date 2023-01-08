@@ -1,21 +1,3 @@
-export type DocumentLoaderResponse<ResolvableDocument> = {
-  document: ResolvableDocument;
-};
-
-export type DocumentLoaderDocument<Identifier> = {
-  id: Identifier;
-  [property: string]: unknown;
-};
-
-export type AsyncDocumentLoader<Identifier, ResolvableDocument> = (
-  id: Identifier
-) => Promise<DocumentLoaderResponse<ResolvableDocument>>;
-
-export type DocumentLoader<Identifier> = AsyncDocumentLoader<
-  Identifier,
-  DocumentLoaderDocument<Identifier>
->;
-
 export type Split<S extends string, D extends string> = string extends S
   ? string[]
   : S extends ""
@@ -86,11 +68,6 @@ export type ResourceParams<S extends string> = {
   path: ExtractPathParams<ParsedDidUrl<S>["path"]>;
   query: ExtractQueryParams<ParsedDidUrl<S>["query"]>;
   fragment: ExtractFragmentParams<ParsedDidUrl<S>["fragment"]>;
-};
-
-export type DidResolutionParameters<Did> = {
-  id: Did;
-  documentLoader: DocumentLoader<Did>;
 };
 
 export type DidDereferenceParameters<DidUrl> = {

@@ -3,6 +3,6 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testPathIgnorePatterns: ['examples'],
+  testPathIgnorePatterns: ['examples', 'attic'],
   coverageReporters: ['json-summary'],
 };

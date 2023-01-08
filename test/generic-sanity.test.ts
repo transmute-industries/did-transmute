@@ -1,10 +1,6 @@
-import {
-  Did,
-  DidUrl,
-  DocumentLoader,
-  DidResolutionParameters,
-  DidDereferenceParameters,
-} from "../src/types/_types";
+import { Did, DidUrl, DidDereferenceParameters } from "../src/types/_types";
+
+import { DocumentLoader, DidResolutionParameters } from "../src/types";
 
 async function loader<Type>(id: Type) {
   return { document: { id, foo: 123 } };
