@@ -8,8 +8,7 @@ import {
   DeriveKey,
 } from "../../types/KeyOperation";
 
-import jwsAlg from "../did-jws/alg";
-import jweAlg from "../did-jwe/alg";
+import { jwsAlg, jweAlg } from "../../jose/alg";
 
 export const sign: Sign = "sign";
 export const verify: Verify = "verify";

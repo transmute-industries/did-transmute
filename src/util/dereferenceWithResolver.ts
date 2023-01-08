@@ -1,4 +1,4 @@
-import { DidDocument, DidUrl, DereferenceParameters } from "../types";
+import { DidDocument, DidUrl } from "../types";
 import { VerificationMethod } from "../types/VerificationMethod";
 import { parseDidUrl } from "./parseDidUrl";
 
@@ -15,10 +15,11 @@ const findInBuckets = (didDocument: DidDocument, didUrl: DidUrl) => {
   return item ? item : null;
 };
 
+// refactor
 export const dereferenceWithResolver = async ({
   didUrl,
   resolver,
-}: DereferenceParameters): Promise<DidDocument | VerificationMethod | null> => {
+}: any): Promise<DidDocument | VerificationMethod | null> => {
   const { did, path, query, fragment } = parseDidUrl(didUrl);
   const didDocument = await resolver({ did });
 

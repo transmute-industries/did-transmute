@@ -5,8 +5,7 @@ import { VerificationMethod } from "../../types/VerificationMethod";
 import { DidDocument } from "../../types/DidDocument";
 import { getPublicKeyJwk } from "./getPublicKeyJwk";
 
-import { signatureAlgorithms } from "../did-jws/alg";
-import { keyAgreementAlgorithms } from "../did-jwe/alg";
+import { signatureAlgorithms, keyAgreementAlgorithms } from "../../jose/alg";
 
 import {
   signatureVerificationRelationships,

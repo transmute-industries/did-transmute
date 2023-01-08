@@ -6,7 +6,6 @@ export * from "./Service";
 
 export * from "./Resolver";
 
-export * from "./DereferenceParameters";
 export * from "./Dereferencer";
 
 export * from "./SignatureAlgorithm";

@@ -11,7 +11,7 @@ describe("transmute", () => {
     describe("jwk", () => {
       describe("generate", () => {
         describe("alg", () => {
-          Object.values(transmute.did.jwk.alg).forEach((alg) => {
+          Object.values(transmute.jose.alg).forEach((alg) => {
             it(alg, async () => {
               const e = await transmute.did.jwk.exportable({
                 alg,
