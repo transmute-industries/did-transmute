@@ -2,9 +2,9 @@ import { PublicKeyJwk } from "../types";
 import { verify } from "./actions/verify";
 import { DidJwsJwt } from "./types";
 import { DidJwsJwtDocument } from "./types";
-
+import { AnyDid } from "../did/Did";
 export type DidDocumentFromVerification = {
-  did: DidJwsJwt;
+  did: AnyDid;
   issuer: string;
   publicKey: PublicKeyJwk;
 };
@@ -15,7 +15,7 @@ export const getDidDocumentFromVerification = async ({
   publicKey,
 }: DidDocumentFromVerification) => {
   const v = await verify({
-    did: did,
+    did: did as DidJwsJwt,
     issuer,
     publicKey,
   });

@@ -1,17 +1,20 @@
 import * as jose from "jose";
 import { PublicKeyJwk } from "../jose/PublicKeyJwk";
-import { DidJwsJwt, DidJwsJwtResolver } from "./types";
+import { DidJwsJwtResolutionParameters } from "./types";
 import { parseDidUrl } from "../did/parseDidUrl";
 
 import { toDid } from "../did-jwk/toDid";
 import { dereferenceWithinDocument } from "../did/dereferenceWithinDocument";
 import { getDidDocumentFromVerification } from "./getDidDocumentFromVerification";
+import { VerificationMethod } from "../did/VerificationMethod";
+import { DidJwk } from "../types";
+import { AnyDid } from "../did/Did";
 
-export const resolveWithEmbeddedJwk: DidJwsJwtResolver = async ({
+export const resolveWithEmbeddedJwk = async ({
   id,
   documentLoader,
-}) => {
-  const parsed = parseDidUrl<DidJwsJwt>(id);
+}: DidJwsJwtResolutionParameters) => {
+  const parsed = parseDidUrl<AnyDid>(id);
   const { alg, jwk } = jose.decodeProtectedHeader(parsed.id);
   const { iss } = jose.decodeJwt(parsed.id);
   if (!jwk) {
@@ -24,21 +27,28 @@ export const resolveWithEmbeddedJwk: DidJwsJwtResolver = async ({
       "Algorithm mismatch. Expected 'header.alg' to be 'header.jwk.alg'."
     );
   }
-  const issuerDidJwk = toDid(jwk as any);
-  const issuerDocumentLoaderResponse = await documentLoader(issuerDidJwk);
-  const issuerVerificationMethod = dereferenceWithinDocument({
+  const issuerDidJwk = toDid(jwk as PublicKeyJwk);
+  const issuerDocumentLoaderResponse = await documentLoader(
+    issuerDidJwk as AnyDid
+  );
+  const verificationMethod = dereferenceWithinDocument<
+    VerificationMethod<DidJwk>
+  >({
     id: "#0",
     document: issuerDocumentLoaderResponse.document,
   });
+  if (verificationMethod === null) {
+    throw new Error("Could not dereference verification method.");
+  }
   if (
     (await jose.calculateJwkThumbprint(jwk)) !==
-    (await jose.calculateJwkThumbprint(issuerVerificationMethod.publicKeyJwk))
+    (await jose.calculateJwkThumbprint(verificationMethod.publicKeyJwk))
   ) {
     throw new Error("Dereferenced embedded jwk does not match embedded jwk.");
   }
   return getDidDocumentFromVerification({
     did: id,
-    issuer: iss as string,
-    publicKey: issuerVerificationMethod.publicKeyJwk as PublicKeyJwk,
+    issuer: iss as DidJwk,
+    publicKey: verificationMethod.publicKeyJwk,
   });
 };

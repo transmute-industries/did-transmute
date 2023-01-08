@@ -1,4 +1,7 @@
-export const formatVerificationMethod = (vm: any): any => {
+import { AnyVerificationMethod } from "./VerificationMethod";
+export const formatVerificationMethod = (
+  vm: AnyVerificationMethod
+): AnyVerificationMethod => {
   const formatted = {
     id: vm.id,
     type: vm.type,

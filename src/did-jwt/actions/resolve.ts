@@ -3,31 +3,34 @@ import * as jose from "jose";
 
 import { parseDidUrl } from "../../did/parseDidUrl";
 
-import { DidJwsJwt } from "../types";
-
 import { resolveWithEmbeddedJwk } from "../resolveWithEmbeddedJwk";
 import { resolveWithRelativeDidUrl } from "../resolveWithRelativeDidUrl";
 import { resolveWithAccessToken } from "../resolveWithAccessToken";
 
+import { DidJwsJwtResolutionParameters, DidJwsJwtDocument } from "../types";
+
 // documentLoader is a dynamic just in time allow-list.
-export const resolve: any = async ({ id, documentLoader, profiles }: any) => {
+export const resolve = async (
+  params: DidJwsJwtResolutionParameters
+): Promise<DidJwsJwtDocument> => {
+  const { id, profiles } = params;
   if (!id.startsWith(prefix)) {
     throw new Error(`Method is not ${prefix}.`);
   }
-  const parsedDid = parseDidUrl<DidJwsJwt>(id);
+  const parsedDid = parseDidUrl(id);
   const protectedHeader = jose.decodeProtectedHeader(parsedDid.id);
   const { jwk, kid } = protectedHeader;
 
   if (jwk && profiles.includes("embedded-jwk")) {
-    return resolveWithEmbeddedJwk({ id, documentLoader });
+    return resolveWithEmbeddedJwk(params);
   }
 
   if (kid && profiles.includes("relative-did-url")) {
-    return resolveWithRelativeDidUrl({ id, documentLoader });
+    return resolveWithRelativeDidUrl(params);
   }
 
   if (kid && profiles.includes("access_token")) {
-    return resolveWithAccessToken({ id, documentLoader });
+    return resolveWithAccessToken(params);
   }
 
   throw new Error(`Profile not supported.`);

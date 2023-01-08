@@ -1,4 +1,4 @@
-import transmute, { DidJwk } from "../src";
+import transmute, { DidJwk, AnyService, AnyDidDocument } from "../src";
 
 const { alg, enc } = transmute.jose;
 
@@ -236,7 +236,7 @@ describe("transmute.did.jwt.resolve", () => {
         throw new Error("documentLoader does not support identifier: " + id);
       },
       profiles: ["access_token"],
-    });
+    } as any);
     expect(didDocument.id.startsWith("did:jwt")).toBe(true);
     expect(didDocument.scope).toBe("openid profile read:patients read:admin");
   });
@@ -281,7 +281,7 @@ it("transmute.did.jwt.dereference", async () => {
     },
     privateKey: issuer.key.privateKey,
   });
-  const service = await transmute.did.jwt.dereference({
+  const service = await transmute.did.jwt.dereference<AnyService>({
     id: `${subject.did}#dwn`,
     documentLoader: async (id: string) => {
       if (id.startsWith("did:jwk")) {

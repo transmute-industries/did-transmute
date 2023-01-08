@@ -4,6 +4,7 @@ import { ClaimSet } from "../../jose/ClaimSet";
 import { sign } from "./sign";
 import { ProtectedHeader } from "../../jose/ProtectedHeader";
 
+import { Algorithm } from "../../jose/Algorithm";
 export const actor = async ({
   protectedHeader,
   claimSet,
@@ -11,8 +12,7 @@ export const actor = async ({
   protectedHeader: ProtectedHeader;
   claimSet: ClaimSet;
 }) => {
-  // fix any when hide api
-  const root = await exportable({ alg: protectedHeader.alg as any });
+  const root = await exportable({ alg: protectedHeader.alg as Algorithm });
   const delegate = await sign({
     issuer: root.did,
     protectedHeader,

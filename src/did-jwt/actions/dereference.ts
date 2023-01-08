@@ -2,21 +2,18 @@ import { prefix } from "../method";
 import { resolve } from "./resolve";
 
 import { dereferenceWithinDocument } from "../../did/dereferenceWithinDocument";
+import { DidJwsJwtResolutionParameters } from "../types";
 
-export const dereference: any = async ({
-  id,
-  documentLoader,
-  profiles,
-}: any) => {
+export const dereference = async <U>(params: DidJwsJwtResolutionParameters) => {
+  const { id } = params;
   if (!id.startsWith(prefix)) {
     throw new Error(`Method is not ${prefix}.`);
   }
-  const didDocument = await resolve({ id, documentLoader, profiles });
-  const item = dereferenceWithinDocument({
+  const didDocument = await resolve(params);
+  const item = dereferenceWithinDocument<U>({
     id,
     document: didDocument,
   });
-
   if (item) {
     return item;
   }

@@ -1,13 +1,7 @@
-import { Did } from "../did/Did";
-// import { DidUrl } from "../did/DidUrl";
+import { Did, AnyDid } from "../did/Did";
 import { Context } from "../did/Context";
-// import { ParsedDidUrl } from "../did/ParsedDidUrl";
 import { DidResolutionParameters } from "../did/DidResolutionParameters";
-// import { DidDereferenceParameters } from "../did/DidDereferenceParameters";
-// import { VerificationMethod } from "../did/VerificationMethod";
-
-// export type JwsJwt =
-
+import { DidDereferenceParameters } from "../did/DidDereferenceParameters";
 import { ExportableActor } from "../did/ExportableActor";
 import { IsolatedActor } from "../did/IsolatedActor";
 
@@ -30,8 +24,15 @@ export type ExportableDidJwsJwtActor = Omit<ExportableActor<DidJwsJwt>, "key">;
 
 export type IsolatedDidJwsJwtActor = Omit<IsolatedActor<DidJwsJwt>, "key">;
 
-export type DidJwsJwtResolutionParameters = DidResolutionParameters<DidJwsJwt>;
-// export type DidJwkDereferenceParameters = DidDereferenceParameters<DidJwkUrl>;
+export type DidJwtResolutionProfile =
+  | `embedded-jwk`
+  | `relative-did-url`
+  | `access_token`;
+
+export type DidJwsJwtResolutionParameters = DidResolutionParameters<AnyDid> & {
+  profiles: DidJwtResolutionProfile[];
+};
+export type DidJwkDereferenceParameters = DidDereferenceParameters<AnyDid>;
 
 export type DidJwsJwtDocument = {
   "@context": Array<Context>;

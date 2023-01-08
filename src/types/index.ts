@@ -1,5 +1,6 @@
 export * from "../did/Did";
 export * from "../did/DidUrl";
+export * from "../did/DidDocument";
 
 export * from "../did/DocumentLoader";
 export * from "../did/DidResolutionParameters";

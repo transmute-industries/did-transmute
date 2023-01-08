@@ -9,15 +9,21 @@ import { AsymmetricJsonWebKey } from "../jose/AsymmetricJsonWebKey";
 import { SignatureAlgorithm } from "../jose/SignatureAlgorithm";
 import { KeyAgreementAlgorithm } from "../jose/KeyAgreementAlgorithm";
 import { formatDidDocument } from "../did/formatDidDocument";
+import {
+  VerificationMethod,
+  AnyVerificationMethodDidUrl,
+} from "../did/VerificationMethod";
+
 export const toDidDocument = (jwk: AsymmetricJsonWebKey) => {
   const publicKeyJwk = getPublicKeyJwk(jwk);
   const did = toDid(publicKeyJwk);
-  const vm: any = {
+  const vm: VerificationMethod<AnyVerificationMethodDidUrl> = {
     id: "#0",
     type: "JsonWebKey2020",
     controller: did,
     publicKeyJwk,
   };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const didDocument: any = {
     "@context": [
       "https://www.w3.org/ns/did/v1",
