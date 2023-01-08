@@ -1,13 +1,12 @@
 import {
   sign,
   verify,
-  actor,
-  resolve,
-
-  // dereference,
+  actor, // kill me
 
   // encrypt,
   // decrypt,
+  resolve,
+  dereference,
 } from "./actions";
 
 const jwt = {
@@ -17,8 +16,7 @@ const jwt = {
   // encrypt,
   // decrypt,
   resolve,
-
-  // dereference,
+  dereference,
 };
 
 export default jwt;

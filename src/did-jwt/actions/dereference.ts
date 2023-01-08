@@ -1,13 +1,24 @@
-import { Resolver } from "../../../types";
-import { DidJwtDereference } from "../../../types/DidJwt";
-
-import { dereferenceWithResolver } from "../../../util/dereferenceWithResolver";
 import { prefix } from "../method";
+import { resolve } from "./resolve";
 
-export const dereference: DidJwtDereference = async ({ didUrl, resolver }) => {
-  if (!didUrl.startsWith(prefix)) {
-    return null;
+import { dereferenceWithinDocument } from "../../did/dereferenceWithinDocument";
+
+export const dereference: any = async ({
+  id,
+  documentLoader,
+  profiles,
+}: any) => {
+  if (!id.startsWith(prefix)) {
+    throw new Error(`Method is not ${prefix}.`);
   }
-  // this resolver needs to handle both did:jwk and did:jwt...
-  return dereferenceWithResolver({ didUrl, resolver: resolver as Resolver }); // needs generics
+  const didDocument = await resolve({ id, documentLoader, profiles });
+  const item = dereferenceWithinDocument({
+    id,
+    document: didDocument,
+  });
+
+  if (item) {
+    return item;
+  }
+  throw new Error(`Profile not supported.`);
 };

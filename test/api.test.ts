@@ -229,7 +229,7 @@ describe("transmute.did.jwt.resolve", () => {
               // set the public key manually
               jwks: [{ ...issuer.key.publicKey, kid }],
               // get the public key via OIDC Discovery
-              // jwk: await transmute.oidc.getPublicKey({iss, kid})
+              // jwks: await transmute.oidc.getIssuerKeys({iss})
             });
           return { document: didDocument };
         }
@@ -255,4 +255,42 @@ it("transmute.did.oidc.getPublicKey", async () => {
   const kid = `NTBGNTJEMDc3RUE3RUVEOTM4NDcyOEFDNzEyOTY5NDNGOUQ4OEU5OA`;
   const publicKeyJwk = await transmute.did.oidc.getPublicKey({ iss, kid });
   expect(publicKeyJwk.kid).toBe(kid);
+});
+
+it("transmute.did.jwt.dereference", async () => {
+  const issuer = await transmute.did.jwk.exportable({
+    alg: alg.ES256,
+  });
+  const subject = await transmute.did.jwt.sign({
+    issuer: "did:example:123",
+    audience: "did:example:456",
+    protectedHeader: {
+      alg: issuer.key.publicKey.alg,
+      jwk: issuer.key.publicKey,
+    },
+    claimSet: {
+      service: [
+        {
+          id: "#dwn",
+          type: "DecentralizedWebNode",
+          serviceEndpoint: {
+            nodes: ["https://dwn.example.com", "https://example.org/dwn"],
+          },
+        },
+      ],
+    },
+    privateKey: issuer.key.privateKey,
+  });
+  const service = await transmute.did.jwt.dereference({
+    id: `${subject.did}#dwn`,
+    documentLoader: async (id: string) => {
+      if (id.startsWith("did:jwk")) {
+        return transmute.did.jwk.documentLoader(id as DidJwk);
+      }
+      throw new Error("documentLoader does not support identifier: " + id);
+    },
+    profiles: ["embedded-jwk"],
+  });
+  expect(service.id).toBe("#dwn");
+  expect(service.type).toBe("DecentralizedWebNode");
 });
