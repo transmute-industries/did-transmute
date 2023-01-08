@@ -1,5 +1,5 @@
-import { IsolatedActor } from "../../../types";
-import { Algorithm } from "../../../types/Algorithm";
+import { IsolatedActor } from "../../types";
+import { Algorithm } from "../../types/Algorithm";
 import { generate } from "./generate";
 
 export type Isolated = {

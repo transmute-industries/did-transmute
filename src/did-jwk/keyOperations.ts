@@ -6,9 +6,9 @@ import {
   Encrypt,
   Decrypt,
   DeriveKey,
-} from "../../types/KeyOperation";
+} from "../types/KeyOperation";
 
-import { jwsAlg, jweAlg } from "../../jose/alg";
+import { jwsAlg, jweAlg } from "../jose/alg";
 
 export const sign: Sign = "sign";
 export const verify: Verify = "verify";

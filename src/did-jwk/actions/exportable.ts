@@ -1,7 +1,7 @@
-import { Algorithm } from "../../../types/Algorithm";
+import { Algorithm } from "../../types/Algorithm";
 import { generate } from "./generate";
 
-import { ExportableDidJwkActor } from "../../../types";
+import { ExportableDidJwkActor } from "../../types";
 
 export type Exportable = {
   alg: Algorithm;

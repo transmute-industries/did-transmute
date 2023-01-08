@@ -1,4 +1,4 @@
-import jwk from "./did-jwk";
+import jwk from "../did-jwk";
 // import jwe from "./did-jwe";
 // import jws from "./did-jws";
 // import jwt from "./did-jwt";

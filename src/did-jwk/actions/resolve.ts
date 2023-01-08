@@ -1,8 +1,8 @@
 import * as jose from "jose";
 import { prefix } from "../method";
-import { DidJwkResolver } from "../../../types/DidJwk";
+import { DidJwkResolver } from "../../types/DidJwk";
 
-import { parseDidUrl } from "../../../util/parseDidUrl";
+import { parseDidUrl } from "../../util/parseDidUrl";
 import { toDidDocument } from "../toDidDocument";
 
 export const resolve: DidJwkResolver = async ({ did }) => {

@@ -1,4 +1,4 @@
-import { KeyOperation } from "../../types/KeyOperation";
+import { KeyOperation } from "../types/KeyOperation";
 
 import * as ko from "./keyOperations";
 

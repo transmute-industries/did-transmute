@@ -1,22 +1,22 @@
 import { toDid } from "./toDid";
 
-import { DidUrl } from "../../types/DidUrl";
-import { VerificationMethod } from "../../types/VerificationMethod";
-import { DidDocument } from "../../types/DidDocument";
+import { DidUrl } from "../types/DidUrl";
+import { VerificationMethod } from "../types/VerificationMethod";
+import { DidDocument } from "../types/DidDocument";
 import { getPublicKeyJwk } from "./getPublicKeyJwk";
 
-import { signatureAlgorithms, keyAgreementAlgorithms } from "../../jose/alg";
+import { signatureAlgorithms, keyAgreementAlgorithms } from "../jose/alg";
 
 import {
   signatureVerificationRelationships,
   encryptionVerificationRelationships,
 } from "./method";
 
-import { AsymmetricJsonWebKey } from "../../types/AsymmetricJsonWebKey";
-import { SignatureAlgorithm } from "../../types/SignatureAlgorithm";
-import { KeyAgreementAlgorithm } from "../../types/KeyAgreementAlgorithm";
+import { AsymmetricJsonWebKey } from "../types/AsymmetricJsonWebKey";
+import { SignatureAlgorithm } from "../types/SignatureAlgorithm";
+import { KeyAgreementAlgorithm } from "../types/KeyAgreementAlgorithm";
 
-import { formatDidDocument } from "../../util/formatDidDocument";
+import { formatDidDocument } from "../util/formatDidDocument";
 
 export const toDidDocument = (jwk: AsymmetricJsonWebKey) => {
   const publicKeyJwk = getPublicKeyJwk(jwk);

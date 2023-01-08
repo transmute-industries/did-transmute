@@ -1,4 +1,4 @@
-import did from "./did-methods";
+import did from "./did";
 
 import {
   encryptToKey,
