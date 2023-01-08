@@ -9,15 +9,15 @@ it("transmute.did.jwk.exportable", async () => {
   const actor = await transmute.did.jwk.exportable({
     alg: alg.ES256,
   });
-  expect(actor.key.publicKeyJwk.alg).toBe(alg.ES256);
-  expect(actor.key.privateKeyJwk.alg).toBe(alg.ES256);
+  expect(actor.key.publicKey.alg).toBe(alg.ES256);
+  expect(actor.key.privateKey.alg).toBe(alg.ES256);
 });
 
 it("transmute.did.jwk.isolated", async () => {
   const actor = await transmute.did.jwk.isolated({
     alg: alg.ES256,
   });
-  expect(actor.key.publicKeyJwk.alg).toBe(alg.ES256);
+  expect(actor.key.publicKey.alg).toBe(alg.ES256);
   expect(actor.key.privateKey).toBeDefined();
 });
 
@@ -48,7 +48,7 @@ it("transmute.did.jwk.dereference", async () => {
 
 it("transmute.sign", async () => {
   const {
-    key: { privateKey, publicKeyJwk },
+    key: { privateKey, publicKey },
   } = await transmute.did.jwk.isolated({
     alg: alg.ES256,
   });
@@ -61,22 +61,22 @@ it("transmute.sign", async () => {
   });
   const v = await transmute.verify({
     jws,
-    publicKey: publicKeyJwk,
+    publicKey: publicKey,
   });
-  expect(v.protectedHeader.alg).toBe(publicKeyJwk.alg);
+  expect(v.protectedHeader.alg).toBe(publicKey.alg);
   expect(new TextDecoder().decode(v.payload)).toEqual(message);
 });
 
 it("transmute.encrypt", async () => {
   const {
-    key: { privateKey, publicKeyJwk },
+    key: { privateKey, publicKey },
   } = await transmute.did.jwk.isolated({
     alg: alg.ECDH_ES_A256KW,
   });
   const jwe = await transmute.encrypt({
-    publicKey: publicKeyJwk,
+    publicKey: publicKey,
     protectedHeader: {
-      alg: publicKeyJwk.alg,
+      alg: publicKey.alg,
       enc: enc.A256GCM,
     },
     plaintext: payload,
@@ -85,6 +85,6 @@ it("transmute.encrypt", async () => {
     jwe,
     privateKey: privateKey,
   });
-  expect(v.protectedHeader.alg).toBe(publicKeyJwk.alg);
+  expect(v.protectedHeader.alg).toBe(publicKey.alg);
   expect(new TextDecoder().decode(v.plaintext)).toEqual(message);
 });

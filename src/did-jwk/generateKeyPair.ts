@@ -23,10 +23,10 @@ export const generateKeyPair = async ({
   const kid = await jose.calculateJwkThumbprintUri(publicKeyJwk);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const key: any = {
-    publicKeyJwk: formatJwk({ ...publicKeyJwk, alg, kid }),
+    publicKey: formatJwk({ ...publicKeyJwk, alg, kid }),
   };
   if (extractable) {
-    key.privateKeyJwk = formatJwk({
+    key.privateKey = formatJwk({
       ...(await jose.exportJWK(privateKey)),
       alg,
       kid,

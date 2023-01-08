@@ -11,7 +11,7 @@ export type Generate = {
 
 export const generate = async ({ alg, extractable }: Generate) => {
   const key = await generateKeyPair({ alg, extractable });
-  const did = toDid(key.publicKeyJwk);
+  const did = toDid(key.publicKey);
   const actor = { did, key };
   return extractable
     ? (actor as ExportableActor<DidJwk>)
