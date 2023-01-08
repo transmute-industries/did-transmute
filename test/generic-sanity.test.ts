@@ -141,3 +141,49 @@ it("did dereferencing", async () => {
   const didUrlDocumentLoader: DidExampleUrlDocumentLoader = loader;
   validateDocumentLoader(didUrl, didUrlDocumentLoader);
 });
+
+type DidMethodResolver<Method extends string> = {
+  id: Did<`did:${Method}:123`>;
+  documentLoader: typeof loader;
+};
+
+const resolve = async ({
+  id,
+  documentLoader,
+}: DidMethodResolver<"example">) => {
+  const { document } = await documentLoader(id);
+  return document;
+};
+
+type DidMethodDereferencer<Method extends string> = {
+  id: DidUrl<`did:${Method}:123#key-123`>;
+  documentLoader: typeof loader;
+};
+
+const dereference = async ({
+  id,
+  documentLoader,
+}: DidMethodDereferencer<"example">) => {
+  const { document } = await documentLoader(id);
+  return document;
+};
+const transmute = {
+  resolve,
+  dereference,
+};
+
+it("resolve api", async () => {
+  const data = await transmute.resolve({
+    id: "did:example:123",
+    documentLoader: loader,
+  });
+  expect(data.id).toBe("did:example:123");
+});
+
+it("dereference api", async () => {
+  const data = await transmute.dereference({
+    id: "did:example:123#key-123",
+    documentLoader: loader,
+  });
+  expect(data.id).toBe("did:example:123#key-123");
+});
