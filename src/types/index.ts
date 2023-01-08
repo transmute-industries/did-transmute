@@ -23,3 +23,5 @@ export * from "../jose/SignatureAlgorithm";
 export * from "../jose/KeyAgreementAlgorithm";
 
 export * from "../did/ResourceParams";
+
+export * from "../did-jwk/types";

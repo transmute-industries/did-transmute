@@ -1,5 +1,4 @@
-import transmute, { PublicKeyJwk } from "../src";
-import { DidJwk } from "../src/did-jwk/types";
+import transmute, { DidJwk } from "../src";
 
 const { alg, enc } = transmute.jose;
 
