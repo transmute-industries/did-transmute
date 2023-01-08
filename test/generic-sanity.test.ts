@@ -1,112 +1,25 @@
-type DocumentLoaderResponse<ResolvableDocument> = {
-  document: ResolvableDocument;
-};
-
-type DocumentLoaderDocument<Identifier> = {
-  id: Identifier;
-  [property: string]: unknown;
-};
-
-type AsyncDocumentLoader<Identifier, ResolvableDocument> = (
-  id: Identifier
-) => Promise<DocumentLoaderResponse<ResolvableDocument>>;
-
-type DocumentLoader<Identifier> = AsyncDocumentLoader<
-  Identifier,
-  DocumentLoaderDocument<Identifier>
->;
-
-type Split<S extends string, D extends string> = string extends S
-  ? string[]
-  : S extends ""
-  ? []
-  : S extends `${infer T}${D}${infer U}`
-  ? [T, ...Split<U, D>]
-  : [S];
-
-type DidFragment<S extends string> = S extends `${string}#${infer Fragment}`
-  ? `#${Fragment}`
-  : "";
-
-type DidQuery<S extends string> = S extends `${string}?${infer Query}`
-  ? `?${Query}`
-  : "";
-
-type DidPath<S extends string> = S extends `${string}/${infer Path}`
-  ? `/${Path}`
-  : "";
-
-type DidMethod<S extends string> = S extends `did:${infer Method}:${string}`
-  ? Method
-  : "";
-
-type DidMethodId<S extends string> = S extends `did:${string}:${infer Id}`
-  ? Split<Split<Split<Id, "/">[0], "?">[0], "#">[0]
-  : "";
-
-type ParsedDidUrl<S extends string> = {
-  method: DidMethod<S>;
-  id: DidMethodId<S>;
-  path: DidPath<Split<Split<S, "#">[0], "?">[0]>;
-  query: DidQuery<Split<S, "#">[0]>;
-  fragment: DidFragment<S>;
-};
-
-type Did<D extends string> =
-  `did:${ParsedDidUrl<D>["method"]}:${ParsedDidUrl<D>["id"]}`;
-
-type DidUrl<D extends string> =
-  `${Did<D>}${ParsedDidUrl<D>["path"]}${ParsedDidUrl<D>["query"]}${ParsedDidUrl<D>["fragment"]}`;
-
-type ExtractPathParams<T extends string> = string extends T
-  ? Record<string, string>
-  : T extends `${string}:${infer Param}/${infer Rest}`
-  ? { [k in Param | keyof ExtractPathParams<Rest>]: string }
-  : T extends `${string}:${infer Param}`
-  ? { [k in Param]: string }
-  : Record<string, never>;
-
-type ExtractQueryParams<T extends string> = string extends T
-  ? Record<string, string>
-  : T extends `${string}:${infer Param}&${infer Rest}`
-  ? { [k in Param | keyof ExtractQueryParams<Rest>]: string }
-  : T extends `${string}:${infer Param}`
-  ? { [k in Param]: string }
-  : Record<string, never>;
-
-type ExtractFragmentParams<T extends string> = string extends T
-  ? Record<string, string>
-  : T extends `${string}:${infer Param}/${infer Rest}`
-  ? { [k in Param | keyof ExtractFragmentParams<Rest>]: string }
-  : T extends `${string}:${infer Param}`
-  ? { [k in Param]: string }
-  : Record<string, never>;
-
-type ResourceParams<S extends string> = {
-  id: `did:${ParsedDidUrl<S>["method"]}:${ParsedDidUrl<S>["id"]}`;
-  path: ExtractPathParams<ParsedDidUrl<S>["path"]>;
-  query: ExtractQueryParams<ParsedDidUrl<S>["query"]>;
-  fragment: ExtractFragmentParams<ParsedDidUrl<S>["fragment"]>;
-};
-
-type E0 =
-  ParsedDidUrl<"did:example:v0:123/resources/123?query=456#fragment-789">;
-type E1 = ParsedDidUrl<"did:example:v0:123/resources/123#fragment-789">;
-type E2 = ParsedDidUrl<"did:example:v0:123?query=456#fragment-789">;
-type E3 = ParsedDidUrl<"did:example:v0:123#fragment-789">;
-type E4 = ParsedDidUrl<"did:example:v0:123?query=456">;
-type E5 = ParsedDidUrl<"did:example:v0:123/resources/123">;
-type E6 = ParsedDidUrl<"did:example:v0:123/resources/123">;
-
-type R0 = DidUrl<"did:example:v0:123/resources/123?query=456#fragment-789">;
-type R1 = DidUrl<"did:example:v0:123/resources/123">;
-type R2 = DidUrl<"did:example:v0:123#fragment-789">;
-
-type R0P =
-  ResourceParams<"did:example:v0:123/posts/:postId/:commentId?authUser=:authUser&filter=:filter#:keyId">;
+import {
+  Did,
+  DidUrl,
+  DocumentLoader,
+  DidResolutionParameters,
+  DidDereferenceParameters,
+} from "../src/types/_types";
 
 async function loader<Type>(id: Type) {
   return { document: { id, foo: 123 } };
+}
+
+async function resolve<Did>(params: DidResolutionParameters<Did>) {
+  const { id, documentLoader } = params;
+  const { document } = await documentLoader(id);
+  return document;
+}
+
+async function dereference<DidUrl>(params: DidDereferenceParameters<DidUrl>) {
+  const { id, documentLoader } = params;
+  const { document } = await documentLoader(id);
+  return document;
 }
 
 async function validateDocumentLoader<Identifier>(
@@ -142,48 +55,40 @@ it("did dereferencing", async () => {
   validateDocumentLoader(didUrl, didUrlDocumentLoader);
 });
 
-type DidMethodResolver<Method extends string> = {
-  id: Did<`did:${Method}:123`>;
-  documentLoader: typeof loader;
-};
-
-const resolve = async ({
-  id,
-  documentLoader,
-}: DidMethodResolver<"example">) => {
-  const { document } = await documentLoader(id);
-  return document;
-};
-
-type DidMethodDereferencer<Method extends string> = {
-  id: DidUrl<`did:${Method}:123#key-123`>;
-  documentLoader: typeof loader;
-};
-
-const dereference = async ({
-  id,
-  documentLoader,
-}: DidMethodDereferencer<"example">) => {
-  const { document } = await documentLoader(id);
-  return document;
-};
-const transmute = {
-  resolve,
-  dereference,
-};
-
 it("resolve api", async () => {
-  const data = await transmute.resolve({
+  const transmute = {
+    resolve,
+  };
+  const didDocument = await transmute.resolve({
     id: "did:example:123",
     documentLoader: loader,
   });
-  expect(data.id).toBe("did:example:123");
+  expect(didDocument.id).toBe("did:example:123");
 });
 
 it("dereference api", async () => {
-  const data = await transmute.dereference({
+  const transmute = {
+    dereference,
+  };
+  const verificationMethod = await transmute.dereference({
     id: "did:example:123#key-123",
     documentLoader: loader,
   });
-  expect(data.id).toBe("did:example:123#key-123");
+  expect(verificationMethod.id).toBe("did:example:123#key-123");
+});
+
+it("multi method resolve api", async () => {
+  const transmute = {
+    resolve,
+  };
+  const didDocument1 = await transmute.resolve<Did<"did:example:123">>({
+    id: "did:example:123",
+    documentLoader: loader,
+  });
+  expect(didDocument1.id).toBe("did:example:123");
+  const didDocument2 = await transmute.resolve<Did<"did:example2:123">>({
+    id: "did:example2:123",
+    documentLoader: loader,
+  });
+  expect(didDocument2.id).toBe("did:example2:123");
 });
