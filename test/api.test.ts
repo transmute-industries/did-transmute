@@ -1,6 +1,9 @@
 import transmute from "../src";
 
-const { alg } = transmute.jose;
+const { alg, enc } = transmute.jose;
+
+const message = "It’s a dangerous business, Frodo, going out your door. 🧠💎";
+const payload = new TextEncoder().encode(message);
 
 it("transmute.did.jwk.exportable", async () => {
   const actor = await transmute.did.jwk.exportable({
@@ -41,4 +44,47 @@ it("transmute.did.jwk.dereference", async () => {
   expect(verificationMethod.type).toBe(`JsonWebKey2020`);
   expect(verificationMethod.controller).toBe(did);
   expect(verificationMethod.publicKeyJwk.alg).toBe(alg.ES256);
+});
+
+it("transmute.sign", async () => {
+  const {
+    key: { privateKey, publicKeyJwk },
+  } = await transmute.did.jwk.isolated({
+    alg: alg.ES256,
+  });
+  const jws = await transmute.sign({
+    privateKey: privateKey,
+    protectedHeader: {
+      alg: alg.ES256,
+    },
+    payload,
+  });
+  const v = await transmute.verify({
+    jws,
+    publicKey: publicKeyJwk,
+  });
+  expect(v.protectedHeader.alg).toBe(publicKeyJwk.alg);
+  expect(new TextDecoder().decode(v.payload)).toEqual(message);
+});
+
+it("transmute.encrypt", async () => {
+  const {
+    key: { privateKey, publicKeyJwk },
+  } = await transmute.did.jwk.isolated({
+    alg: alg.ECDH_ES_A256KW,
+  });
+  const jwe = await transmute.encrypt({
+    publicKey: publicKeyJwk,
+    protectedHeader: {
+      alg: publicKeyJwk.alg,
+      enc: enc.A256GCM,
+    },
+    plaintext: payload,
+  });
+  const v = await transmute.decrypt({
+    jwe,
+    privateKey: privateKey,
+  });
+  expect(v.protectedHeader.alg).toBe(publicKeyJwk.alg);
+  expect(new TextDecoder().decode(v.plaintext)).toEqual(message);
 });

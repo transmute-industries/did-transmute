@@ -5,3 +5,4 @@ export * from "./signWithKey";
 export * from "./verifyWithKey";
 
 export * from "./alg";
+export * from "./enc";

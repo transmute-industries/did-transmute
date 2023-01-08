@@ -6,11 +6,12 @@ import {
   signWithKey,
   verifyWithKey,
   alg,
+  enc,
 } from "./jose";
 
 const transmute = {
   did,
-  jose: { alg },
+  jose: { alg, enc },
   sign: signWithKey,
   verify: verifyWithKey,
   encrypt: encryptToKey,
