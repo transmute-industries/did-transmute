@@ -1,7 +1,6 @@
 import { formatVerificationMethod } from "./formatVerificationMethod";
-import { DidDocument } from "../types";
 
-export const formatDidDocument = (didDocument: DidDocument): DidDocument => {
+export const formatDidDocument = (didDocument: any): any => {
   const {
     id,
     verificationMethod,

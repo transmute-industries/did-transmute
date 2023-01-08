@@ -1,17 +1,14 @@
-import * as jose from "jose";
+import { DidJwkDocument, DidJwkResolutionParameters } from "../types";
+
 import { prefix } from "../method";
-import { DidJwkResolver } from "../../types/DidJwk";
 
-import { parseDidUrl } from "../../util/parseDidUrl";
-import { toDidDocument } from "../toDidDocument";
-
-export const resolve: DidJwkResolver = async ({ did }) => {
-  if (!did.startsWith(prefix)) {
-    return null;
+export const resolve = async ({
+  id,
+  documentLoader,
+}: DidJwkResolutionParameters) => {
+  if (!id.startsWith(prefix)) {
+    throw new Error("Method is not did:jwk.");
   }
-  const parsed = parseDidUrl(did);
-  const methodSpecificIdentifier = parsed.did.split(":").pop() || "";
-  const decoded = jose.base64url.decode(methodSpecificIdentifier);
-  const jwk = JSON.parse(new TextDecoder().decode(decoded));
-  return toDidDocument(jwk);
+  const { document } = await documentLoader(id);
+  return document as DidJwkDocument;
 };

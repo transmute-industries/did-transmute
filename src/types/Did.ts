@@ -1,4 +1,4 @@
-export type DidUrn = "did";
-export type DidMethod = string;
-export type DidMethodSpecificIdentifier = string;
-export type Did = `${DidUrn}:${DidMethod}:${DidMethodSpecificIdentifier}`;
+import { ParsedDidUrl } from "./ParsedDidUrl";
+
+export type Did<D extends string> =
+  `did:${ParsedDidUrl<D>["method"]}:${ParsedDidUrl<D>["id"]}`;

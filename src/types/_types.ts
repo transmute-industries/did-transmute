@@ -33,12 +33,6 @@ export type ParsedDidUrl<S extends string> = {
   fragment: DidFragment<S>;
 };
 
-export type Did<D extends string> =
-  `did:${ParsedDidUrl<D>["method"]}:${ParsedDidUrl<D>["id"]}`;
-
-export type DidUrl<D extends string> =
-  `${Did<D>}${ParsedDidUrl<D>["path"]}${ParsedDidUrl<D>["query"]}${ParsedDidUrl<D>["fragment"]}`;
-
 export type ExtractPathParams<T extends string> = string extends T
   ? Record<string, string>
   : T extends `${string}:${infer Param}/${infer Rest}`

@@ -1,14 +1,19 @@
-import { DidJwkDereference } from "../../types/DidJwk";
-// import { Resolver } from "../../../types/Resolver";
-import { dereferenceWithResolver } from "../../util/dereferenceWithResolver";
-import { prefix } from "../method";
+import { dereferenceWithinDocument } from "../../util/dereferenceWithinDocument";
 
-export const dereference: DidJwkDereference = async ({ didUrl, resolver }) => {
-  if (!didUrl.startsWith(prefix)) {
-    return null;
+import { prefix } from "../method";
+import { DidJwkResolutionParameters, DidJwkVerificationMethod } from "../types";
+
+export const dereference = async ({
+  id,
+  documentLoader,
+}: DidJwkResolutionParameters) => {
+  if (!id.startsWith(prefix)) {
+    throw new Error("Method is not did:jwk.");
   }
-  return dereferenceWithResolver({
-    didUrl,
-    resolver: resolver as any, // needs generics...
+  const { document } = await documentLoader(id);
+  const resource = dereferenceWithinDocument({
+    id,
+    document,
   });
+  return resource as DidJwkVerificationMethod;
 };

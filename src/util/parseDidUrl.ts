@@ -1,47 +1,48 @@
-import { Did } from "../types/Did";
-import {
-  DidFragment,
-  DidPath,
-  DidQuery,
-  DidUrl,
-  DidUrlObject,
-} from "../types/DidUrl";
+import { ParsedDidUrl } from "../types/ParsedDidUrl";
+import { DidUrl } from "../types/DidUrl";
 
-export const parseDidUrl = (didUrl: DidUrl): DidUrlObject => {
-  const pathStartsAt = didUrl.indexOf("/");
-  const queryStartsAt = didUrl.indexOf("?");
-  const fragmentStartsAt = didUrl.indexOf("#");
+export function parseDidUrl<DidUrlType extends string>(
+  id: DidUrl<DidUrlType>
+): ParsedDidUrl<DidUrlType> {
+  const pathStartsAt = id.indexOf("/");
+  const queryStartsAt = id.indexOf("?");
+  const fragmentStartsAt = id.indexOf("#");
   const fragment =
     fragmentStartsAt === -1
       ? ""
-      : didUrl.substring(fragmentStartsAt + 1, didUrl.length);
+      : id.substring(fragmentStartsAt + 1, id.length);
 
   const query =
     queryStartsAt === -1
       ? ""
-      : didUrl.substring(
+      : id.substring(
           queryStartsAt + 1,
-          fragmentStartsAt > -1 ? fragmentStartsAt : didUrl.length
+          fragmentStartsAt > -1 ? fragmentStartsAt : id.length
         );
   const path =
     pathStartsAt === -1
       ? ""
-      : didUrl.substring(
+      : id.substring(
           pathStartsAt + 1,
           queryStartsAt > -1
             ? queryStartsAt
             : fragmentStartsAt > -1
             ? fragmentStartsAt
-            : didUrl.length
+            : id.length
         );
-  const did = didUrl
+  const did = id
     .replace("/" + path, "")
     .replace("?" + query, "")
     .replace("#" + fragment, "");
+
+  const method = did.split(":")[1];
+  const methodSpecificId = did.replace(`did:${method}:`, "");
+
   return {
-    did: did as Did,
-    path: path as DidPath,
-    query: query as DidQuery,
-    fragment: fragment as DidFragment,
-  };
-};
+    method,
+    id: methodSpecificId,
+    path: path,
+    query: query,
+    fragment: fragment,
+  } as ParsedDidUrl<DidUrlType>;
+}

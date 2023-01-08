@@ -1,13 +1,3 @@
-export * from "./Did";
-export * from "./DidUrl";
-export * from "./DidDocument";
-export * from "./VerificationMethod";
-export * from "./Service";
-
-export * from "./Resolver";
-
-export * from "./Dereferencer";
-
 export * from "./SignatureAlgorithm";
 export * from "./KeyAgreementAlgorithm";
 
@@ -20,14 +10,18 @@ export * from "./ExportableActor";
 export * from "./IsolatedKey";
 export * from "./IsolatedActor";
 
-export * from "./DidJwk";
-export * from "./DidJwt";
-export * from "./DidWeb";
-
 export * from "./SignatureRelationships";
 export * from "./EncryptionRelationships";
 
 // begin new
-export * from "./GenericResolver";
+
+export * from "./Did";
+export * from "./DidUrl";
+
 export * from "./DocumentLoader";
 export * from "./DidResolutionParameters";
+
+export * from "./Resolver";
+
+// refactr...
+export * from "./Service";

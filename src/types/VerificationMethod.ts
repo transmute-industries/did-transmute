@@ -1,10 +1,10 @@
-import { DidUrl } from "./DidUrl";
 import { Did } from "./Did";
+import { ParsedDidUrl } from "./ParsedDidUrl";
 import { PublicKeyJwk } from "./PublicKeyJwk";
 
-export type VerificationMethod = {
-  id: DidUrl;
+export type VerificationMethod<U extends string> = {
+  id: ParsedDidUrl<U>["fragment"];
   type: "JsonWebKey2020";
-  controller: Did;
+  controller: Did<U>;
   publicKeyJwk: PublicKeyJwk;
 };

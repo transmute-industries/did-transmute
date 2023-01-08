@@ -1,9 +1,8 @@
 import { Did } from "./Did";
-import { DidDocument } from "./DidDocument";
+
 import { ExportableKey } from "./ExportableKey";
 
-export type ExportableActor = {
-  did: Did;
+export type ExportableActor<U extends string> = {
+  did: Did<U>;
   key: ExportableKey;
-  didDocument?: DidDocument;
 };
