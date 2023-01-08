@@ -127,17 +127,17 @@ it("url resolution", async () => {
 });
 
 it("did resolution", async () => {
-  type DidUrl = Did<`did:example:${string}`>;
-  type DidDocumentLoader = DocumentLoader<DidUrl>;
-  const didUrl: DidUrl = "did:example:456";
-  const didUrlDocumentLoader: DidDocumentLoader = loader;
-  validateDocumentLoader(didUrl, didUrlDocumentLoader);
+  type DidExample = Did<`did:example:${string}`>;
+  type DidDocumentLoader = DocumentLoader<DidExample>;
+  const did: DidExample = "did:example:456";
+  const didDocumentLoader: DidDocumentLoader = loader;
+  validateDocumentLoader(did, didDocumentLoader);
 });
 
 it("did dereferencing", async () => {
   type DidExampleUrl = DidUrl<`did:example:${string}#${string}`>;
-  type DidDocumentLoader = DocumentLoader<DidExampleUrl>;
+  type DidExampleUrlDocumentLoader = DocumentLoader<DidExampleUrl>;
   const didUrl: DidExampleUrl = "did:example:456#key-456";
-  const didUrlDocumentLoader: DidDocumentLoader = loader;
+  const didUrlDocumentLoader: DidExampleUrlDocumentLoader = loader;
   validateDocumentLoader(didUrl, didUrlDocumentLoader);
 });
