@@ -2,9 +2,14 @@ import { prefix } from "../method";
 import { resolve } from "./resolve";
 
 import { dereferenceWithinDocument } from "../../did/dereferenceWithinDocument";
-import { DidJwsJwtResolutionParameters } from "../types";
+import {
+  DidJwsJwtResolutionParameters,
+  DidJweJwtResolutionParameters,
+} from "../types";
 
-export const dereference = async <U>(params: DidJwsJwtResolutionParameters) => {
+export const dereference = async <U>(
+  params: DidJwsJwtResolutionParameters | DidJweJwtResolutionParameters
+) => {
   const { id } = params;
   if (!id.startsWith(prefix)) {
     throw new Error(`Method is not ${prefix}.`);

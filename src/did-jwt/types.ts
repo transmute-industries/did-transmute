@@ -61,21 +61,20 @@ export type DidJwsJwtDocument = {
   [property: string]: unknown;
 };
 
-export type DidJweJwtResolutionParameters = {
-  id: DidJweJwt;
+export interface DidResolutionParameters {
+  id: DidJwsJwt | DidJweJwt;
   profiles: DidJwtResolutionProfile[];
-  privateKeyLoader: PrivateKeyLoader;
-};
+}
 
-export type DidJwsJwtResolutionParameters = {
+export interface DidJwsJwtResolutionParameters extends DidResolutionParameters {
   id: DidJwsJwt;
-  profiles: DidJwtResolutionProfile[];
   documentLoader: DocumentLoader<AnyDidLike>;
-};
+}
 
-export type DidJwtResolutionParameters =
-  | DidJweJwtResolutionParameters
-  | DidJwsJwtResolutionParameters;
+export interface DidJweJwtResolutionParameters extends DidResolutionParameters {
+  id: DidJweJwt;
+  privateKeyLoader: PrivateKeyLoader;
+}
 
 export type DidJwtDocument = {
   "@context": Array<Context>;

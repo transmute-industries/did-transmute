@@ -1,4 +1,4 @@
-import transmute, { DidJwk } from "../src";
+import transmute, { DidJwk, AnyDidLike } from "../src";
 
 const { alg, enc } = transmute.jose;
 
@@ -220,7 +220,7 @@ describe("transmute.did.jwt.resolve", () => {
     });
     const didDocument = await transmute.did.jwt.resolve({
       id: subject.did,
-      documentLoader: async (id) => {
+      documentLoader: async (id: AnyDidLike) => {
         if (id.startsWith("https://contoso.auth0.com/")) {
           const [iss, kid] = id.split("#");
           const didDocument =
@@ -325,7 +325,7 @@ it("transmute.did.jwt.encrypt", async () => {
   expect(v.payload.yolo).toBe(1);
 });
 
-it.only("transmute.did.jwt.resolve", async () => {
+it("transmute.did.jwt.resolve", async () => {
   const issuer = await transmute.did.jwk.exportable({
     alg: alg.ECDH_ES_A256KW,
   });
@@ -352,5 +352,51 @@ it.only("transmute.did.jwt.resolve", async () => {
     },
     profiles: ["encrypted-jwt"],
   });
-  console.log(didDocument);
+  expect(didDocument.yolo).toBe(1);
+});
+
+it("transmute.did.jwt.dereference", async () => {
+  const issuer = await transmute.did.jwk.exportable({
+    alg: alg.ECDH_ES_A256KW,
+  });
+  const subject = await transmute.did.jwt.encrypt({
+    issuer: "did:example:123",
+    protectedHeader: {
+      alg: issuer.key.publicKey.alg,
+      iss: "did:example:123",
+      kid: "#0",
+      enc: transmute.jose.enc.A256GCM,
+    },
+    claimSet: {
+      service: [
+        {
+          id: "#dwn",
+          type: "DecentralizedWebNode",
+          serviceEndpoint: {
+            nodes: ["https://dwn.example.com", "https://example.org/dwn"],
+          },
+        },
+      ],
+    },
+    publicKey: issuer.key.publicKey,
+  });
+  type DwnService = {
+    id: "#dwn";
+    type: "DecentralizedWebNode";
+    serviceEndpoint: {
+      nodes: ["https://dwn.example.com", "https://example.org/dwn"];
+    };
+  };
+  const service = await transmute.did.jwt.dereference<DwnService>({
+    id: `${subject.did}#dwn`,
+    privateKeyLoader: async (id: string) => {
+      if (id.startsWith("did:example:123")) {
+        return issuer.key.privateKey;
+      }
+      throw new Error("privateKeyLoader does not support identifier: " + id);
+    },
+    profiles: ["encrypted-jwt"],
+  });
+  expect(service.id).toBe("#dwn");
+  expect(service.type).toBe("DecentralizedWebNode");
 });
