@@ -1,7 +1,6 @@
-import { ExportableActor } from "../../types";
 import { Algorithm } from "../../jose/Algorithm";
 import { generate } from "./generate";
-import { DidJwk } from "../types";
+import { ExportableDidJwkActor } from "../types";
 
 export type Exportable = {
   alg: Algorithm;
@@ -9,7 +8,7 @@ export type Exportable = {
 
 export const exportable = async ({
   alg,
-}: Exportable): Promise<ExportableActor<DidJwk>> => {
+}: Exportable): Promise<ExportableDidJwkActor> => {
   const actor = await generate({ alg, extractable: true });
-  return actor as ExportableActor<DidJwk>;
+  return actor as ExportableDidJwkActor;
 };

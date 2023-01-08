@@ -5,8 +5,6 @@ export * from "../did/DocumentLoader";
 export * from "../did/DidResolutionParameters";
 export * from "../did/DidDereferenceParameters";
 
-export * from "../did/Resolver";
-
 export * from "../did/SignatureRelationships";
 export * from "../did/EncryptionRelationships";
 

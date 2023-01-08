@@ -1,4 +1,5 @@
 import transmute from "../src";
+import { DidJwk } from "../src/did-jwk/types";
 
 const { alg, enc } = transmute.jose;
 
@@ -87,4 +88,110 @@ it("transmute.encrypt", async () => {
   });
   expect(v.protectedHeader.alg).toBe(publicKey.alg);
   expect(new TextDecoder().decode(v.plaintext)).toEqual(message);
+});
+
+it("transmute.did.jwt.sign", async () => {
+  const issuer = await transmute.did.jwk.exportable({
+    alg: alg.ES256,
+  });
+  const subject = await transmute.did.jwt.sign({
+    issuer: "did:example:123",
+    audience: "did:example:456",
+    protectedHeader: {
+      alg: issuer.key.publicKey.alg,
+    },
+    claimSet: {
+      "urn:example:claim": true,
+    },
+    privateKey: issuer.key.privateKey,
+  });
+  const verifiedSubject = await transmute.did.jwt.verify({
+    did: subject.did,
+    issuer: "did:example:123",
+    audience: "did:example:456",
+    publicKey: issuer.key.publicKey,
+  });
+  expect(verifiedSubject.protectedHeader.alg).toBe(issuer.key.publicKey.alg);
+  expect(verifiedSubject.payload["urn:example:claim"]).toBe(true);
+});
+
+it("transmute.did.jwt.actor", async () => {
+  // implicit extractable
+  const subject = await transmute.did.jwt.actor({
+    protectedHeader: {
+      alg: alg.ES256,
+    },
+    claimSet: {
+      "urn:example:claim": true,
+    },
+  });
+  expect(subject.root.did.startsWith("did:jwk")).toBe(true);
+  expect(subject.root.key.publicKey.alg).toBe(alg.ES256);
+  expect(subject.root.key.privateKey.alg).toBe(alg.ES256);
+  expect(subject.delegate.did.startsWith("did:jwt")).toBe(true);
+});
+
+describe("transmute.did.jwt.resolve", () => {
+  it("embedded-jwk", async () => {
+    const issuer = await transmute.did.jwk.exportable({
+      alg: alg.ES256,
+    });
+    const subject = await transmute.did.jwt.sign({
+      issuer: "did:example:123",
+      audience: "did:example:456",
+      protectedHeader: {
+        alg: issuer.key.publicKey.alg,
+        jwk: issuer.key.publicKey,
+        iss: issuer.did,
+        kid: `#0`,
+      },
+      claimSet: {
+        "urn:example:claim": true,
+      },
+      privateKey: issuer.key.privateKey,
+    });
+    const didDocument = await transmute.did.jwt.resolve({
+      id: subject.did,
+      documentLoader: async (id: string) => {
+        if (id.startsWith("did:jwk")) {
+          return transmute.did.jwk.documentLoader(id as DidJwk);
+        }
+        throw new Error("documentLoader does not support identifier: " + id);
+      },
+      profiles: ["embedded-jwk"], // This part.
+    });
+    expect(didDocument.id.startsWith("did:jwt")).toBe(true);
+    expect(didDocument["urn:example:claim"]).toBe(true);
+  });
+
+  it("relative-did-url", async () => {
+    const issuer = await transmute.did.jwk.exportable({
+      alg: alg.ES256,
+    });
+    const subject = await transmute.did.jwt.sign({
+      issuer: "did:example:123",
+      audience: "did:example:456",
+      protectedHeader: {
+        alg: issuer.key.publicKey.alg,
+        iss: "did:example:123", // generic issuer.
+        kid: `#0`,
+      },
+      claimSet: {
+        "urn:example:claim": true,
+      },
+      privateKey: issuer.key.privateKey,
+    });
+    const didDocument = await transmute.did.jwt.resolve({
+      id: subject.did,
+      documentLoader: async (id: string) => {
+        if (id.startsWith("did:example:123")) {
+          return transmute.did.jwk.documentLoader(issuer.did);
+        }
+        throw new Error("documentLoader does not support identifier: " + id);
+      },
+      profiles: ["relative-did-url"], // This part.
+    });
+    expect(didDocument.id.startsWith("did:jwt")).toBe(true);
+    expect(didDocument["urn:example:claim"]).toBe(true);
+  });
 });

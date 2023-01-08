@@ -1,9 +1,9 @@
-import { ExportableActor, IsolatedActor } from "../../types";
 import { Algorithm } from "../../jose/Algorithm";
 import { generateKeyPair } from "../generateKeyPair";
 import { toDid } from "../toDid";
 
-import { DidJwk } from "../types";
+import { ExportableDidJwkActor, IsolatedDidJwkActor } from "../types";
+
 export type Generate = {
   alg: Algorithm;
   extractable: boolean;
@@ -14,6 +14,6 @@ export const generate = async ({ alg, extractable }: Generate) => {
   const did = toDid(key.publicKey);
   const actor = { did, key };
   return extractable
-    ? (actor as ExportableActor<DidJwk>)
-    : (actor as IsolatedActor<DidJwk>);
+    ? (actor as ExportableDidJwkActor)
+    : (actor as IsolatedDidJwkActor);
 };

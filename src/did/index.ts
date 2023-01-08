@@ -1,14 +1,13 @@
-import jwk from "../did-jwk";
-// import jwe from "./did-jwe";
-// import jws from "./did-jws";
-// import jwt from "./did-jwt";
-// import web from "./did-web";
-
 import { parseDidUrl } from "./parseDidUrl";
+
+import jwk from "../did-jwk";
+import jwt from "../did-jwt";
+// import web from "./did-web";
 
 const did = {
   jwk,
-  // jwe, jws, jwt, web,
+  jwt,
+  // web,
   parse: parseDidUrl,
 };
 
