@@ -1,4 +1,4 @@
-import transmute from "../src";
+import transmute, { PublicKeyJwk } from "../src";
 import { DidJwk } from "../src/did-jwk/types";
 
 const { alg, enc } = transmute.jose;
@@ -115,6 +115,7 @@ it("transmute.did.jwt.sign", async () => {
   expect(verifiedSubject.payload["urn:example:claim"]).toBe(true);
 });
 
+// kill this
 it("transmute.did.jwt.actor", async () => {
   // implicit extractable
   const subject = await transmute.did.jwt.actor({
@@ -194,4 +195,65 @@ describe("transmute.did.jwt.resolve", () => {
     expect(didDocument.id.startsWith("did:jwt")).toBe(true);
     expect(didDocument["urn:example:claim"]).toBe(true);
   });
+
+  it("access_token", async () => {
+    const issuer = await transmute.did.jwk.exportable({
+      alg: alg.ES256,
+    });
+    const subject = await transmute.did.jwt.sign({
+      issuer: "https://contoso.auth0.com/",
+      audience: [
+        "https://example.com/health-api",
+        "https://contoso.auth0.com/userinfo",
+      ],
+      protectedHeader: {
+        alg: issuer.key.publicKey.alg,
+        typ: "JWT",
+        kid: "zwY7_3TbTHDUUddVLtK4y",
+      },
+      claimSet: {
+        iss: "https://contoso.auth0.com/",
+        sub: "auth0|123456",
+        azp: "my_client_id",
+        scope: "openid profile read:patients read:admin",
+      },
+      privateKey: issuer.key.privateKey,
+    });
+    const didDocument = await transmute.did.jwt.resolve({
+      id: subject.did,
+      documentLoader: async (id: string) => {
+        if (id.startsWith("https://contoso.auth0.com/")) {
+          const [iss, kid] = id.split("#");
+          const didDocument =
+            transmute.did.oidc.didDocument<"https://contoso.auth0.com/">({
+              iss,
+              // set the public key manually
+              jwks: [{ ...issuer.key.publicKey, kid }],
+              // get the public key via OIDC Discovery
+              // jwk: await transmute.oidc.getPublicKey({iss, kid})
+            });
+          return { document: didDocument };
+        }
+        throw new Error("documentLoader does not support identifier: " + id);
+      },
+      profiles: ["access_token"],
+    });
+    expect(didDocument.id.startsWith("did:jwt")).toBe(true);
+    expect(didDocument.scope).toBe("openid profile read:patients read:admin");
+  });
+});
+
+it("transmute.did.oidc.resolve", async () => {
+  const iss = "https://contoso.auth0.com/";
+  const didDocument = await transmute.did.oidc.resolve({
+    iss,
+  });
+  expect(didDocument.id).toBe(iss);
+});
+
+it("transmute.did.oidc.getPublicKey", async () => {
+  const iss = "https://contoso.auth0.com/";
+  const kid = `NTBGNTJEMDc3RUE3RUVEOTM4NDcyOEFDNzEyOTY5NDNGOUQ4OEU5OA`;
+  const publicKeyJwk = await transmute.did.oidc.getPublicKey({ iss, kid });
+  expect(publicKeyJwk.kid).toBe(kid);
 });

@@ -7,6 +7,7 @@ import { DidJwsJwt } from "../types";
 
 import { resolveWithEmbeddedJwk } from "../resolveWithEmbeddedJwk";
 import { resolveWithRelativeDidUrl } from "../resolveWithRelativeDidUrl";
+import { resolveWithAccessToken } from "../resolveWithAccessToken";
 
 // documentLoader is a dynamic just in time allow-list.
 export const resolve: any = async ({ id, documentLoader, profiles }: any) => {
@@ -25,21 +26,9 @@ export const resolve: any = async ({ id, documentLoader, profiles }: any) => {
     return resolveWithRelativeDidUrl({ id, documentLoader });
   }
 
-  // import { resolveWithEmbeddedJwk } from "../resolveWithEmbeddedJwk";
-  // import { resolveWithIss } from "../resolveWithIss";
-  // import { resolveWithOpenIdConnectDiscovery } from "../resolveWithOpenIdConnectDiscovery";
-
-  // if (!iss && kid) {
-  //   return resolveWithOpenIdConnectDiscovery({
-  //     did: didJwt,
-  //     resolver,
-  //   });
-  // }
-  // if (iss && kid) {
-  //   return resolveWithIss({ did: didJwt, resolver });
-  // }
-
-  // return null;
+  if (kid && profiles.includes("access_token")) {
+    return resolveWithAccessToken({ id, documentLoader });
+  }
 
   throw new Error(`Profile not supported.`);
 };

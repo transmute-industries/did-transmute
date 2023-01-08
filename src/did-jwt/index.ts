@@ -3,6 +3,7 @@ import {
   verify,
   actor,
   resolve,
+
   // dereference,
 
   // encrypt,
@@ -16,8 +17,8 @@ const jwt = {
   // encrypt,
   // decrypt,
   resolve,
+
   // dereference,
-  // getOpenIdConnectIssuerPublicKey,
 };
 
 export default jwt;
