@@ -44,7 +44,7 @@ type DidMethodId<S extends string> = S extends `did:${string}:${infer Id}`
   ? Split<Split<Split<Id, "/">[0], "?">[0], "#">[0]
   : "";
 
-type DidUrl<S extends string> = {
+type ParsedDidUrl<S extends string> = {
   method: DidMethod<S>;
   id: DidMethodId<S>;
   path: DidPath<Split<Split<S, "#">[0], "?">[0]>;
@@ -52,10 +52,11 @@ type DidUrl<S extends string> = {
   fragment: DidFragment<S>;
 };
 
-type DidResourceId<D extends string> =
-  `did:${DidUrl<D>["method"]}:${DidUrl<D>["id"]}${DidUrl<D>["path"]}${DidUrl<D>["query"]}${DidUrl<D>["fragment"]}`;
+type Did<D extends string> =
+  `did:${ParsedDidUrl<D>["method"]}:${ParsedDidUrl<D>["id"]}`;
 
-type Did<D extends string> = `did:${DidUrl<D>["method"]}:${DidUrl<D>["id"]}`;
+type DidUrl<D extends string> =
+  `${Did<D>}${ParsedDidUrl<D>["path"]}${ParsedDidUrl<D>["query"]}${ParsedDidUrl<D>["fragment"]}`;
 
 type ExtractPathParams<T extends string> = string extends T
   ? Record<string, string>
@@ -82,24 +83,24 @@ type ExtractFragmentParams<T extends string> = string extends T
   : Record<string, never>;
 
 type ResourceParams<S extends string> = {
-  id: `did:${DidUrl<S>["method"]}:${DidUrl<S>["id"]}`;
-  path: ExtractPathParams<DidUrl<S>["path"]>;
-  query: ExtractQueryParams<DidUrl<S>["query"]>;
-  fragment: ExtractFragmentParams<DidUrl<S>["fragment"]>;
+  id: `did:${ParsedDidUrl<S>["method"]}:${ParsedDidUrl<S>["id"]}`;
+  path: ExtractPathParams<ParsedDidUrl<S>["path"]>;
+  query: ExtractQueryParams<ParsedDidUrl<S>["query"]>;
+  fragment: ExtractFragmentParams<ParsedDidUrl<S>["fragment"]>;
 };
 
-type E0 = DidUrl<"did:example:v0:123/resources/123?query=456#fragment-789">;
-type E1 = DidUrl<"did:example:v0:123/resources/123#fragment-789">;
-type E2 = DidUrl<"did:example:v0:123?query=456#fragment-789">;
-type E3 = DidUrl<"did:example:v0:123#fragment-789">;
-type E4 = DidUrl<"did:example:v0:123?query=456">;
-type E5 = DidUrl<"did:example:v0:123/resources/123">;
-type E6 = DidUrl<"did:example:v0:123/resources/123">;
+type E0 =
+  ParsedDidUrl<"did:example:v0:123/resources/123?query=456#fragment-789">;
+type E1 = ParsedDidUrl<"did:example:v0:123/resources/123#fragment-789">;
+type E2 = ParsedDidUrl<"did:example:v0:123?query=456#fragment-789">;
+type E3 = ParsedDidUrl<"did:example:v0:123#fragment-789">;
+type E4 = ParsedDidUrl<"did:example:v0:123?query=456">;
+type E5 = ParsedDidUrl<"did:example:v0:123/resources/123">;
+type E6 = ParsedDidUrl<"did:example:v0:123/resources/123">;
 
-type R0 =
-  DidResourceId<"did:example:v0:123/resources/123?query=456#fragment-789">;
-type R1 = DidResourceId<"did:example:v0:123/resources/123">;
-type R2 = DidResourceId<"did:example:v0:123#fragment-789">;
+type R0 = DidUrl<"did:example:v0:123/resources/123?query=456#fragment-789">;
+type R1 = DidUrl<"did:example:v0:123/resources/123">;
+type R2 = DidUrl<"did:example:v0:123#fragment-789">;
 
 type R0P =
   ResourceParams<"did:example:v0:123/posts/:postId/:commentId?authUser=:authUser&filter=:filter#:keyId">;
@@ -134,9 +135,9 @@ it("did resolution", async () => {
 });
 
 it("did dereferencing", async () => {
-  type DidUrl = DidResourceId<`did:example:${string}#${string}`>;
-  type DidDocumentLoader = DocumentLoader<DidUrl>;
-  const didUrl: DidUrl = "did:example:456#key-456";
+  type DidExampleUrl = DidUrl<`did:example:${string}#${string}`>;
+  type DidDocumentLoader = DocumentLoader<DidExampleUrl>;
+  const didUrl: DidExampleUrl = "did:example:456#key-456";
   const didUrlDocumentLoader: DidDocumentLoader = loader;
   validateDocumentLoader(didUrl, didUrlDocumentLoader);
 });
