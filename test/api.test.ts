@@ -1,4 +1,10 @@
-import transmute, { DidJwk, AnyDidLike, DidJwsJwt, DidJweJwt } from "../src";
+import transmute, {
+  DidJwk,
+  AnyDidLike,
+  DidJwsJwt,
+  DidJweJwt,
+  DocumentLoader,
+} from "../src";
 
 const { alg, enc } = transmute.jose;
 
@@ -405,7 +411,7 @@ it("transmute.did.web.exportable", async () => {
   const { did, didDocument, key } = await transmute.did.web.exportable({
     url: "https://id.gs1.transmute.example/01/9506000134352",
     alg: transmute.jose.alg.ES256,
-    documentLoader: transmute.did.jwk.documentLoader,
+    documentLoader: transmute.did.jwk.documentLoader as DocumentLoader<string>,
   });
   expect(did).toBe("did:web:id.gs1.transmute.example:01:9506000134352");
   expect(didDocument.id).toBe(
@@ -442,19 +448,20 @@ it("transmute.did.web.resolve", async () => {
     url: "https://id.gs1.transmute.example/01/9506000134352",
     privateKey: privateKey,
   });
+
+  const testLoader = async (iri: string) => {
+    // for test purposes.
+    if (iri === "https://id.gs1.transmute.example/01/9506000134352/did.json") {
+      return { document: issuer.didDocument };
+    }
+    throw new Error("Unsupported IRI " + iri);
+  };
   const didDocument = await transmute.did.web.resolve({
     id: issuer.did,
-    documentLoader: async (iri: string) => {
-      // for test purposes.
-      if (
-        iri === "https://id.gs1.transmute.example/01/9506000134352/did.json"
-      ) {
-        return { document: issuer.didDocument };
-      }
-      throw new Error("Unsupported IRI " + iri);
-    },
+    documentLoader: testLoader as DocumentLoader<string>,
   });
-  expect(didDocument.id).toBe(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  expect((didDocument as any).id).toBe(
     "did:web:id.gs1.transmute.example:01:9506000134352"
   );
 });
@@ -472,18 +479,19 @@ it("transmute.did.web.dereference", async () => {
       d: "RWgQ966yzek12KSlDJ-hmlqckRUhZzKDqJeM_QdbT-E",
     },
   });
-  const verificationMethod = await transmute.did.web.dereference({
+
+  const testLoader = async (iri: string) => {
+    // for test purposes.
+    if (iri === "https://id.gs1.transmute.example/01/9506000134352/did.json") {
+      return { document: issuer.didDocument };
+    }
+    throw new Error("Unsupported IRI " + iri);
+  };
+  const verificationMethod = (await transmute.did.web.dereference({
     id: `${issuer.did}#a9EEmV5OPmFQlAVU2EDuKB3cp5JpirRwnD12UdHc91Q`,
-    documentLoader: async (iri: string) => {
-      // for test purposes.
-      if (
-        iri === "https://id.gs1.transmute.example/01/9506000134352/did.json"
-      ) {
-        return { document: issuer.didDocument };
-      }
-      throw new Error("Unsupported IRI " + iri);
-    },
-  });
+    documentLoader: testLoader as DocumentLoader<string>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  })) as any;
   expect(verificationMethod.controller).toBe(
     "did:web:id.gs1.transmute.example:01:9506000134352"
   );
@@ -501,7 +509,8 @@ describe("transmute.did.web.fromDids", () => {
     const issuer = await transmute.did.web.fromDids({
       url: "https://id.gs1.transmute.example/01/9506000134352",
       dids: [did],
-      documentLoader: transmute.did.jwk.documentLoader,
+      documentLoader: transmute.did.jwk
+        .documentLoader as DocumentLoader<string>,
     });
     expect(issuer.did).toBe(
       "did:web:id.gs1.transmute.example:01:9506000134352"
@@ -544,8 +553,9 @@ describe("transmute.did.web.fromDids", () => {
         }
         if (id.startsWith("did:jwt")) {
           const didDocument = await transmute.did.jwt.resolve({
-            id: id as any,
-            documentLoader: transmute.did.jwk.documentLoader as any,
+            id: id as DidJwsJwt,
+            documentLoader: transmute.did.jwk
+              .documentLoader as DocumentLoader<AnyDidLike>,
             profiles: ["embedded-jwk"],
           });
           return { document: didDocument };
@@ -604,7 +614,7 @@ describe("transmute.did.web.fromDids", () => {
         }
         if (id.startsWith("did:jwt")) {
           const didDocument = await transmute.did.jwt.resolve({
-            id: id as any,
+            id: id as DidJweJwt,
             privateKeyLoader: async (id: string) => {
               if (id.startsWith("did:example:123")) {
                 return actor0.key.privateKey;
@@ -718,7 +728,14 @@ describe("transmute.did.web.fromDids", () => {
             // jws
             const didDocument = await transmute.did.jwt.resolve({
               id: id as DidJwsJwt,
-              documentLoader: transmute.did.jwk.documentLoader as any,
+              documentLoader: async (id: string) => {
+                if (id.startsWith("did:jwk")) {
+                  return transmute.did.jwk.documentLoader(id as DidJwk);
+                }
+                throw new Error(
+                  "documentLoader does not support identifier: " + id
+                );
+              },
               profiles: ["embedded-jwk"],
             });
             return { document: didDocument };

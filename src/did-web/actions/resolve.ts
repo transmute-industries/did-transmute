@@ -1,11 +1,12 @@
 import { didToEndpoint } from "../didToEndpoint";
 
 import { prefix } from "../method";
+import { DidWebResolver, DidWebResolveParams } from "../types";
 
-export const resolve: any = async ({
+export const resolve: DidWebResolver = async ({
   id,
   documentLoader,
-}: any): Promise<any | null> => {
+}: DidWebResolveParams) => {
   if (!id.startsWith(prefix)) {
     return null;
   }

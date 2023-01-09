@@ -1,16 +1,12 @@
 import { toDidDocument } from "../toDidDocument";
 
-export type FromDids = {
-  url: string;
-  dids: any[];
-  documentLoader: any;
-};
+import { DidWebActor, CreateFromDids } from "../types";
 
 export const fromDids = async ({
   url,
   dids,
   documentLoader,
-}: FromDids): Promise<any> => {
+}: CreateFromDids): Promise<DidWebActor> => {
   const didDocument = await toDidDocument(url, dids, documentLoader);
-  return { did: didDocument.id, didDocument } as any;
+  return { did: didDocument.id, didDocument } as DidWebActor;
 };
