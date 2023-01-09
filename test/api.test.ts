@@ -507,3 +507,9 @@ it("transmute.did.web.dereference", async () => {
   );
   expect(verificationMethod.publicKeyJwk).toBeDefined();
 });
+
+it.todo("did web from did:jwt (JWS)");
+it.todo("did web from did:jwt (JWE)");
+it.todo("did web from did:jwt (JWS + JWE)");
+it.todo("did web types and lint");
+it.todo("update mermaid diagram at top");
