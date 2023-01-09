@@ -61,7 +61,7 @@ export type DidJwsJwtDocument = {
   [property: string]: unknown;
 };
 
-export interface DidResolutionParameters {
+interface DidResolutionParameters {
   id: DidJwsJwt | DidJweJwt;
   profiles: DidJwtResolutionProfile[];
 }

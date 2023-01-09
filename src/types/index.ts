@@ -26,3 +26,4 @@ export * from "../jose/KeyAgreementAlgorithm";
 export * from "../did/ResourceParams";
 
 export * from "../did-jwk/types";
+export * from "../did-jwt/types";

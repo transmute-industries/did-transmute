@@ -2,9 +2,9 @@ import { PublicKeyJwk } from "../types";
 import { verify } from "./actions/verify";
 import { DidJwsJwt } from "./types";
 import { DidJwsJwtDocument } from "./types";
-import { AnyDid } from "../did/Did";
+
 export type DidDocumentFromVerification = {
-  did: AnyDid;
+  did: DidJwsJwt;
   issuer: string;
   publicKey: PublicKeyJwk;
 };

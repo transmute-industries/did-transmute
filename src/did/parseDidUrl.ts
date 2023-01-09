@@ -1,7 +1,6 @@
 import { ParsedDidUrl, RemovePrefix } from "./ParsedDidUrl";
-import { AnyDidUrl } from "./DidUrl";
 
-export function parseDidUrl<ID extends AnyDidUrl>(id: ID) {
+export function parseDidUrl<ID extends string>(id: ID) {
   const pathStartsAt = id.indexOf("/");
   const queryStartsAt = id.indexOf("?");
   const fragmentStartsAt = id.indexOf("#");

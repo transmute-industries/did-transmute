@@ -1,4 +1,4 @@
-import transmute, { DidJwk, AnyDidLike } from "../src";
+import transmute, { DidJwk, AnyDidLike, DidJwsJwt, DidJweJwt } from "../src";
 
 const { alg, enc } = transmute.jose;
 
@@ -432,21 +432,6 @@ it("transmute.did.web.fromPrivateKey", async () => {
   expect(issuer.key.privateKey).toBeDefined();
 });
 
-it("transmute.did.web.fromDids", async () => {
-  const { did } = await transmute.did.jwk.exportable({
-    alg: "ES256",
-  });
-  const issuer = await transmute.did.web.fromDids({
-    url: "https://id.gs1.transmute.example/01/9506000134352",
-    dids: [did],
-    documentLoader: transmute.did.jwk.documentLoader,
-  });
-  expect(issuer.did).toBe("did:web:id.gs1.transmute.example:01:9506000134352");
-  expect(issuer.didDocument.id).toBe(
-    "did:web:id.gs1.transmute.example:01:9506000134352"
-  );
-});
-
 it("transmute.did.web.resolve", async () => {
   const {
     key: { privateKey },
@@ -508,8 +493,271 @@ it("transmute.did.web.dereference", async () => {
   expect(verificationMethod.publicKeyJwk).toBeDefined();
 });
 
-it.todo("did web from did:jwt (JWS)");
-it.todo("did web from did:jwt (JWE)");
-it.todo("did web from did:jwt (JWS + JWE)");
+describe("transmute.did.web.fromDids", () => {
+  it("did:web jwk", async () => {
+    const { did } = await transmute.did.jwk.exportable({
+      alg: "ES256",
+    });
+    const issuer = await transmute.did.web.fromDids({
+      url: "https://id.gs1.transmute.example/01/9506000134352",
+      dids: [did],
+      documentLoader: transmute.did.jwk.documentLoader,
+    });
+    expect(issuer.did).toBe(
+      "did:web:id.gs1.transmute.example:01:9506000134352"
+    );
+    expect(issuer.didDocument.id).toBe(
+      "did:web:id.gs1.transmute.example:01:9506000134352"
+    );
+  });
+
+  it("did:web jwt(jws)", async () => {
+    const actor0 = await transmute.did.jwk.exportable({
+      alg: "ES256",
+    });
+    const actor1 = await transmute.did.jwt.sign({
+      issuer: "did:example:123",
+      audience: "did:example:456",
+      protectedHeader: {
+        alg: actor0.key.publicKey.alg,
+        jwk: actor0.key.publicKey,
+      },
+      claimSet: {
+        service: [
+          {
+            id: "#dwn",
+            type: "DecentralizedWebNode",
+            serviceEndpoint: {
+              nodes: ["https://dwn.example.com", "https://example.org/dwn"],
+            },
+          },
+        ],
+      },
+      privateKey: actor0.key.privateKey,
+    });
+    const actor2 = await transmute.did.web.fromDids({
+      url: "https://id.gs1.transmute.example/01/9506000134352",
+      dids: [actor1.did],
+      documentLoader: async (id: string) => {
+        if (id.startsWith("did:jwk")) {
+          return transmute.did.jwk.documentLoader(id as DidJwk);
+        }
+        if (id.startsWith("did:jwt")) {
+          const didDocument = await transmute.did.jwt.resolve({
+            id: id as any,
+            documentLoader: transmute.did.jwk.documentLoader as any,
+            profiles: ["embedded-jwk"],
+          });
+          return { document: didDocument };
+        }
+        throw new Error("documentLoader does not support id: " + id);
+      },
+    });
+    expect(actor2.did).toBe(
+      "did:web:id.gs1.transmute.example:01:9506000134352"
+    );
+    expect(actor2.didDocument.id).toBe(
+      "did:web:id.gs1.transmute.example:01:9506000134352"
+    );
+    expect(actor2.didDocument.service).toEqual([
+      {
+        id: "#dwn",
+        type: "DecentralizedWebNode",
+        serviceEndpoint: {
+          nodes: ["https://dwn.example.com", "https://example.org/dwn"],
+        },
+      },
+    ]);
+  });
+
+  it("did:web jwt(jwe)", async () => {
+    const actor0 = await transmute.did.jwk.exportable({
+      alg: alg.ECDH_ES_A256KW,
+    });
+    const actor1 = await transmute.did.jwt.encrypt({
+      issuer: "did:example:123",
+      protectedHeader: {
+        alg: actor0.key.publicKey.alg,
+        iss: "did:example:123",
+        kid: "#0",
+        enc: transmute.jose.enc.A256GCM,
+      },
+      claimSet: {
+        service: [
+          {
+            id: "#dwn",
+            type: "DecentralizedWebNode",
+            serviceEndpoint: {
+              nodes: ["https://dwn.example.com", "https://example.org/dwn"],
+            },
+          },
+        ],
+      },
+      publicKey: actor0.key.publicKey,
+    });
+    const actor2 = await transmute.did.web.fromDids({
+      url: "https://id.gs1.transmute.example/01/9506000134352",
+      dids: [actor1.did],
+      documentLoader: async (id: string) => {
+        if (id.startsWith("did:jwk")) {
+          return transmute.did.jwk.documentLoader(id as DidJwk);
+        }
+        if (id.startsWith("did:jwt")) {
+          const didDocument = await transmute.did.jwt.resolve({
+            id: id as any,
+            privateKeyLoader: async (id: string) => {
+              if (id.startsWith("did:example:123")) {
+                return actor0.key.privateKey;
+              }
+              throw new Error(
+                "privateKeyLoader does not support identifier: " + id
+              );
+            },
+            profiles: ["encrypted-jwt"],
+          });
+          return { document: didDocument };
+        }
+        throw new Error("documentLoader does not support id: " + id);
+      },
+    });
+    expect(actor2.did).toBe(
+      "did:web:id.gs1.transmute.example:01:9506000134352"
+    );
+    expect(actor2.didDocument.id).toBe(
+      "did:web:id.gs1.transmute.example:01:9506000134352"
+    );
+    expect(actor2.didDocument.service).toEqual([
+      {
+        id: "#dwn",
+        type: "DecentralizedWebNode",
+        serviceEndpoint: {
+          nodes: ["https://dwn.example.com", "https://example.org/dwn"],
+        },
+      },
+    ]);
+  });
+
+  it.only("did:web (jws + jwe)", async () => {
+    const actor0 = await transmute.did.jwk.exportable({
+      alg: alg.ECDH_ES_A256KW,
+    });
+    const actor1 = await transmute.did.jwt.encrypt({
+      issuer: "did:example:123",
+      protectedHeader: {
+        alg: actor0.key.publicKey.alg,
+        iss: "did:example:123",
+        kid: "#0",
+        enc: transmute.jose.enc.A256GCM,
+      },
+      claimSet: {
+        service: [
+          {
+            id: "#dwn",
+            type: "DecentralizedWebNode",
+            serviceEndpoint: {
+              nodes: ["https://dwn.example.com", "https://example.org/dwn"],
+            },
+          },
+        ],
+      },
+      publicKey: actor0.key.publicKey,
+    });
+    const actor2 = await transmute.did.jwk.exportable({
+      alg: alg.ES256,
+    });
+    const actor3 = await transmute.did.jwt.sign({
+      issuer: "did:example:123",
+      audience: "did:example:456",
+      protectedHeader: {
+        alg: actor2.key.publicKey.alg,
+        jwk: actor2.key.publicKey,
+      },
+      claimSet: {
+        verificationMethod: [
+          {
+            id: "#AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0", // will be overwritten by kid
+            type: "JsonWebKey2020",
+            controller: "did:example:123", // will be overwritten anyway.
+            publicKeyJwk: {
+              kid: "urn:ietf:params:oauth:jwk-thumbprint:sha-256:AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0",
+              kty: "OKP",
+              crv: "Ed25519",
+              alg: "EdDSA",
+              x: "dh2c41edqveCxEzw3OVjtAmdcJPwe4lAg2fJ10rsZk0",
+            },
+          },
+        ],
+      },
+      privateKey: actor2.key.privateKey,
+    });
+    const actor4 = await transmute.did.web.fromDids({
+      url: "https://id.gs1.transmute.example/01/9506000134352",
+      dids: [actor1.did, actor3.did],
+      documentLoader: async (id: string) => {
+        if (id.startsWith("did:jwk")) {
+          return transmute.did.jwk.documentLoader(id as DidJwk);
+        }
+        if (id.startsWith("did:jwt")) {
+          if (id.split(".").length === 5) {
+            // jwe
+            const didDocument = await transmute.did.jwt.resolve({
+              id: id as DidJweJwt,
+              privateKeyLoader: async (id: string) => {
+                if (id.startsWith("did:example:123")) {
+                  return actor0.key.privateKey;
+                }
+                throw new Error(
+                  "privateKeyLoader does not support identifier: " + id
+                );
+              },
+              profiles: ["encrypted-jwt"],
+            });
+            return { document: didDocument };
+          }
+          if (id.split(".").length === 3) {
+            // jws
+            const didDocument = await transmute.did.jwt.resolve({
+              id: id as DidJwsJwt,
+              documentLoader: transmute.did.jwk.documentLoader as any,
+              profiles: ["embedded-jwk"],
+            });
+            return { document: didDocument };
+          }
+        }
+        throw new Error("documentLoader does not support id: " + id);
+      },
+    });
+    expect(actor4.did).toBe(
+      "did:web:id.gs1.transmute.example:01:9506000134352"
+    );
+    expect(actor4.didDocument.id).toBe(
+      "did:web:id.gs1.transmute.example:01:9506000134352"
+    );
+    expect(actor4.didDocument.verificationMethod).toEqual([
+      {
+        id: "#AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0", // set by fromDids
+        type: "JsonWebKey2020",
+        controller: "did:web:id.gs1.transmute.example:01:9506000134352", // set by fromDids
+        publicKeyJwk: {
+          kid: "urn:ietf:params:oauth:jwk-thumbprint:sha-256:AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0",
+          kty: "OKP",
+          crv: "Ed25519",
+          alg: "EdDSA",
+          x: "dh2c41edqveCxEzw3OVjtAmdcJPwe4lAg2fJ10rsZk0",
+        },
+      },
+    ]);
+    expect(actor4.didDocument.service).toEqual([
+      {
+        id: "#dwn",
+        type: "DecentralizedWebNode",
+        serviceEndpoint: {
+          nodes: ["https://dwn.example.com", "https://example.org/dwn"],
+        },
+      },
+    ]);
+  });
+});
+
 it.todo("did web types and lint");
 it.todo("update mermaid diagram at top");

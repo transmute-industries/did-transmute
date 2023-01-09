@@ -1,4 +1,3 @@
-import { AnyDidUrl } from "./DidUrl";
 import { ParsedDidUrl } from "./ParsedDidUrl";
 
 export type Service<U extends string> = {
@@ -7,4 +6,4 @@ export type Service<U extends string> = {
   serviceEndpoint: string | string[];
 };
 
-export type AnyService = Service<AnyDidUrl>;
+export type AnyService = Service<string>;

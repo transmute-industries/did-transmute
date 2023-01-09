@@ -11,14 +11,16 @@ import { KeyAgreementAlgorithm } from "../jose/KeyAgreementAlgorithm";
 import { formatDidDocument } from "../did/formatDidDocument";
 import {
   VerificationMethod,
-  AnyVerificationMethodDidUrl,
+  // AnyVerificationMethodDidUrl, delete me
 } from "../did/VerificationMethod";
+import { DidJwk } from "./types";
+import { ParsedDidUrl } from "../did/ParsedDidUrl";
 
 export const toDidDocument = (jwk: AsymmetricJsonWebKey) => {
   const publicKeyJwk = getPublicKeyJwk(jwk);
   const did = toDid(publicKeyJwk);
-  const vm: VerificationMethod<AnyVerificationMethodDidUrl> = {
-    id: "#0",
+  const vm: VerificationMethod<DidJwk> = {
+    id: "#0" as ParsedDidUrl<DidJwk>["fragment"],
     type: "JsonWebKey2020",
     controller: did,
     publicKeyJwk,

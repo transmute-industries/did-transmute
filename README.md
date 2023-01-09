@@ -415,7 +415,7 @@ For example:
   "id": "#key-4",
   "type": "JsonWebKey2020",
   "controller": "did:example:123",
-  "publicKey": {
+  "publicKeyJwk": {
     "kid": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0",
     "kty": "OKP",
     "crv": "Ed25519",
@@ -432,7 +432,7 @@ or
   "id": "did:example:123#urn:ietf:params:oauth:jwk-thumbprint:sha-256:AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0",
   "type": "JsonWebKey2020",
   "controller": "did:example:123",
-  "publicKey": {
+  "publicKeyJwk": {
     "kid": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0",
     "kty": "OKP",
     "crv": "Ed25519",

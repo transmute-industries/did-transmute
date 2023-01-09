@@ -4,7 +4,7 @@ import { parseDidUrl } from "../did/parseDidUrl";
 import { getDidDocumentFromVerification } from "./getDidDocumentFromVerification";
 import { dereferenceWithinDocument } from "../did/dereferenceWithinDocument";
 import { DidUrl, PublicKeyJwk } from "../types";
-import { AnyDid } from "../did/Did";
+
 import { VerificationMethod } from "../did/VerificationMethod";
 
 export const resolveWithAccessToken = async ({
@@ -25,7 +25,7 @@ export const resolveWithAccessToken = async ({
     `${iss}#${kid}` as DidUrl<"did:jwt:header.payload.signature#key-0">;
   const { document: didDocument } = await documentLoader(absoluteDidUrl);
   const verificationMethod = dereferenceWithinDocument<
-    VerificationMethod<AnyDid>
+    VerificationMethod<DidJwsJwt>
   >({
     id: absoluteDidUrl,
     document: didDocument,

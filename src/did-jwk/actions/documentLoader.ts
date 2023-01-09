@@ -12,5 +12,5 @@ export async function documentLoader(id: Did<DidJwk>) {
   const methodSpecificIdentifier = parsed.id;
   const decoded = base64url.decode(methodSpecificIdentifier);
   const jwk = JSON.parse(new TextDecoder().decode(decoded));
-  return { document: toDidDocument(jwk) as DidJwkDocument };
+  return { document: toDidDocument(jwk) as unknown as DidJwkDocument };
 }
