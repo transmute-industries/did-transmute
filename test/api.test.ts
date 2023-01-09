@@ -413,3 +413,97 @@ it("transmute.did.web.exportable", async () => {
   );
   expect(key.privateKey).toBeDefined();
 });
+
+it("transmute.did.web.fromPrivateKey", async () => {
+  const {
+    key: { privateKey },
+  } = await transmute.did.jwk.exportable({
+    alg: "ES256",
+  });
+  const issuer = await transmute.did.web.fromPrivateKey({
+    url: "https://id.gs1.transmute.example/01/9506000134352",
+    privateKey: privateKey,
+  });
+  expect(issuer.did).toBe("did:web:id.gs1.transmute.example:01:9506000134352");
+  expect(issuer.didDocument.id).toBe(
+    "did:web:id.gs1.transmute.example:01:9506000134352"
+  );
+  expect(issuer.key.publicKey).toBeDefined();
+  expect(issuer.key.privateKey).toBeDefined();
+});
+
+it("transmute.did.web.fromDids", async () => {
+  const { did } = await transmute.did.jwk.exportable({
+    alg: "ES256",
+  });
+  const issuer = await transmute.did.web.fromDids({
+    url: "https://id.gs1.transmute.example/01/9506000134352",
+    dids: [did],
+    documentLoader: transmute.did.jwk.documentLoader,
+  });
+  expect(issuer.did).toBe("did:web:id.gs1.transmute.example:01:9506000134352");
+  expect(issuer.didDocument.id).toBe(
+    "did:web:id.gs1.transmute.example:01:9506000134352"
+  );
+});
+
+it("transmute.did.web.resolve", async () => {
+  const {
+    key: { privateKey },
+  } = await transmute.did.jwk.exportable({
+    alg: "ES256",
+  });
+  const issuer = await transmute.did.web.fromPrivateKey({
+    url: "https://id.gs1.transmute.example/01/9506000134352",
+    privateKey: privateKey,
+  });
+  const didDocument = await transmute.did.web.resolve({
+    id: issuer.did,
+    documentLoader: async (iri: string) => {
+      // for test purposes.
+      if (
+        iri === "https://id.gs1.transmute.example/01/9506000134352/did.json"
+      ) {
+        return { document: issuer.didDocument };
+      }
+      throw new Error("Unsupported IRI " + iri);
+    },
+  });
+  expect(didDocument.id).toBe(
+    "did:web:id.gs1.transmute.example:01:9506000134352"
+  );
+});
+
+it("transmute.did.web.dereference", async () => {
+  const issuer = await transmute.did.web.fromPrivateKey({
+    url: "https://id.gs1.transmute.example/01/9506000134352",
+    privateKey: {
+      kid: "urn:ietf:params:oauth:jwk-thumbprint:sha-256:a9EEmV5OPmFQlAVU2EDuKB3cp5JpirRwnD12UdHc91Q",
+      kty: "EC",
+      crv: "P-256",
+      alg: "ES256",
+      x: "D1ygYPasDI88CrYAF_Ga_4aXEhp5fWetEXzyitdt1K8",
+      y: "dkxXWzis0tQQIctZRzSvf6tdeITCLXim8HgTUhMOTrg",
+      d: "RWgQ966yzek12KSlDJ-hmlqckRUhZzKDqJeM_QdbT-E",
+    },
+  });
+  const verificationMethod = await transmute.did.web.dereference({
+    id: `${issuer.did}#a9EEmV5OPmFQlAVU2EDuKB3cp5JpirRwnD12UdHc91Q`,
+    documentLoader: async (iri: string) => {
+      // for test purposes.
+      if (
+        iri === "https://id.gs1.transmute.example/01/9506000134352/did.json"
+      ) {
+        return { document: issuer.didDocument };
+      }
+      throw new Error("Unsupported IRI " + iri);
+    },
+  });
+  expect(verificationMethod.controller).toBe(
+    "did:web:id.gs1.transmute.example:01:9506000134352"
+  );
+  expect(verificationMethod.id).toBe(
+    "#a9EEmV5OPmFQlAVU2EDuKB3cp5JpirRwnD12UdHc91Q"
+  );
+  expect(verificationMethod.publicKeyJwk).toBeDefined();
+});

@@ -24,8 +24,8 @@ export const fromPrivateKey = async ({
     did,
     didDocument,
     key: {
-      publicKeyJwk: getPublicKeyJwk(privateKey),
-      privateKeyJwk: privateKey,
+      publicKey: getPublicKeyJwk(privateKey),
+      privateKey: privateKey,
     },
   };
 };

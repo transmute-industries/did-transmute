@@ -536,7 +536,11 @@ This method is very 🚧 experimental 🏗️.
 ### Generate
 
 ```ts
-
+ const { did, didDocument, key } = await transmute.did.web.exportable({
+  url: "https://id.gs1.transmute.example/01/9506000134352",
+  alg: transmute.jose.alg.ES256,
+  documentLoader: transmute.did.jwk.documentLoader,
+});
 ```
 
 ### From Private Key
@@ -564,7 +568,7 @@ const {
 const issuer = await transmute.did.web.fromDids({
   url: "https://id.gs1.transmute.example/01/9506000134352",
   dids: [did],
-  resolver: transmute.did.jwk.resolve,
+  documentLoader: transmute.did.jwk.documentLoader,
 });
 ```
 
@@ -581,7 +585,7 @@ const issuer = await transmute.did.web.fromPrivateKey({
   privateKey: privateKey,
 });
 const didDocument = await transmute.did.web.resolve({
-  did: issuer.did,
+  id: issuer.did,
   documentLoader: async (iri: string) => {
     // for test purposes.
     if (iri === "https://id.gs1.transmute.example/01/9506000134352/did.json") {
