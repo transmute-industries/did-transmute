@@ -600,38 +600,33 @@ const didDocument = await transmute.did.web.resolve({
 ### Dereference
 
 ```ts
-const { 
-  key: { privateKey } 
-} = await transmute.did.jwk.exportable({
-  alg: 'ES256',
-});
 const issuer = await transmute.did.web.fromPrivateKey({
   url: "https://id.gs1.transmute.example/01/9506000134352",
-  privateKey: privateKey,
-});
-const jws = await transmute.sign({
-  payload,
-  protectedHeader: {
-    alg: privateKey.alg,
+  privateKey: {
+    kid: "urn:ietf:params:oauth:jwk-thumbprint:sha-256:a9EEmV5OPmFQlAVU2EDuKB3cp5JpirRwnD12UdHc91Q",
+    kty: "EC",
+    crv: "P-256",
+    alg: "ES256",
+    x: "D1ygYPasDI88CrYAF_Ga_4aXEhp5fWetEXzyitdt1K8",
+    y: "dkxXWzis0tQQIctZRzSvf6tdeITCLXim8HgTUhMOTrg",
+    d: "RWgQ966yzek12KSlDJ-hmlqckRUhZzKDqJeM_QdbT-E",
   },
-  privateKey: privateKey,
 });
-const absoluteDidWebUrl = `${issuer.did}#${privateKey.kid
-  ?.split(":")
-  .pop()}`;
-const vm = await transmute.did.web.dereference({
-  didUrl: absoluteDidWebUrl as DidWebUrl,
-  resolver: async ({ did }) => {
+const verificationMethod = await transmute.did.web.dereference({
+  id: `${issuer.did}#a9EEmV5OPmFQlAVU2EDuKB3cp5JpirRwnD12UdHc91Q`,
+  documentLoader: async (iri: string) => {
     // for test purposes.
-    if (did === issuer.did) {
-      return issuer.didDocument;
+    if (
+      iri === "https://id.gs1.transmute.example/01/9506000134352/did.json"
+    ) {
+      return { document: issuer.didDocument };
     }
-    return null;
+    throw new Error("Unsupported IRI " + iri);
   },
 });
 const v = await transmute.verify({
   jws,
-  publicKey: (vm as VerificationMethod).publicKey,
+  publicKey: verificationMethod.publicKeyJwk,
 });
 ```
 
