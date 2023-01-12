@@ -20,10 +20,6 @@ all JWK or JWT, is projected into a Decentralizied Identifier space, such as `di
 
 This is accomplished by defining resolution and dereferencing for the DID URLs under the "projection method".
 
-The prefixing might be removed as part of a standardization process.
-
-For example: `did:corporate:example:123` might become `did:example:123` if doing so improves interoperability.
-
 ### Composition
 
 ```mermaid
@@ -48,15 +44,16 @@ For example: `did:corporate:example:123` might become `did:example:123` if doing
 graph LR
 	subgraph &nbsp
 		direction LR
-        root("did:corporate:web:  ")
+        root("did:web:  ")
         0("did:jwk: base64url ( json-web-key ) ")
         1("did:jwt: compact-json-web-token ")
-        2("did:jws: compact-json-web-signature ")
-        3("did:jwe: compact-json-web-encryption ")
+        2("compact-json-web-signature ")
+        3("compact-json-web-encryption ")
         root -- derive -->  0
-        0 -- issue --> 1
-        0 -- sign --> 2
-        0 -- encrypt --> 3
+        0 -- sign --> 1
+        0 -- encrypt --> 1
+        1 -- as --> 2
+        1 -- as --> 3
         root -- derive -->  1
 	end
 
@@ -64,8 +61,9 @@ style root color: #fff, fill: #594aa8
 style 0 color: #fcb373, stroke: #fcb373
 style 1 color: #fcb373, stroke: #fcb373
 style 2 color: #8286a3, stroke: #8286a3
-linkStyle 0,4 color:#2cb3d9, stroke-width: 2.0px
-linkStyle 1,2,3 color:#ff605d, stroke:#8286a3, stroke-width: 2.0px
+linkStyle 0,5 color:#2cb3d9, stroke-width: 2.0px
+linkStyle 1,2 color:#ff605d, stroke:#8286a3, stroke-width: 2.0px
+linkStyle 3,4 color:#48caca, stroke-width: 2.0px
 %% export const transmute = {
 %%   primary: {
 %%     purple: { dark: "#27225b", light: "#594aa8" },
@@ -266,8 +264,6 @@ linkStyle 0,2 color:#ff605d, stroke-width: 2.0px
 
 There are several different ways to "trust" a JSON Web Token issuer, based `exclusively` or the `header` and `verify` or `decrypt` operations.
 
-🔥 Only `embedded jwk` is supported currently.
-
 ### Embedding keys
 
 Using [jwk](https://www.rfc-editor.org/rfc/rfc7515.html#section-4.1.3) and [x5c](https://www.rfc-editor.org/rfc/rfc7515.html#section-4.1.6).
@@ -280,7 +276,6 @@ Using [jwk](https://www.rfc-editor.org/rfc/rfc7515.html#section-4.1.3) and [x5c]
 When `jwk` is present in the `Protected Header` of a `JWT`, a custom `did:jwk` resoler will be used as the the `allow-list`.
 
 A `null` resolution is treated as a `deny` operation.
-
 
 See also [panva/jose](https://github.com/panva/jose/blob/HEAD/docs/functions/jwk_embedded.EmbeddedJWK.md#readme).
 
@@ -300,7 +295,7 @@ See [RFC7800](https://www.rfc-editor.org/rfc/rfc7800.html#section-3)
 
 ### Using OpenID Connect Discovery
 
-## TODO
+🚧 Experimental 🏗️.
 
 
 ```mermaid
@@ -342,7 +337,7 @@ VerificationMethod("{{iss}}#{{kid}}")
 DecodedVerificationMethodComponents -.-> VerificationMethod
 
 DidDocument -.-> publicKey
-publicKey("{ publicKey }")
+publicKey("{ publicKeyJwk }")
 VerificationMethod -.-> publicKey
 
 class ProtectedHeader,ProtectedClaimSet,publicKey PurpleNode

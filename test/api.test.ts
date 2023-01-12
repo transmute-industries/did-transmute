@@ -775,6 +775,3 @@ describe("transmute.did.web.fromDids", () => {
     ]);
   });
 });
-
-it.todo("did web types and lint");
-it.todo("update mermaid diagram at top");
