@@ -8,6 +8,9 @@
     "src",
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "clean": "rm -rf ./dist",
     "prebuild": "npm run clean",
