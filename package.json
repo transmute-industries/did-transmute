@@ -5,7 +5,8 @@
   "main": "./dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
-    "src","dist"
+    "src",
+    "dist"
   ],
   "scripts": {
     "clean": "rm -rf ./dist",
