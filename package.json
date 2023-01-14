@@ -4,6 +4,9 @@
   "description": "An opinionated typescript library for decentralized identifiers and verifiable credentials.",
   "main": "./dist/index.js",
   "typings": "dist/index.d.ts",
+  "files": [
+    "src","dist"
+  ],
   "scripts": {
     "clean": "rm -rf ./dist",
     "prebuild": "npm run clean",
