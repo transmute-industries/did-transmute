@@ -647,7 +647,7 @@ describe("transmute.did.web.fromDids", () => {
     ]);
   });
 
-  it.only("did:web (jws + jwe)", async () => {
+  it("did:web (jws + jwe)", async () => {
     const actor0 = await transmute.did.jwk.exportable({
       alg: alg.ECDH_ES_A256KW,
     });
