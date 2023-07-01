@@ -362,7 +362,7 @@ end
   "id": "{{iss}}",
   "verificationMethod":[{
     "id": "#{{kid}}",
-    "type": "JsonWebKey2020",
+    "type": "JsonWebKey",
     "controller": "{{iss}}",
     "publicKey":{
       "kid": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0",
@@ -408,7 +408,7 @@ For example:
 ```json
 {
   "id": "#key-4",
-  "type": "JsonWebKey2020",
+  "type": "JsonWebKey",
   "controller": "did:example:123",
   "publicKeyJwk": {
     "kid": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0",
@@ -425,7 +425,7 @@ or
 ```json
 {
   "id": "did:example:123#urn:ietf:params:oauth:jwk-thumbprint:sha-256:AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0",
-  "type": "JsonWebKey2020",
+  "type": "JsonWebKey",
   "controller": "did:example:123",
   "publicKeyJwk": {
     "kid": "urn:ietf:params:oauth:jwk-thumbprint:sha-256:AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0",
