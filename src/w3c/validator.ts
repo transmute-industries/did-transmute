@@ -15,9 +15,9 @@ const ajv = new Ajv({
 export const validator = async ({ issuer, credentialStatus, credentialSchema }: RequestValidator) => {
   // TODO: decode and precompile / cache anything we can before returning the validator
 
-  const validate = async (jwt: string) => {
+  const validate = async (jwt: any) => {
     const issuerPublicKey = await issuer(jwt)
-    const { payload } = await verifyWithKey({ jws: jwt as any, publicKey: issuerPublicKey })
+    const { payload } = await verifyWithKey({ jws: jwt, publicKey: issuerPublicKey })
     const claimset = JSON.parse(payload.toString())
     const statusLists: any = {}
     if (claimset.credentialStatus) {
