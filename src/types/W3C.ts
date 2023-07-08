@@ -1,11 +1,13 @@
 
 
+import { DidJwkUrl } from "../../dist"
 import { CompactJsonWebSignature } from "../jose/CompactJsonWebSignature"
 import { PrivateKeyJwk } from "../jose/PrivateKeyJwk"
 import { PublicKeyJwk } from "../jose/PublicKeyJwk"
 
+import { JWTHeaderParameters } from "jose"
 
-export type VcLdJwtHeader = Record<string, unknown> & {
+export type VcLdJwtHeader = JWTHeaderParameters | Record<string, unknown> & {
   alg: string
   kid: string
   typ?: 'vc+ld+jwt'
@@ -67,12 +69,12 @@ export type VpLd = Record<string, unknown> & {
 }
 
 export type RequestJwt = {
-  header: VcLdJwtHeader
+  protectedHeader: VcLdJwtHeader
   claimset: VcLd | VpLd
 }
 
 export type JwtSigner = {
-  sign: (req: RequestJwt) => Promise<string>
+  sign: ({ protectedHeader, claimset }: RequestJwt) => Promise<string>
 }
 
 export type RequestVerifyJwt = {
@@ -80,28 +82,28 @@ export type RequestVerifyJwt = {
 }
 
 export type JwtVerifier = {
-  verify: (req: RequestVerifyJwt) => Promise<VcLd>
+  verify: ({ jwt }: RequestVerifyJwt) => Promise<VcLd>
 }
 export type RequestVcLdJwt = {
-  header: VcLdJwtHeader
+  protectedHeader: VcLdJwtHeader
   claimset: VcLd
   signer: JwtSigner
 }
 
 
-export type RequestW3CVcLdJwtSigner = {
+export type RequestIssuer = {
   privateKey: PrivateKeyJwk
 }
+export type RequestVerifier = {
+  issuer: (id: string) => Promise<PublicKeyJwk>
+}
 
-export type RequestVerifierFromPublicKey = {
-  publicKey: PublicKeyJwk
+export type JsonSchema = Record<string, unknown>
+
+export type RequestValidator = RequestVerifier & {
+  credentialStatus: (id: string) => Promise<CompactJsonWebSignature>
+  credentialSchema: (id: string) => Promise<JsonSchema>
 }
 
 
-export type RequestVerifierFromResolver = {
-  resolver: {
-    dereference: (id: string) => Promise<PublicKeyJwk>
-  }
-}
 
-export type RequestW3CVerifier = RequestVerifierFromPublicKey | RequestVerifierFromResolver

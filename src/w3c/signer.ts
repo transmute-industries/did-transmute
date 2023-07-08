@@ -1,13 +1,13 @@
 import { signWithKey } from '../jose/signWithKey'
 
-import { RequestW3CVcLdJwtSigner, RequestJwt } from '../types/W3C'
+import { RequestIssuer, RequestJwt } from '../types/W3C'
 
-export const signer = ({ privateKey }: RequestW3CVcLdJwtSigner) => {
+export const signer = ({ privateKey }: RequestIssuer) => {
   return {
-    sign: ({ header, claimset }: RequestJwt) => {
+    sign: ({ protectedHeader, claimset }: RequestJwt) => {
       return signWithKey({
         privateKey: privateKey,
-        protectedHeader: header,
+        protectedHeader: protectedHeader,
         payload: new TextEncoder().encode(JSON.stringify(claimset)),
       });
     }

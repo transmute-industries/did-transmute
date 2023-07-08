@@ -1,24 +1,11 @@
 import { verifyWithKey } from '../jose';
 
-import { RequestW3CVerifier, RequestVerifyJwt, VcLd, RequestVerifierFromPublicKey, RequestVerifierFromResolver } from '../types/W3C'
+import { RequestVerifier, RequestVerifyJwt, VcLd } from '../types/W3C'
 
-
-import getKidFromJwt from '../jose/getKidFromJwt'
-
-export const verifier = (req: RequestW3CVerifier) => {
+export const verifier = ({ issuer }: RequestVerifier) => {
   return {
     verify: async ({ jwt }: RequestVerifyJwt) => {
-      let publicKey;
-      if ((req as RequestVerifierFromPublicKey).publicKey) {
-        publicKey = (req as RequestVerifierFromPublicKey).publicKey
-      }
-      if ((req as RequestVerifierFromResolver).resolver) {
-        const kid = getKidFromJwt(jwt)
-        if (!kid) {
-          throw new Error('No kid found, unable to locate key material')
-        }
-        publicKey = await (req as RequestVerifierFromResolver).resolver.dereference(kid)
-      }
+      const publicKey = await issuer(jwt)
       if (!publicKey) {
         throw new Error('No public key available to verify')
       }
