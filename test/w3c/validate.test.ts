@@ -4,6 +4,7 @@ import transmute from "../../src";
 import yaml from 'js-yaml'
 import moment from 'moment'
 import { StatusList } from '@transmute/vc-jwt-status-list'
+import { CompactJsonWebSignature } from "../../src/jose/CompactJsonWebSignature";
 
 
 it("validation", async () => {
@@ -44,7 +45,6 @@ it("validation", async () => {
     },
   });
   const validator = await transmute.w3c.validator({
-    jwt: vc,
     issuer: async (jwt: string) => {
       const id = transmute.w3c.getPublicKeyIdFromToken(jwt);
       const { publicKeyJwk } = await transmute.did.jwk.dereference({
@@ -70,7 +70,7 @@ it("validation", async () => {
         },
       })
       // this resolver MUST return application/vc+ld+jwt
-      return statusList
+      return statusList as CompactJsonWebSignature
     },
     credentialSchema: async (id: string) => {
       const loaded = yaml.load(`

@@ -1,6 +1,6 @@
 
 
-import { DidJwkUrl } from "../../dist"
+
 import { CompactJsonWebSignature } from "../jose/CompactJsonWebSignature"
 import { PrivateKeyJwk } from "../jose/PrivateKeyJwk"
 import { PublicKeyJwk } from "../jose/PublicKeyJwk"
