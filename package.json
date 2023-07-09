@@ -1,6 +1,6 @@
 {
   "name": "@transmute/did-transmute",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "An opinionated typescript library for decentralized identifiers and verifiable credentials.",
   "main": "./dist/index.js",
   "typings": "dist/index.d.ts",
