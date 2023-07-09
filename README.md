@@ -96,6 +96,54 @@ import transmute from '@transmute/did-transmute';
 const transmute = require('@transmute/did-transmute');
 ```
 
+See also [transmute-industries/verifiable-credentials](https://github.com/transmute-industries/verifiable-credentials).
+
+This api is exposed on the default export, for example:
+
+```ts
+const actor = await transmute.did.jwk.exportable({
+  alg: "ES384",
+});
+const issuer = await transmute.w3c.vc.issuer({ 
+  signer: await transmute.w3c.controller.key.attached.signer({ 
+    privateKey: actor.key.privateKey 
+  }) 
+});
+// issue a vc+ld+jwt
+const vc = await issuer.issue({
+  protectedHeader: {
+    kid: actor.did + '#0',
+    alg: actor.key.publicKey.alg,
+  },
+  claimset: {
+    "@context": [
+      "https://www.w3.org/ns/credentials/v2",
+      "https://www.w3.org/ns/credentials/examples/v2"
+    ],
+    "id": "https://contoso.example/credentials/35327255",
+    "type": ["VerifiableCredential", "KYCExample"],
+    "issuer": "did:web:contoso.example",
+    "validFrom": "2019-05-25T03:10:16.992Z",
+    "validUntil": "2027-05-25T03:10:16.992Z",
+    "credentialStatus": {
+      "id": "https://contoso.example/credentials/status/4#3",
+      "type": "StatusList2021Entry",
+      "statusPurpose": "suspension",
+      "statusListIndex": "3",
+      "statusListCredential": "https://contoso.example/credentials/status/4"
+    },
+    "credentialSchema": {
+      "id": "https://contoso.example/bafybeigdyr...lqabf3oclgtqy55fbzdi",
+      "type": "JsonSchema"
+    },
+    "credentialSubject": {
+      "id": "did:example:1231588",
+      "type": "Person"
+    }
+  },
+});
+```
+
 ## did:jwk
 
 ### Generate
