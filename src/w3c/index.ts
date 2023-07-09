@@ -1,10 +1,4 @@
-import { signer } from "./signer"
-import { verifier } from "./verifier"
+import w3c from '@transmute/verifiable-credentials'
 
-import { validator } from "./validator"
-
-import { getPublicKeyIdFromToken } from "./getPublicKeyIdFromToken"
-
-const w3c = { signer, verifier, validator, getPublicKeyIdFromToken }
 
 export default w3c

@@ -1,22 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import transmute from "../../src";
-
+import { decodeProtectedHeader } from 'jose'
 import yaml from 'js-yaml'
 import moment from 'moment'
-import { StatusList } from '@transmute/vc-jwt-status-list'
-import { CompactJsonWebSignature } from "../../src/jose/CompactJsonWebSignature";
-
 
 it("validation", async () => {
   const actor = await transmute.did.jwk.exportable({
     alg: "ES256",
   });
-  const signer = transmute.w3c.signer({ privateKey: actor.key.privateKey });
-  const vc = await signer.sign({
-    protectedHeader: {
-      kid: actor.did + '#0',
-      alg: actor.key.publicKey.alg,
-    },
+  const issuer = await transmute.w3c.vc.issuer({ signer: await transmute.w3c.controller.key.attached.signer({ privateKey: actor.key.privateKey as any }) });
+  const protectedHeader = {
+    kid: actor.did + '#0',
+    alg: actor.key.publicKey.alg,
+  }
+  const vc = await issuer.issue({
+    protectedHeader,
     claimset: {
       "@context": [
         "https://www.w3.org/ns/credentials/v2",
@@ -44,33 +42,33 @@ it("validation", async () => {
       }
     },
   });
-  const validator = await transmute.w3c.validator({
+
+  const validator = await transmute.w3c.vc.validator({
+    vc,
     issuer: async (jwt: string) => {
-      const id = transmute.w3c.getPublicKeyIdFromToken(jwt);
+      const { kid } = decodeProtectedHeader(jwt) as any
       const { publicKeyJwk } = await transmute.did.jwk.dereference({
-        id,
+        id: kid,
         documentLoader: transmute.did.jwk.documentLoader,
       });
       // this resolver MUST return application/jwk+json
       return publicKeyJwk
+
     },
     credentialStatus: async (id: string) => {
-      const statusList = await StatusList.create({
+      const statusList = await transmute.w3c.vc.StatusList.create({
         id,
-        alg: 'ES256',
-        iss: actor.did,
-        kid: '#0',
-        iat: moment('2021-04-05T14:27:40Z').unix(),
         length: 8,
         purpose: 'suspension',
-        signer: {
-          sign: async ({ header, claimset }) => {
-            return signer.sign({ protectedHeader: header, claimset })
-          }
-        },
       })
+      statusList.issuer = actor.did
+      statusList.validFrom = moment().toISOString()
       // this resolver MUST return application/vc+ld+jwt
-      return statusList as CompactJsonWebSignature
+      const jwt = await issuer.issue({
+        protectedHeader,
+        claimset: statusList
+      })
+      return jwt
     },
     credentialSchema: async (id: string) => {
       const loaded = yaml.load(`
@@ -96,25 +94,23 @@ properties:
       return JSON.parse(JSON.stringify(loaded))
     }
   })
-  const validation = await validator.validate(vc)
-  expect(validation).toEqual({
-    "issuer": {
-      "did:web:contoso.example": {
-        "verified": true
-      }
-    },
-    "credentialStatus": {
-      "https://contoso.example/credentials/status/4#3": {
-        "suspension": false
-      }
-    },
-    "credentialSchema": {
-      "https://contoso.example/bafybeigdyr...lqabf3oclgtqy55fbzdi": {
-        "valid": true
-      }
+  const verifier = await transmute.w3c.vc.verifier({
+    issuer: async (jwt: string) => {
+      const { kid } = decodeProtectedHeader(jwt) as any
+      const { publicKeyJwk } = await transmute.did.jwk.dereference({
+        id: kid,
+        documentLoader: transmute.did.jwk.documentLoader,
+      });
+      // this resolver MUST return application/jwk+json
+      return publicKeyJwk
     }
-  }
-  )
-
+  })
+  const verified = await verifier.verify(vc)
+  const validation = await validator.validate(verified)
+  expect(validation.issuer).toEqual(actor.key.publicKey)
+  expect((validation.credentialSchema?.valid)).toBe(true)
+  expect((validation.credentialSchema as any)['https://contoso.example/bafybeigdyr...lqabf3oclgtqy55fbzdi']).toBeDefined()
+  expect((validation.credentialStatus?.valid)).toBe(true)
+  expect((validation.credentialStatus as any)['https://contoso.example/credentials/status/4#3'].suspension).toBe(false)
 });
 
