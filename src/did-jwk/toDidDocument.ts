@@ -21,7 +21,7 @@ export const toDidDocument = (jwk: AsymmetricJsonWebKey) => {
   const did = toDid(publicKeyJwk);
   const vm: VerificationMethod<DidJwk> = {
     id: "#0" as ParsedDidUrl<DidJwk>["fragment"],
-    type: "JsonWebKey2020",
+    type: "JsonWebKey",
     controller: did,
     publicKeyJwk,
   };
@@ -29,7 +29,10 @@ export const toDidDocument = (jwk: AsymmetricJsonWebKey) => {
   const didDocument: any = {
     "@context": [
       "https://www.w3.org/ns/did/v1",
-      { "@vocab": "https://www.iana.org/assignments/jose#" },
+      {
+        "@vocab": "https://www.iana.org/assignments/jose#",
+        '@base': did
+      },
     ],
     id: did,
     verificationMethod: [vm],

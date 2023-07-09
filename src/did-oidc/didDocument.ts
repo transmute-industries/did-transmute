@@ -3,7 +3,7 @@ import { PublicKeyJwk } from "../types";
 
 export type FakeVerificationMethod<iss extends string> = {
   id: `#${string}`;
-  type: "JsonWebKey2020";
+  type: "JsonWebKey";
   controller: iss;
   publicKeyJwk: PublicKeyJwk;
 };
@@ -32,7 +32,7 @@ export function didDocument<iss extends string>(
     verificationMethod: params.jwks.map((jwk: PublicKeyJwk) => {
       return {
         id: `#${jwk.kid}`,
-        type: "JsonWebKey2020",
+        type: "JsonWebKey",
         controller: params.iss as iss,
         publicKeyJwk: jwk as PublicKeyJwk,
       };

@@ -47,7 +47,7 @@ it("transmute.did.jwk.dereference", async () => {
     documentLoader: transmute.did.jwk.documentLoader,
   });
   expect(verificationMethod.id).toBe(`#0`);
-  expect(verificationMethod.type).toBe(`JsonWebKey2020`);
+  expect(verificationMethod.type).toBe(`JsonWebKey`);
   expect(verificationMethod.controller).toBe(did);
   expect(verificationMethod.publicKeyJwk.alg).toBe(alg.ES256);
 });
@@ -686,7 +686,7 @@ describe("transmute.did.web.fromDids", () => {
         verificationMethod: [
           {
             id: "#AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0", // will be overwritten by kid
-            type: "JsonWebKey2020",
+            type: "JsonWebKey",
             controller: "did:example:123", // will be overwritten anyway.
             publicKeyJwk: {
               kid: "urn:ietf:params:oauth:jwk-thumbprint:sha-256:AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0",
@@ -753,7 +753,7 @@ describe("transmute.did.web.fromDids", () => {
     expect(actor4.didDocument.verificationMethod).toEqual([
       {
         id: "#AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0", // set by fromDids
-        type: "JsonWebKey2020",
+        type: "JsonWebKey",
         controller: "did:web:id.gs1.transmute.example:01:9506000134352", // set by fromDids
         publicKeyJwk: {
           kid: "urn:ietf:params:oauth:jwk-thumbprint:sha-256:AXRYM9BnKWZj6c84ykLX6D-fE9FRV2_f3pRDwcJGSU0",
