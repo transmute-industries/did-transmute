@@ -3,13 +3,11 @@ import transmute, { DidJwkUrl } from "../src";
 const message = "It’s a dangerous business, Frodo, going out your door. 🧠💎";
 const payload = new TextEncoder().encode(message);
 
-
-
 it("with resolver", async () => {
   const actor = await transmute.did.jwk.exportable({
     alg: "ES256",
   });
-  const signer = await transmute.scitt.signer({ privateKeyJwk: actor.key.privateKey as any });
+  const signer = await transmute.scitt.signer({ privateKey: actor.key.privateKey });
   const detached = await signer.sign({
     protectedHeader: {
       kid: 'did:example:123#key-42',
@@ -18,9 +16,13 @@ it("with resolver", async () => {
     payload
   });
   const verifier = transmute.scitt.verifier({
-    issuer: async (id: string) => {
+    issuer: async (signature: Uint8Array) => {
+      const kid = transmute.cose.getKid(signature)
+      if (!kid) {
+        throw new Error('No kid found, unable to locate key material')
+      }
       // You might implement an allowed issuers policy here...
-      if (id !== 'did:example:123#key-42') {
+      if (kid !== 'did:example:123#key-42') {
         throw new Error('Unsupported issuer')
       }
       try {
